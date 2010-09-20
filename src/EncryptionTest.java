@@ -8,8 +8,9 @@ public class EncryptionTest {
 	 */
 	public static void main(String[] args) {
 		try {
-			// the key is shorter than 8 bytes
-			String shortKey = new String("123456789");
+
+			// vuln #1: short keys & padding
+			String shortKey = new String("abc123");
 
 			Encryption e = new Encryption(shortKey);
 			DESEncryption e2 = new DESEncryption(shortKey);
@@ -24,6 +25,8 @@ public class EncryptionTest {
 			if (Arrays.equals(e.encrypt(plaintext), e2.encrypt(plaintext))) {
 				System.out.println("[!] 3DES reduced to DES!");
 			}
+
+			// vuln #2:
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
