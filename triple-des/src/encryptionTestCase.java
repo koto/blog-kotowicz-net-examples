@@ -41,8 +41,9 @@ public class encryptionTestCase extends TestCase {
 		System.out.println(getName());
 
 		// the keys are differing in least significant bits only
-		String key = new String("\u00ff\u0000");
-		String secondKey = new String("\u00fe\u0001");
+		String key = new String("Ruffed");
+		String secondKey = new String("Rugged");
+
 		Encryption e = new Encryption(key);
 		Encryption e2 = new Encryption(secondKey);
 		byte[] plaintext = new String("plaintxt").getBytes("UTF8");
