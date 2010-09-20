@@ -2,8 +2,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
-import javax.crypto.BadPaddingException;
-
 import org.junit.Test;
 
 import junit.framework.TestCase;

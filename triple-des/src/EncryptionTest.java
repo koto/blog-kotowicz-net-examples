@@ -36,7 +36,12 @@ public class EncryptionTest {
 	private static void dumpBytes(String name, byte[] bytes) {
 		System.out.print(name + ":\t");
 		for (int i = 0; i < bytes.length; i++) {
-			System.out.print(Integer.toHexString(bytes[i]));
+
+			if (i > 0 && (i % 8 == 0)) {
+				System.out.print(" ");
+			}
+
+			System.out.printf("%02x", bytes[i]);
 		}
 		System.out.println();
 	}
