@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>BBCode2HTML XSS demo</title>
+<script type="text/javascript" src="bbcode2html.js"></script>
+<script type="text/javascript">
+function convert() {
+    var value=BBC2HTML(document.getElementById('src').value);
+    document.getElementById('dest').value = value;
+    document.getElementById('result').innerHTML = value;
+}
+</script>
+</head>
+<body>
+<label>Insert BBCODE</label>
+<textarea id="src" cols="60" rows="10"></textarea>
+<button id="convert" onclick="convert()">Convert</button>
+<br />
+<label>Resulting HTML</label>
+<textarea id="dest" cols="60" rows="10"></textarea>
+<div id="result">
+</div>
+</body>
+</html>
