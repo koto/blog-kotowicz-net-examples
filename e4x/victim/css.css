@@ -1,11 +1,21 @@
+h3 {
+	color: green;
+}
+
+#container {
+	width: 400px;
+}
+div.comment, div.comment-text, input, textarea, strong.author {
+	width: 100%;
+}
+
 div.comment {
 	border: 1px dashed #ccc;
-	width: 400px;
 	padding: 5px;
+	margin-bottom: 5px;
 }
 
 div.comment-text {
-	width: 400px;
 	padding: 5px;
 	font-size: 10px;
 	overflow: hidden;
@@ -15,5 +25,4 @@ div.comment-text {
 
 strong.author {
 	display: block;
-	width: 400px;
 }
