@@ -82,7 +82,7 @@ Comment: <br /><textarea name="comment"></textarea><br />
 </form>
 <p>
 <strong>Disclaimer:</strong> This page is a demonstraction of XSS attack. IT MAY CONTAIN MALICIOUS CODE (if somebody injects it), be careful!
-<br />For more info see <a href="http://blog.kotowicz.net">the blog</a>
+<br />For more info see <a href="http://blog.kotowicz.net/2010/10/test-your-skills-with-this-xss-hackme.html">the blog</a>
 </p>
 </div>
 </body>
