@@ -1,0 +1,19 @@
+div.comment {
+	border: 1px dashed #ccc;
+	width: 400px;
+	padding: 5px;
+}
+
+div.comment-text {
+	width: 400px;
+	padding: 5px;
+	font-size: 10px;
+	overflow: hidden;
+	white-space: pre;
+}
+
+
+strong.author {
+	display: block;
+	width: 400px;
+}
