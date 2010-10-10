@@ -1,0 +1,4 @@
+<Files *.sqlite>
+Order deny,allow
+Deny From all
+</Files>
