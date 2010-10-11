@@ -34,7 +34,7 @@ foreach ($widgets as $w) {
 
 	// delete comments for IP
 	if (!empty($_GET['clear'])) {
-		$stmt = $db->prepare("DELETE FROM comments WHERE ip = :i");
+		$stmt = $db->prepare("UPDATE comments SET hidden = 1 WHERE ip = :i");
 		$ok = $stmt->execute(array(
 			'i' => $ip)
 		);
@@ -47,8 +47,9 @@ foreach ($widgets as $w) {
 	if (!empty($_POST['author']) && !empty($_POST['comment'])) {
 
 		// SQL injection protection - prepared statements
-		$stmt = $db->prepare("INSERT INTO comments (author, comment, ip) VALUES(:a,:c,:i)");
+		$stmt = $db->prepare("INSERT INTO comments (date, author, comment, ip, hidden) VALUES(:d,:a,:c,:i, 0)");
 		$ok = $stmt->execute(array(
+			'd' => date('Y-m-d H:i:s'),
 			'a' => $_POST['author'], 
 			'c' => $_POST['comment'],
 			'i' => $ip)
@@ -62,7 +63,7 @@ foreach ($widgets as $w) {
 	}
 
 	// fetch all comments and render them with htmlspecialchars() (XSS protection) 
-	$stmt = $db->prepare("SELECT author, comment FROM comments WHERE ip = ? ORDER BY id DESC");
+	$stmt = $db->prepare("SELECT author, comment FROM comments WHERE ip = ? AND hidden <> 1 ORDER BY id DESC");
 
 	$result = $stmt->execute(array($ip));
 
