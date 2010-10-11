@@ -1,3 +1,4 @@
+php_flag magic_quotes_gpc off
 <Files *.sqlite>
 Order deny,allow
 Deny From all
