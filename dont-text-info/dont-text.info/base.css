@@ -1,0 +1,65 @@
+html * {padding: 0; margin: 0;}
+html {background: url('top.gif') left top repeat-x;}
+
+body {background: url('header.gif') top left no-repeat; width: 980px; margin: 0 auto; padding-top: 60px;}
+
+h1 {font-size:16px; font-weight:bold; padding:0; color: #333; font-family:"lucida grande",tahoma,verdana,arial,sans-serif; margin: 5px 0 6px 0;}
+h2 {
+background:#ECEFF5 none repeat scroll 0 0;
+display:block;
+padding:5px 8px;
+position:relative;
+font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+font-size: 11px;
+border-top: #94a3c4 1px solid;}
+
+#container {overflow:}
+  #left {width: 200px; float: left; margin-left: 17px; margin-right: 17px;}
+    #profilepic {display: block; margin: 0 auto 10px auto;}
+  #right {width: 735px; float: right; margin-left: 10px;}
+    #toptab {border: solid 1px #d8dfea; padding: 5px; background: #fff; width: 80px; color:#333333; font-size:13px; font-family:"lucida grande",tahoma,verdana,arial,sans-serif; font-weight: bold; text-align: center; border-bottom: 2px solid #fff;}
+    #instructions {background: #eceff5; font-family:"lucida grande",tahoma,verdana,arial,sans-serif; border: solid 1px #d8dfea; padding: 10px; margin-top: 15px;}
+
+    #buyer {font-size:13px; color:#990000; background: #fffff4; font-family:"lucida grande",tahoma,verdana,arial,sans-serif; border: solid 1px #CCCCCC; padding: 10px; margin-top: 15px;}
+
+
+      #instructions h2 {font-size: 14px; font-weight: 700; padding: 0; border: 0; margin: 0;}
+      #instructions p {font-size: 12px; margin: 10px 0;}
+    .step {margin: 20px 0;}
+    #like {margin-left: 160px;}
+    #share-button {margin: 0 auto; display: block;}
+    #start {width: 250px; margin: 20px auto; display: block; padding: 5px; font-weight: 700; font-size: 14px; font-family:"lucida grande",tahoma,verdana,arial,sans-serif; background: #627caf; border: 2px solid #415783; text-align: center; color: #fff; text-decoration: none;}
+  #footer {border-bottom:1px solid #B3B3B3; height: 8px; background: #fff; clear: both; margin-bottom: 40px;}
+  
+  #step2 {
+  }
+
+  #like {
+  	padding-left: 100px;
+  }
+
+  #step3 {
+  }
+
+  #share-button {
+  	padding: 4px 3px 4px 3px;
+  	border:1px solid #2F2F2F;
+  	background-color: #627CAF;
+  	color: #FFFFFF;
+  	font-size: 11px;
+  	font-weight: bold;
+  	cursor: pointer;
+  }
+
+  #step4 {
+  }
+
+  #invite {
+  	padding-left: 156px;
+  }
+
+  #invites-submit {
+  	padding: 4px;
+  }
+  
+  

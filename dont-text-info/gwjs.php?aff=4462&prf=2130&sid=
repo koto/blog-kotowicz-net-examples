@@ -1,0 +1,165 @@
+var loaded = true;/*
+ These Javascript functions (except where noted) are the intellectual property of Adscend Media LLC
+ Copyright 2009 Adscend Media LLC. All Rights Reserved. No duplication, reverse engineering, or decompliation permitted. Use in any other application without prior written consent is prohibited.
+ The getScrollPos and getPageSize functions were created by Lokesh Dhakar (http://www.huddletogether.com) for his Lightbox project. They are used here under the Creative Commons license.
+*/
+
+var hasloaded = false;
+var delay_time = 0;
+var unscroll_time = 200;
+hide_ie_embeds = 0;
+
+function getScrollPos(){
+	var topScroll;
+	if (self.pageYOffset) {
+		topScroll = self.pageYOffset;
+	}else if (document.documentElement && document.documentElement.scrollTop){
+		topScroll = document.documentElement.scrollTop;
+	}else if (document.body) {
+		topScroll = document.body.scrollTop;
+	}
+	return topScroll;
+}
+
+function getPageSize(){
+  var xScroll, yScroll;
+	if (window.innerHeight && window.scrollMaxY) {	
+		xScroll = window.innerWidth + window.scrollMaxX;
+		yScroll = window.innerHeight + window.scrollMaxY;
+	} else if (document.body.scrollHeight > document.body.offsetHeight){ // all but Explorer Mac
+		xScroll = document.body.scrollWidth;
+		yScroll = document.body.scrollHeight;
+	} else { // Explorer Mac...would also work in Explorer 6 Strict, Mozilla and Safari
+		xScroll = document.body.offsetWidth;
+		yScroll = document.body.offsetHeight;
+	}
+	var windowWidth, windowHeight;
+	if (self.innerHeight) {	// all except Explorer
+		if(document.documentElement.clientWidth){
+			windowWidth = document.documentElement.clientWidth; 
+		} else {
+			windowWidth = self.innerWidth;
+		}
+		windowHeight = self.innerHeight;
+	} else if (document.documentElement && document.documentElement.clientHeight) { // Explorer 6 Strict Mode
+		windowWidth = document.documentElement.clientWidth;
+		windowHeight = document.documentElement.clientHeight;
+	} else if (document.body) { // other Explorers
+		windowWidth = document.body.clientWidth;
+		windowHeight = document.body.clientHeight;
+	}	
+	// for small pages with total height less then height of the viewport
+	if(yScroll < windowHeight){
+		pageHeight = windowHeight;
+	} else { 
+		pageHeight = yScroll;
+	}
+	// for small pages with total width less then width of the viewport
+	if(xScroll < windowWidth){	
+		pageWidth = xScroll;		
+	} else {
+		pageWidth = windowWidth;
+	}
+	arrayPageSize = new Array(pageWidth,pageHeight,windowWidth,windowHeight)
+	return arrayPageSize;
+}
+ 
+function addLoadEvent(func) { // credit to Scott Andrew
+  	var oldonload = window.onload;
+  	if (typeof window.onload != 'function'){
+      window.onload = func;
+  	}else{
+  		window.onload = function(){ oldonload(); func(); }
+  	}
+}
+
+// -----------
+
+
+function initGateway() {
+  if (hasloaded != true){
+    hasloaded = true;
+    if (delay_time > 0) {
+    	setTimeout("loadGateway()", delay_time*1000);
+    } else {
+    	loadGateway();
+    }
+	}
+}
+
+function loadGateway(){
+  // the Body must be ready before we can begin
+	var objBody = document.getElementsByTagName("body")[0];
+	if (objBody == null) {
+		setTimeout("loadGateway();", 200);
+		return false;
+	}
+  var overlayDiv = document.getElementById('gw_overlay');
+	toggleEmbeds(0);
+	var mainDiv = document.getElementById('gw_main');
+	mainDiv.style.display = 'block';
+	var arrayPageSize = getPageSize();
+	overlayDiv.style.height = (arrayPageSize[1] + 'px');
+	if (navigator.appName == 'Microsoft Internet Explorer') {
+	  overlayDiv.style.width = (arrayPageSize[0] + 'px');
+	}
+	overlayDiv.style.display = 'block';
+	document.getElementById('gw_iframe').style.display = '';
+	document.getElementById('gw_iframe').src = 'http://adscendmedia.com/gwframe.php?aff=4462&prf=2130&sid=';
+	if (unscroll_time > 0){ unscroll(); }
+}
+
+function unscroll(){
+	scroll(0,0);
+	if (unscroll_time > 0) {
+		setTimeout("unscroll();", unscroll_time);
+	}	
+}
+
+function toggleEmbeds(newstate) {
+	if (newstate==0){
+    v_visibility = 'hidden';
+    v_wmode = 'opaque';
+    f_display = 'none';
+  }else{
+    v_visibility = 'visible';
+    v_wmode = 'window';
+    f_display = '';
+  }
+    
+	var embeds = document.getElementsByTagName('embed');
+	for (var ems = document.embeds, i = 0, em; em = ems[i]; i++) {
+    if (navigator.appName == 'Microsoft Internet Explorer') {
+			if (hide_ie_embeds){ em.style.visibility = v_visibility; }
+			em.setAttribute('wmode', v_wmode);
+		}else{
+		  em.setAttribute('wmode', v_wmode);
+		  if (newstate==0){
+  			var nx = em.nextSibling, pn = em.parentNode;
+  			pn.removeChild(em);
+  			pn.insertBefore(em, nx);
+  		}
+		}
+	}	
+}
+
+
+
+
+var out = '';
+out = '<style type="text/css">';
+  	out += '#gw_overlay { position:absolute;top:0;left:0; width:100%; z-index:1999002; background-color:#000000; filter:alpha(opacity=10); opacity:0.10; -moz-opacity:0.10; }';
+  out += '#gw_main { margin-top:100px; width:100%; text-align:center; position:absolute;top:0;left:0; z-index:1999003; }';
+out += '</style>';
+
+out += '<div id="gw_overlay" style="display:none;"></div>';
+
+out += '<div id="gw_main" style="display:none;">';
+  out += '<iframe width="539" height="264" id="gw_iframe" src="" allowtransparency="true" frameborder="0" style="overflow-x:hidden;overflow-y:hidden; background-color:transparent; z-index:1999005;" scrollbars="no"></iframe>';
+  out += '</div>';
+
+document.write(out);
+if (delay_time != -1){ addLoadEvent(initGateway); }
+
+
+
