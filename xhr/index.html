@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>XHR</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    $('form').submit(function() {
+        $.ajax({
+            url: $('#address').val(),
+            success: function() {
+                $('#result').val(arguments[0]);
+                console.log(arguments);
+            },
+            error: function(xhr, status, error) {
+                alert('!', status);
+                console.log(xhr,error);
+            }
+         });
+        return false;
+    })
+});
+</script>
+</head>
+<body>
+<form><input id="address" /><button type="submit" id="go">Go!</button></form>
+<textarea rows="20" cols="80" id="result"></textarea>
+</body>
+</html>
