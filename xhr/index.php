@@ -1,3 +1,4 @@
+<?php setcookie('secret','1'); ?>
 <!doctype html>
 <html>
 <head>
@@ -8,10 +9,12 @@
 $(function() {
     $('form').submit(function() {
         $.ajax({
+            type: "post",
+            dataType: 'html',
             url: $('#address').val(),
             success: function() {
                 $('#result').val(arguments[0]);
-                console.log(arguments);
+                $('body').append(arguments[0]);
             },
             error: function(xhr, status, error) {
                 alert('!', status);

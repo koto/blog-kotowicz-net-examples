@@ -15,3 +15,6 @@ if (strtolower($_SERVER['REQUEST_METHOD']) == 'options') {
 }
 ?>
 I'm cross domain
+<script>
+alert(document.cookie);
+</script>
