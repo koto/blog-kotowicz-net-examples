@@ -51,7 +51,7 @@ padding: 0;
     <?php endif;?>
 <?php elseif ($_GET['page'] == 'other') : ?>
     <h2>Other page</h2>
-    <p>Bla bla bla</p>
+    <div style="height: 3000px; background: #ccc; border-bottom: 10px solid blue">my div</div>
 <?php else : ?>
     <h2>Home page</h2>
     <p><?php echo date() ?></p>
