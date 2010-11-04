@@ -1,5 +1,4 @@
 <?php setcookie('secret','1'); ?>
-<!doctype html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -27,7 +26,7 @@ $(function() {
 </script>
 </head>
 <body>
-<form><input id="address" /><button type="submit" id="go">Go!</button></form>
+<form onsubmit="return false"><input id="address" /><button type="submit" id="go">Go!</button></form>
 <textarea rows="20" cols="80" id="result"></textarea>
 </body>
 </html>

@@ -14,7 +14,7 @@ if (strtolower($_SERVER['REQUEST_METHOD']) == 'options') {
     exit();
 }
 ?>
-I'm cross domain
+<p onmouseover="alert('a')">I'm cross domain</p>
 <script>
 alert(document.cookie);
 </script>
