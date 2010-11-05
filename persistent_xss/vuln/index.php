@@ -1,6 +1,5 @@
 <html>
 <head>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
 <title>Vulnerable site</title>
 <style type="text/css">
 input{
