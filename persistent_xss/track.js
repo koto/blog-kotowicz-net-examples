@@ -19,6 +19,7 @@
  * start - starting frame URL (e.g. targetted site home page)
  *       (defaults to current location without query params)
  * site - site id (optional) - used to enable logs from different sites simultaneously
+ * observe - jQuery selector to look for in pages. If it's present, it's HTML content will be logged
  */
 (function() {
 	var scripts = document.getElementsByTagName('script');
@@ -29,6 +30,7 @@
 
 	var startUrl = params.start || location.href.replace(/\?.*/,'');
 	var logUrl = params.log || scriptUrl.replace(/\/track.js/, '/log.php');
+	var observeSelector = params.observe || null;
 
 	function parseQuery ( query ) {
 	   var Params = new Object ();
@@ -79,7 +81,13 @@
 
 				try {
 					location = this.contentDocument.location.href;
-					height = this.contentWindow.innerHeight+this.contentWindow.scrollMaxY;
+					height = (this.contentWindow.innerHeight||0)+(this.contentWindow.scrollMaxY||0);
+					var openf = this.contentWindow.open;
+					// proxy for window.open()
+					this.contentWindow.open = function(url) {
+						log({event: 'open', 'from': location, 'href': arguments[0], 'arguments': $.makeArray(arguments).slice(1)});
+						return openf.apply(this, $.makeArray(arguments));
+					}
 				} catch(e) {}
 
 				log({event: 'load', 'href': location, 'height': height});
@@ -88,19 +96,32 @@
 				$('body',this.contentDocument)
 				.find('a')
 					.click(function() {
-						log({event:'click', 'href': this.href});
+						log({event:'click', 'from': location, 'href': this.href, 'target': this.target});
 					})
 				.end()
 				.find('form')
 					.submit(function() {
-						log({event: 'form',
-							 url: location,
+						log({event: 'submit',
+							 from: location,
 							 action: $(this).attr('action') || location,
 							 fields: $(this).serialize()
 						   });
 					})
 				.end();
-			})
+				if (observeSelector && $(observeSelector, this.contentDocument).length) {
+					// we found the selector
+					$(observeSelector, this.contentDocument).each(function() {
+						var clone = $(this).clone();
+						log({event: 'found',
+							 selector: observeSelector,
+							 from: location,
+							 'content': clone.wrap('<div>').parent().html()
+						    });
+						clone.remove();
+					})
+
+				}
+			});
 
 		i.attr('src', startUrl);
 

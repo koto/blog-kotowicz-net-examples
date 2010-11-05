@@ -24,7 +24,9 @@ padding: 0;
 <li><a href="?page=other">Other</a></li>
 <li><a href="?page=search">Search</a></li>
 <li><a href="?page=login">Login</a></li>
-<li><a href="http://www.heritageofscotland.com">external</a></li>
+<li><a href="?page=other" target="_blank">Other in new page</a></li>
+<li><a href="#" onclick="window.open('?page=other')">window.open()</a></li>
+<li><a href="http://www.google.com">external</a></li>
 </ul>
 <?php if ($_GET['page'] == 'search') : ?>
     <h2>Search</h2>
@@ -48,6 +50,8 @@ padding: 0;
     </form>
     <?php if ($_POST['login'] == 'admin' && $_POST['password'] == 'secret') : ?>
     <h1>You're in!</h1>
+    <p>Your secret ID is <span class="secret">SECRET_ID_1</span></p>
+    <p>Your auth code is <span class="secret">SECRET_CODE</span></p>
     <?php endif;?>
 <?php elseif ($_GET['page'] == 'other') : ?>
     <h2>Other page</h2>
