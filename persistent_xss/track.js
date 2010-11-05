@@ -11,13 +11,14 @@
  * USING THIS PROJECT IS PROHIBITED!
  *
  * To configure the tracker use script URL parameters like so:)
- * <script src="http://example.com/track.js?log=http://whatever/log.php
+ * <script src="http://example.com/track.js?log=http%3A%2F%2Fwhatever%2Flog.php&amp;site=youtube.com"></script>
  *
  * Parameters:
  * log - external absolute URL used to log events performed on targetted site
  *       (defaults to log.php in the same location as track.js)
  * start - starting frame URL (e.g. targetted site home page)
  *       (defaults to current location without query params)
+ * site - site id (optional) - used to enable logs from different sites simultaneously
  */
 (function() {
 
@@ -47,6 +48,9 @@
 
 	function log(what) {
 		what["_"] = Math.random(); // avoid caching
+		if (params.site) {
+			what.site = params.site;
+		}
 		try {
 		    $.get(logUrl, what); // try with ajax first, but you might bet into cross domain issues
 		} catch (e) {
