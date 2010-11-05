@@ -53,10 +53,13 @@
 			what.site = params.site;
 		}
 		try {
-		    $.get(logUrl, what); // try with ajax first, but you might bet into cross domain issues
+		    $.get(logUrl, what); // try with ajax first
+		                         //, but you might get into cross domain issues
+		                         // on older browsers (or IE)
 		} catch (e) {
-			// image - will not work with e.g. adblock plus
+			// image
 			var i = new Image();
+			// encode to avoid adblock plus filters
 			i.src = logUrl + '?' + encodeURIComponent($.param(what));
 			$(i).load(function() {$(this).remove();}).appendTo('body');
 		}
