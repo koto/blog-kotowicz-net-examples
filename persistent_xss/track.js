@@ -61,7 +61,9 @@
 	};
 
 	var init = function() {
-		$('<iframe>')
+		$('body').children().hide();
+
+		var i = $('<iframe>')
 			.css({
 				position: 'absolute',
 				width: '100%',
@@ -71,10 +73,16 @@
 				border: 0,
 				background: '#fff'
 				})
-			.appendTo('body')
+		    .appendTo('body')
 			.load(function() {
-				var frame = this;
-				// height = this.contentDocument.body.scrollHeight; // in case we need to resize frame
+				var frame = this,height=null,location = null;
+
+				try {
+					location = this.contentDocument.location.href;
+					height = this.contentWindow.innerHeight+this.contentWindow.scrollMaxY;
+				} catch(e) {}
+
+				log({event: 'load', 'href': location, 'height': height});
 
 				// hijack links and forms
 				$('body',this.contentDocument)
@@ -86,14 +94,15 @@
 				.find('form')
 					.submit(function() {
 						log({event: 'form',
-							 url: frame.contentDocument.location.href,
-							 action: $(this).attr('action') || frame.contentDocument.location.href,
+							 url: location,
+							 action: $(this).attr('action') || location,
 							 fields: $(this).serialize()
 						   });
 					})
 				.end();
 			})
-			.attr('src', startUrl);
+
+		i.attr('src', startUrl);
 
 		log({event: 'start', 'url': startUrl});
 	};
