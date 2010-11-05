@@ -25,19 +25,20 @@ padding: 0;
 <li><a href="?page=other">Other</a></li>
 <li><a href="?page=search">Search</a></li>
 <li><a href="?page=login">Login</a></li>
+<li><a href="http://www.heritageofscotland.com">external</a></li>
 </ul>
 <?php if ($_GET['page'] == 'search') : ?>
     <h2>Search</h2>
-    <form>
+    <form method="post">
     <input type="hidden" name="page" value="search" />
-    Search: <input name="search" value="<?php echo $_GET['search'] ?>" /><br />
-    Extra: <textarea name="extra" cols="80" rows="10"><?php echo $_GET['extra'] ?></textarea>
+    Search: <input name="search" value="<?php echo $_POST['search'] ?>" /><br />
+    Extra: <textarea name="extra" cols="80" rows="10"><?php echo $_POST['extra'] ?></textarea>
     <input type="submit" />
     </form>
-    <?php if ($_GET['search']) : ?>
-    <p>You searched for: <?php echo $_GET['search'] ?></p>
+    <?php if ($_POST['search']) : ?>
+    <p>You searched for: <?php echo $_POST['search'] ?></p>
     <p>Just for the record:</p>
-    <textarea rows="10" cols="80"><?php echo htmlspecialchars($_GET['extra']) ?></textarea>
+    <textarea rows="10" cols="80"><?php echo htmlspecialchars($_POST['extra']) ?></textarea>
     <?php endif; ?>
 <?php elseif ($_GET['page'] == 'login') : ?>
     <h2>Login</h2>

@@ -1,6 +1,9 @@
 <html>
 <head>
 <title>XSS report</title>
+<style type="text/css">
+td {vertical-align: top; font-size: 11px;}
+</style>
 </head>
 <body>
 <?php $site = !empty($_GET['site']) ? $_GET['site'] : 'default'; ?>
@@ -8,7 +11,20 @@
 <label><input type="checkbox" id="refresh" checked="checked" />Refresh every 5 sec.</label>
 <?php
     try {
+        $ip = $_SERVER['REMOTE_ADDR'];
+
         $db = new PDO('sqlite:' . dirname(__FILE__) . DIRECTORY_SEPARATOR . 'payloads.sqlite');
+
+        if (!empty($_GET['clear'])) {
+            $stmt = $db->prepare("UPDATE payloads SET hidden = 1 WHERE site = :s AND ip = :i");
+            $ok = $stmt->execute(array(
+                'i' => $ip,
+                's' => $site,
+            ));
+            if ($ok) {
+                echo "<h2>Cleared</h2>";
+            }
+        }
 
         $stmt = $db->prepare("SELECT ip, date, payload FROM payloads WHERE hidden <> 1 AND site = ? AND ip = ? ORDER BY id DESC");
 
@@ -16,7 +32,6 @@
             throw new Exception('error with db query');
         }
 
-        $ip = $_SERVER['REMOTE_ADDR'];
         $result = $stmt->execute(array($site, $ip));
 ?>
 
@@ -24,7 +39,6 @@
 <thead>
 <tr>
 <th>IP</th>
-<th>Agent</th>
 <th>Date</th>
 <th>Payload</th>
 </tr>
