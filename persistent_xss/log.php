@@ -1,4 +1,19 @@
 <?php
+/**
+ * Store tracking log
+ * @author Krzysztof Kotowicz <kkotowicz at gmail dot com>
+ * @see http://blog.kotowicz.net
+ *
+ * THIS FILE IS PART OF THE PROJECT FOR EDUCATIONAL USE *ONLY*
+ * ANY COMMERCIAL USE, E.G. FOR VULNERABILITY ASSESSMENT,
+ * PENETRATION TESTING IS PROHIBITED - CONTACT THE AUTHOR FOR PERMISSION
+ *
+ * PERFORMING ACTUAL ATTACKS ON WEBSITES NOT OWNED BY YOU
+ * USING THIS PROJECT IS PROHIBITED!
+ *
+ * Use together with track.js script!
+ */
+
 if (count($_GET) == 1) { // encoded
     parse_str(urldecode($_SERVER['QUERY_STRING']), $_GET);
 }

@@ -1,3 +1,21 @@
+<?php
+/**
+ * Show tracking log
+ * @author Krzysztof Kotowicz <kkotowicz at gmail dot com>
+ * @see http://blog.kotowicz.net
+ *
+ * THIS FILE IS PART OF THE PROJECT FOR EDUCATIONAL USE *ONLY*
+ * ANY COMMERCIAL USE, E.G. FOR VULNERABILITY ASSESSMENT,
+ * PENETRATION TESTING IS PROHIBITED - CONTACT THE AUTHOR FOR PERMISSION
+ *
+ * PERFORMING ACTUAL ATTACKS ON WEBSITES NOT OWNED BY YOU
+ * USING THIS PROJECT IS PROHIBITED!
+ *
+ * Parameters:
+ * site - show logs for given site
+ * clear=1 - will clear logs for current site
+ */
+?>
 <html>
 <head>
 <title>XSS report</title>

