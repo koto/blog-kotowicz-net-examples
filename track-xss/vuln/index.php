@@ -16,6 +16,10 @@ margin: 1em 0;
 height: 1em;
 padding: 0;
 }
+.warning {
+    border: 1px solid red;
+    padding: 1em;
+}
 </style>
 </head>
 <body>
@@ -28,6 +32,9 @@ padding: 0;
 <li><a href="#" onclick="window.open('?page=other')">window.open()</a></li>
 <li><a href="http://www.google.com">external</a></li>
 </ul>
+<p class="warning">This site is just a demonstration of XSS attack vulnerability. Be careful when browsing it. See
+<a href="http://blog.kotowicz.net/2010/11/xss-track-how-to-quietly-track-whole.html">here</a> for full info.
+</p>
 <?php if ($_GET['page'] == 'search') : ?>
     <h2>Search</h2>
     <form method="post">
