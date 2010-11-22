@@ -65,6 +65,17 @@
 		}
 	};
 
+	var getPath = function(url) {
+		return url.match(/(\/.*)/)[1];
+	};
+
+	var changeAddressBar = function(url) {
+		try {
+			// html5 goodness - should work in Safari, Chrome, FF 4
+			window.history.pushState({}, "", getPath(url));
+		} catch(e) {}
+	};
+
 	var init = function() {
 		$('body').children().hide();
 
@@ -100,6 +111,7 @@
 				.find('a')
 					.click(function() {
 						log({event:'click', 'from': location, 'href': this.href, 'target': this.target});
+						changeAddressBar(this.href);
 					})
 				.end()
 				.find('form')
@@ -127,7 +139,7 @@
 			});
 
 		i.attr('src', startUrl);
-
+		changeAddressBar(startUrl);
 		log({event: 'start', 'url': startUrl});
 	};
 
