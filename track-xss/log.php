@@ -14,8 +14,20 @@
  * Use together with track.js script!
  */
 
+$file_storage = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'captured_files';
+
 if (count($_GET) == 1) { // encoded
     parse_str(urldecode($_SERVER['QUERY_STRING']), $_GET);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') { // file upload
+    $_GET = $_POST;
+}
+
+if (!empty($_FILES['contents'])) {
+    $uniq = uniqid("file-");
+    move_uploaded_file($_FILES['contents']['tmp_name'], $file_storage . DIRECTORY_SEPARATOR . $uniq);
+    $_GET['contents'] = $uniq;
 }
 
 if (!empty($_GET)) {

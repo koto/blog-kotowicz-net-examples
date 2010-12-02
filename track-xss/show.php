@@ -70,7 +70,11 @@ td {vertical-align: top; font-size: 11px;}
     <td><?php
     if ($payload = json_decode($row['payload'])) {
         foreach ($payload as $k => $v) {
-            echo htmlspecialchars($k . ': ' . print_r($v, true)) . "<br />";
+            if ($k == 'contents' && $payload->event == 'file') {
+                echo htmlspecialchars($k) . ': <a href="captured_files/' . htmlspecialchars($v) . '">' . htmlspecialchars($v) . "</a><br />";
+            } else {
+                echo htmlspecialchars($k . ': ' . print_r($v, true)) . "<br />";
+            }
         }
     }
     ?></td>
