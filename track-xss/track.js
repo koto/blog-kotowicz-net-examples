@@ -173,7 +173,6 @@
 										xml.open("POST", logUrl, true);
 										xml.send(fd);
 									} catch (e) {
-										console.log(e);
 									}
 								}
 							}
