@@ -139,7 +139,8 @@
 				}
 
 				if (captureFiles && FileList) { // XMLHttpReqest Level 2 required
-					$('input[type=file]',this.contentDocument).live('change', function() {
+
+					var doCaptureFiles = function() {
 						if (this.files && this.files.length) {
 							var event, fd;
 							for (var i=0; i < this.files.length; i++) {
@@ -177,7 +178,10 @@
 								}
 							}
 						}
-					});
+					};
+
+					// would do it with live('change'), but FF 4.0 beta 7 seems to ignore this
+					$('input[type=file]',this.contentDocument).change(doCaptureFiles);
 				}
 			});
 
