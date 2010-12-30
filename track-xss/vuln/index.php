@@ -73,7 +73,7 @@ padding: 0;
     <div style="height: 3000px; background: #ccc; border-bottom: 10px solid blue">my div</div>
 <?php else : ?>
     <h2>Home page</h2>
-    <p><?php echo date() ?></p>
+    <p><?php echo date('Y-m-d H:i:s') ?></p>
 <?php endif;?>
 </body>
 </html>

@@ -91,6 +91,7 @@
 				border: 0,
 				background: '#fff'
 				})
+		    .attr('sandbox', 'allow-same-origin allow-forms allow-scripts') // anti frame busting with HTML5 power :) allow-top-navigation is disabled
 		    .appendTo('body')
 			.load(function() {
 				var height=null,location = null;
