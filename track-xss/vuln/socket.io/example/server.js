@@ -15,12 +15,13 @@ server = http.createServer(function(req, res){
   switch (path){
     case '/':
       res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write('<h1>Welcome. Try the <a href="/chat.html">chat</a> example.</h1>');
+      res.write('<h1>Welcome. See <a href="/readme.html">readme</a> or try the <a href="/chat.html">chat</a> example.</h1>');
       res.end();
       break;
       
     case '/json.js':
     case '/chat.html':
+    case '/readme.html':
       fs.readFile(__dirname + path, function(err, data){
         if (err) return send404(res);
         res.writeHead(200, {'Content-Type': path == 'json.js' ? 'text/javascript' : 'text/html'})

