@@ -39,7 +39,7 @@ send404 = function(res){
   res.end();
 };
 
-server.listen(8080);
+server.listen(9999);
 
 // socket.io, I choose you
 // simplest chat application evar
