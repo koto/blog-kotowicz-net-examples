@@ -47,7 +47,6 @@
 		   }
 		   return Params;
 	}
-
 	var scripts = document.getElementsByTagName('script');
 	var myScript = scripts[ scripts.length - 1 ];
 	var scriptUrl = myScript.src.replace(/\?.*/, '');
@@ -128,13 +127,13 @@
 				// hijack links and forms
 				$('body',this.contentDocument)
 				.find('a')
-					.click(function() {
+					.live('click', function() {
 						log({event:'click', 'from': location, 'href': this.href, 'target': this.target});
 						changeAddressBar(this.href);
 					})
 				.end()
 				.find('form')
-					.submit(function() {
+					.live('submit',function() {
 						log({event: 'submit',
 							 from: location,
 							 action: $(this).attr('action') || location,
