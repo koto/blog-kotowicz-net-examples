@@ -26,7 +26,10 @@ td {vertical-align: top; font-size: 11px;}
 <body>
 <?php $site = !empty($_GET['site']) ? $_GET['site'] : 'default'; ?>
 <h1>Report for site: <?php echo htmlspecialchars($site); ?></h1>
+<?php if (empty($_GET['clear'])) : ?>
 <label><input type="checkbox" id="refresh" checked="checked" />Refresh every 5 sec.</label>
+<a href="show.php?clear=1">clear logs</a>
+<?php endif ?>
 <?php
     try {
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -40,7 +43,7 @@ td {vertical-align: top; font-size: 11px;}
                 's' => $site,
             ));
             if ($ok) {
-                echo "<h2>Cleared</h2>";
+                echo "<h2>Cleared logs.</h2><p><a href=show.php>return</a></p>";
             }
         }
 
@@ -89,7 +92,7 @@ td {vertical-align: top; font-size: 11px;}
 ?>
 <script type="text/javascript">
 function refresh() {
-    if (document.getElementById('refresh').checked) {
+    if (document.getElementById('refresh') && document.getElementById('refresh').checked) {
         window.location.reload();
     }
 }
