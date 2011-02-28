@@ -10,6 +10,7 @@ input {
 </style>
 <script>
 $(function() {
+  $.ajaxSetup({cache: true}); // no stinking cachebusters in our URL - https://github.com/jquery/jquery/blob/master/src/ajax.js#L659
   $('#find').change(function() {
     this.value = this.value.toUpperCase();
 
