@@ -4,14 +4,18 @@
 <title>Stock news finder</title>
 <script src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
 <style>
-input {
+input, button {
   font-size: 17px;
+}
+input {
+  width: 200px;
 }
 </style>
 <script>
 $(function() {
   $.ajaxSetup({cache: true}); // no stinking cachebusters in our URL - https://github.com/jquery/jquery/blob/master/src/ajax.js#L659
-  $('#find').change(function() {
+
+  var send = function() {
     this.value = this.value.toUpperCase();
 
     var url = 'http://query.yahooapis.com/v1/public/yql?format=json&callback=display_yahoo&q='
@@ -21,7 +25,15 @@ $(function() {
     $('#result').html('Loading...');
 
     $.getScript(url + encodeURIComponent(qry));
+  };
+
+  $('#find').keydown(function(event) {
+     if (event.keyCode == '13') {
+        send.apply(this);
+     };
   });
+
+  $('button').click(function() {send.apply($('#find').get(0))});
 });
 
 function display_yahoo(json) {
@@ -59,7 +71,7 @@ function display_yahoo(json) {
 Challenge: make an <code>alert(1)</code> xss<br />
 Bonus points for still being able to load relevant search results.
 </p>
-<label>Enter stock symbol: <input id=find autofocus></label>
+<label>Enter stock symbol: <br /><input id=find autofocus></label> <button type=button>Search</button>
 <h1 class="header"></h1>
 <div id="result"></div>
 <h2>Hints:</h2>

