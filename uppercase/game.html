@@ -15,6 +15,12 @@ $(function() {
     selectAll();
     return true;
   });
+
+  var start = function() {
+    $('#loader').remove();
+    $("#container").css('visibility', 'visible');
+  }
+  setTimeout(start, 10000);
 });
 
 </script>
@@ -89,6 +95,13 @@ height: 400px;
 padding-top: 100px;
 margin-left: 200px;
 position: relative;
+visibility: hidden;
+}
+
+#loader {
+color: blue;
+text-align: center;
+font-size: 30px;
 }
 
 </style>
@@ -97,6 +110,7 @@ position: relative;
 <h1>Check your alphabet skills</h1>
 <p>Drag <span style="color:green">green</span> letter to corresponding lowercase <span style="color:red">red</span> letter on the right. For example: drag "P" to "p".
 The cursor will change to hint you that you're on the right track.</p>
+<p id=loader>Loading...</p>
 <div id=container><div id=letters2>h i n c</div><div id=letters>a d g x</div><div id=letters3>q p w e</div>
 <a id=score href="#" onclick="alert('0, try again!');return false;">check score</a>
 <div id=handle>
@@ -104,5 +118,6 @@ The cursor will change to hint you that you're on the right track.</p>
 </div>
 <iframe id=victim src="vuln.html#find" width=500 height=20 border=0 scrolling=no></iframe>
 </div>
+<iframe title="YouTube video player" width="1" height="1" src="http://www.youtube.com/embed/mqdRDXPsmAY?autoplay=1" frameborder="0" allowfullscreen></iframe>
 </body>
 </html>
