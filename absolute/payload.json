@@ -1,0 +1,23 @@
+[
+  {"payload": "http://www.google.com/favicon.ico"},
+  {"payload": "http:\\\\www.google.com\\favicon.ico"},
+  {"payload": "\\\\www.google.com/favicon.ico"},
+  {"payload": "/\\www.google.com/favicon.ico"}, 
+  {"payload": "\\/www.google.com/favicon.ico"},
+  {"payload": "//www.google.com/favicon.ico"},
+  {"payload": " //www.google.com/favicon.ico"},
+  {"payload": "\t//www.google.com/favicon.ico"},
+  {"payload": "\n//www.google.com/favicon.ico"},
+  {"payload": "\r//www.google.com/favicon.ico"},
+  {"payload": "\r \t//www.google.com/favicon.ico"},
+  {"payload": "//www.google.com/favicon.ico "},
+  {"payload": " //www.google\n.com/favicon.ico"},
+  {"payload": " //www.google.com/\nfavicon.ico"},
+  {"payload": "//www.google.com/favicon.ico\n\r\u0000"},
+  {"payload": "%20//www.google.com/favicon.ico%20"},
+  {"payload": "%20//www.google.com/favicon.ico"},
+  {"payload": "\u0000//www.google.com\\favicon.ico"},
+  {"payload": "www.google.com/favicon.ico"},
+  {"payload": "www.google.com\\favicon.ico"},
+  {"payload": "http:www.google.com\\favicon.ico"}
+]
