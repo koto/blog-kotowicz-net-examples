@@ -219,4 +219,80 @@
     },
     "description": "NULL unicode byte (\\u0000) can be placed at the end of URL.",
     "name": "NUL byte at the end"
+}, {
+    "id": 24,
+    "data": "\\",
+    "browsers": {},
+    "reporter": "sidarkcat",
+    "name": "Empty protocol"
+}, {
+    "id": 25,
+    "data": "\\\\",
+    "browsers": {},
+    "reporter": "sidarkcat",
+    "name": "Empty two forward slashes"
+}, {
+    "id": 26,
+    "data": "http:////google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox" : ["3.6"]
+    },
+    "reporter": "sidarkcat",
+    "name": "4 slashes"
+}, {
+    "id": 27,
+    "data": "http:////@google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox" : ["3.6"]
+    },
+    "reporter": "sidarkcat",
+    "name": "HTTP Auth tricks"
+}, {
+    "id": 28,
+    "data": "//:@",
+    "browsers": {},
+    "reporter": "sidarkcat"
+}, {
+    "id": 29,
+    "data": "///www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox" : ["3.6"]
+    },
+    "reporter": "sidarkcat"
+}, {
+    "id": 30,
+    "data": "///asdf@/",
+    "browsers": {
+        "firefox" : ["3.6"]
+    },
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=16&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat"
+}, {
+    "id": 31,
+    "data": "://",
+    "browsers": {},
+    "reporter": "sidarkcat",
+    "name": "colon-slash-slash"
+}, {
+    "id": 32,
+    "data": ".:.",
+    "browsers": {},
+    "reporter": "sidarkcat",
+    "name": "dot-colon-dot",
+    "description": "Chrome refuses loading such URL and does nothing"
+}, {
+    "id": 33,
+    "data": "http:/www.google.com/favicon.ico",
+    "browsers": {},
+    "reporter": "sidarkcat",
+    "name": "Missing slash",
+    "description": "All browsers treat URL as local"
+}, {
+    "id": 34,
+    "data": "h t t p://www.google.com/favicon.ico",
+    "browsers": {},
+    "name": "Spaces in protocol"
 }]

@@ -2,12 +2,35 @@
 <html>
 <head>
 <meta charset="utf-8">
-<script src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
-<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+<script src="jquery-1.5.1.min.js"></script>
+<script src="jquery.tmpl.min.js"></script>
+<script src="jquery.json-2.2.min.js"></script>
 <script src="md5.js"></script>
 <script>
+var payloads;
+
+var load_payloads = function() {
+  $('#tests').empty();
+  $('#images').empty();
+
+  $.getJSON('payload.json', function(json) {
+    payloads = json; // store in global var
+    var li, payload, i;
+    for (i = 0; i<json.length; i++) {
+      payload = json[i].data;
+      li = $('#item-template')
+         .tmpl(json[i])
+         .find('code.data').text($.toJSON(payload)).end()
+         .attr('id', 'p-' + hex_md5(payload))
+         .appendTo('#tests');
+    }
+    $("#start").removeAttr('disabled');
+  });
+};
+
+window.onload = load_payloads;
+
 $(function() {
-  var payloads;
 
   function log(msg) {
     var cont = $('#log')[0];
@@ -20,10 +43,10 @@ $(function() {
 
   function mark(realurl, url, classname) {
     var hash = hex_md5(url);
-    log(JSON.stringify(url) + ' is ' + classname);
+    log($.toJSON(url) + ' is ' + classname);
     $(document.getElementById('p-' + hash))
       .addClass(classname)
-      .find('.result').text(JSON.stringify(realurl));
+      .find('.result').text($.toJSON(realurl));
   }
 
   var internalDomain = new RegExp(document.location.host);
@@ -42,16 +65,16 @@ $(function() {
 
   function testPayload(payload, id) {
     id = id ? '#' + id : '';
-    log(id + ':Trying ' + JSON.stringify(payload));
+    log(id + ':Trying ' + $.toJSON(payload));
 
     $('<img>')
       .load(function() {
-        log(id + ':Image source is ' + JSON.stringify(this.src));
+        log(id + ':Image source is ' + $.toJSON(this.src));
         this.title = this.src;
         checkUrl(this.src, $(this).data('src'));
       })
       .error(function() {
-         log(id + ':Image ' + JSON.stringify(this.src) + " failed to load.");
+         log(id + ':Image ' + $.toJSON(this.src) + " failed to load.");
          checkUrl(this.src, $(this).data('src'));
        })
       .data('src', payload)
@@ -63,7 +86,7 @@ $(function() {
      var val = $('#url')[0].value;
      if (val.indexOf('"') === 0) // JSON literal
      try {
-       val = JSON.parse(val);
+       val = $.evalJSON(val);
      } catch(e) {
        alert('Invalid JSON string, use "http://etc/" JSON format or don\'t start with a quote.');
        return;
@@ -78,7 +101,7 @@ $(function() {
   });
 
   $('code.data').live('click', function() {
-    testPayload(JSON.parse($(this).text()));
+    testPayload($.evalJSON($(this).text()));
     return false;
   });
 
@@ -136,26 +159,18 @@ $(function() {
 
     if (changes > 0) {
       $("#changes").remove();
-      $("<textarea id=changes style='width:100%; height:50px;'>").val('// send me to kkotowicz at gmail dot com\n\n' + JSON.stringify(update_json)).prependTo('body');
+      $("<textarea id=changes style='width:100%; height:50px;'>").val('// send me to kkotowicz at gmail dot com\n\n' + $.toJSON(update_json)).prependTo('body');
     }
   });
 
-  $("#load").click(function() {
-    $('#tests').empty();
+  $("#start").click(function() {
+    $('.result').empty();
     $('#images').empty();
-    $.getJSON('payload.json', function(json) {
-      payloads = json; // store in global var
-      var li, payload, i;
-      for (i = 0; i<json.length; i++) {
-        payload = json[i].data;
-        li = $('#item-template')
-           .tmpl(json[i])
-           .find('code.data').text(JSON.stringify(payload)).end()
-           .attr('id', 'p-' + hex_md5(payload))
-           .appendTo('#tests');
-        testPayload(payload, json[i].id);
-       }
-    });
+
+    for (i = 0; i<payloads.length; i++) {
+      testPayload(payloads[i].data, payloads[i].id);
+    }
+
   });
 
 });
@@ -198,7 +213,7 @@ This will show you collected URL formats and test them in you browser as well - 
 <p>Disclaimer: This test page borrows stylesheet, page layout &amp; other ideas from <a href="http://heideri.ch">Mario Heiderich's</a> excellent <a href="http://heideri.ch/jso">HTML5 Security Cheatsheet</a>. The original work is licenced under <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser GPL</a> / <a href="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</a> and I leave it so. The source code is at <a href="https://github.com/koto/blog-kotowicz-net-examples/tree/master/absolute">GitHub</a>.
 </p>
 <p>
-<button id=load><strong>Start tests</strong></button> <button id=clear>Clear logs</button> <button id=save>Submit test results</button>
+<button id=start disabled><strong>Start tests</strong></button> <button id=clear>Clear logs</button> <button id=save>Submit test results</button>
 </p>
 <label>Test URL manually (use plain URL or JSON <a href="https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Core_Language_Features#String_Literals">string literal</a> in quotes for special characters): <textarea id=url rows=1 cols=50>"http:\u0001google.com"</textarea>
 <button id=test-manual>Test</button></label>
@@ -210,7 +225,7 @@ This will show you collected URL formats and test them in you browser as well - 
 <script type="text/x-jquery-tmpl" id=item-template>
         <li class="item" data-id="${id}">
                     <a name="${id}"></a>
-                    <h4 class="name">${name}<a href="#${id}">#${id}</a></h4><p class="description">${description}</p>
+                    <h4 class="name">{{if name}}${name}{{else}}${data}{{/if}}<a href="#${id}">#${id}</a></h4><p class="description">${description}</p>
                     <code class="data"></code>
                     <p class="clear">External in:</p>
                     <ul class="browsers">
