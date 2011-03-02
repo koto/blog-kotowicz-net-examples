@@ -181,9 +181,10 @@
     "id": 37,
     "data": "http:/www.google.com/favicon.ico",
     "browsers": {
-        "safari": ["5"]
+        "safari": ["5"],
+        "android": ["2.2"]
     },
-    "description": "Safari will correct the URL even for the curent protocol. All other browsers will convert to internal. See also #33 and #36.",
+    "description": "Safari will correct the URL even for the curent protocol. Android will leave it in invalid format, all other browsers will convert to internal. See also #33 and #36.",
     "name": "Missing //, other protocol",
     "reporter": "kkotowicz"
 }, {
@@ -341,5 +342,5 @@
     "data": "h t t p://www.google.com/favicon.ico",
     "browsers": {},
     "name": "Spaces in protocol",
-    "description": "No-go. But see #35"
+    "description": "No-go. But see #35."
 }]
