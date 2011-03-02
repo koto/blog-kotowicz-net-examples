@@ -163,7 +163,7 @@
     "data": "http:www.google.com\\favicon.ico",
     "browsers": {},
     "description": "This URL is local ('http:' will be discarded and it will fetch 'www.google.com' subdirectory). See also #33 and #36.",
-    "name": "Missing //, current protocol"
+    "name": "Missing //, same protocol"
 }, {
     "id": 36,
     "data": "https:www.google.com/favicon.ico",
@@ -346,4 +346,16 @@
     "browsers": {},
     "name": "Spaces in protocol",
     "description": "No-go. But see #35."
+}, {
+    "id": 38,
+    "data": "https:anything\n:@www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6","4"],
+        "internet explorer": ["6","7","8"],
+        "android": ["2.2"],
+        "safari": ["5"]
+    },
+    "name": "HTTP auth + autocorrection from browsers",
+    "description": "Combine #36 and #13 for filter evasion. It will reach https://google.com/favicon.ico on vulnerable browsers, potentially avoiding filters."
 }]
