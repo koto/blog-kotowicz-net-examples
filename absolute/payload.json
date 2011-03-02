@@ -4,14 +4,18 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "Standard absolute URL"
 }, {
     "id": 2,
     "data": "http:\\\\www.google.com\\favicon.ico",
     "browsers": {
-        "chrome": ["11"]
+        "chrome": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "description": "Chrome browser treats forward slashes in URL just like backslashes.",
     "name": "Forward slashes"
@@ -21,23 +25,28 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
-    "description": "One of the most common vectors - http: or https: could be missing, the browser fetches the final URI using the protocol of main document.",
+    "description": "One of the most common vectors - http: or https: could be missing, the browser fetches the final URL using the protocol of main document.",
     "name": "Protocol relative"
 }, {
     "id": 4,
     "data": "\\\\www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"]
+        "chrome": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
-    "description": "Again, Chrome treats forward slashes as backslahes, turning the URL into protocol-relative URL.",
+    "description": "Again, Chrome treats forward slashes as backslahes, turning the URL into protocol-relative URL. For IE though, this forwards the requests through WINS server.",
     "name": "Protocol relative with forward slashes"
 }, {
     "id": 5,
     "data": "/\\www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"]
+        "chrome": ["11"],
+        "android": ["2.2"]
     },
     "name": "Mixed slashes",
     "urls" : ["http://heideri.ch/jso/#124"],
@@ -46,7 +55,8 @@
     "id": 6,
     "data": "\\/www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"]
+        "chrome": ["11"],
+        "android": ["2.2"]
     },
     "name": "Mixed slashes"
 }, {
@@ -55,9 +65,11 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
-    "description": "Any white space before the URL is ignored",
+    "description": "Any white space before the URL is ignored by all browsers.",
     "name": "White space prefix (space)"
 }, {
     "id": 8,
@@ -65,7 +77,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space prefix (tab)"
 }, {
@@ -74,7 +88,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space prefix (\\n)"
 }, {
@@ -83,7 +99,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space prefix (\\r)"
 }, {
@@ -92,7 +110,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space prefix (multiple)"
 }, {
@@ -101,7 +121,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space suffix"
 }, {
@@ -110,7 +132,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space in hostname"
 }, {
@@ -119,7 +143,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space in path"
 }, {
@@ -128,7 +154,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "name": "White space after"
 }, {
@@ -163,17 +191,21 @@
 }, {
     "id": 21,
     "data": "\u0000//www.google.com/favicon.ico",
-    "browsers": {},
-    "description": "NULL Unicode byte (\\u0000) seems to stop URL processing. Further investigation required.",
+    "browsers": {
+       "android": ["2.2"]
+    },
+    "description": "NULL Unicode byte (\\u0000) seems to stop URL processing. Further investigation required. Internet Explorer stops parsing URL at first null byte, so this one effectively transforms to '' being local URL. Android strips NUL characters when processing URLs.",
     "name": "NUL byte at the beginning"
 }, {
     "id": 22,
     "data": "//www.google.com/\u0000favicon.ico",
     "browsers": {
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
-    "description": "Some browsers allow NULL unicode byte (\\u0000) in the middle of the URL, some (Chrome) don't.",
+    "description": "Some browsers allow NULL unicode byte (\\u0000) in the middle of the URL, some (Chrome) don't. IE ignores the part after NUL.",
     "name": "NUL byte in the middle"
 }, {
     "id": 23,
@@ -181,7 +213,9 @@
     "browsers": {
         "chrome": ["11"],
         "firefox": ["3.6", "4"],
-        "opera": ["11"]
+        "opera": ["11"],
+        "internet explorer": ["8"],
+        "android": ["2.2"]
     },
     "description": "NULL unicode byte (\\u0000) can be placed at the end of URL.",
     "name": "NUL byte at the end"

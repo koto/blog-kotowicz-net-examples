@@ -89,6 +89,9 @@ ul.chrome {
 ul.safari {
     background: url(../images/safari.png) no-repeat;
 }
+ul.android {
+    background: url(../images/android.png) no-repeat;
+}
 ul.tags li {
     list-style: none;
 	color: #666;

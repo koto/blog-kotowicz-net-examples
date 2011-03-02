@@ -8,11 +8,21 @@
 <script>
 $(function() {
   var payloads;
+
+  function log(msg) {
+    var cont = $('#log')[0];
+    cont.value += msg + "\n";
+    cont.scrollTop = 100000;
+    if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+      console.log(msg);
+    }
+  }
+
   function markExternal(src) {
     var hash = hex_md5(src);
     log(src + ' is external (' + hash + ')');
     $(document.getElementById('p-' + hash)).addClass('external');
-  };
+  }
 
   function markInternal(src) {
     var hash = hex_md5(src);
@@ -30,29 +40,22 @@ $(function() {
     }
   }
 
-  function log(msg) {
-    var log = $('#log')[0];
-    log.value += msg + "\n";
-    log.scrollTop = 100000;
-    if (console && console.log)
-      console.log(msg);
-  }
-
   $(document).ajaxError(function(event, xhr, options, error) {
     log('AJAX error ' + error);
   });
 
-  function testPayload(payload) {
-    log('Trying "' + payload + "\"");
+  function testPayload(payload, id) {
+    id = id ? '#' + id : '';
+    log(id + ':Trying "' + payload + "\"");
 
     $('<img>')
       .load(function() {
-        log('Image source is "' + this.src + '"'); 
+        log(id + ':Image source is "' + this.src + '"'); 
         this.title = this.src;
         checkUrl(this.src, $(this).data('src'));
       })
       .error(function() {
-         log('Image "' + this.src + "\" failed to load.");
+         log(id + ':Image "' + this.src + "\" failed to load.");
          checkUrl(this.src, $(this).data('src'));
        })
       .data('src', payload)
@@ -103,14 +106,14 @@ $(function() {
           payloads[i].browsers[browser] = payloads[i].browsers[browser] || [];
 
           if ($this.hasClass('external')) { // mark as vulnerable
-            if (payloads[i].browsers[browser].indexOf(version) === -1) {
+            if ($.inArray(version, payloads[i].browsers[browser]) === -1) {
               update_json.add.push(parseInt(id,10));
               payloads[i].browsers[browser].push(version);
               changes++;
             }
           }
           if ($this.hasClass('internal')) { // remove marking as vulnerable
-            if ((offset = payloads[i].browsers[browser].indexOf(version)) !== -1) {
+            if ((offset = $.inArray(version, payloads[i].browsers[browser])) !== -1) {
               update_json.remove.push(parseInt(id,10));
               payloads[i].browsers[browser].splice(offset, 1);
               changes++;
@@ -137,14 +140,14 @@ $(function() {
     $('#images').empty();
     $.getJSON('payload.json', function(json) {
       payloads = json; // store in global var
-      var li, payload, i, h;
+      var li, payload, i;
       for (i = 0; i<json.length; i++) {
         payload = json[i].data;
         li = $('#item-template')
            .tmpl(json[i])
            .attr('id', 'p-' + hex_md5(payload))
-        li.appendTo('#tests');
-        testPayload(payload);
+           .appendTo('#tests');
+        testPayload(payload, json[i].id);
        }
     });
   });
@@ -215,6 +218,9 @@ This will show you collected URL formats and test them in you browser as well - 
                     {{/if}}
                     {{if browsers["internet explorer"]}}
                     <ul class="internet explorer">{{each browsers['internet explorer']}}<li>Internet Explorer ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    {{if browsers.android}}
+                    <ul class="android">{{each browsers.android}}<li>Android ${$value}</li>{{/each}}</ul>
                     {{/if}}
                     </ul>
                     {{if urls}}
