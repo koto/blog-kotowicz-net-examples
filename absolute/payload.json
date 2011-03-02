@@ -2,7 +2,7 @@
     "id": 1,
     "data": "http://www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -13,7 +13,7 @@
     "id": 2,
     "data": "http:\\\\www.google.com\\favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "internet explorer": ["8"],
         "android": ["2.2"]
     },
@@ -23,7 +23,7 @@
     "id": 3,
     "data": "//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -35,17 +35,17 @@
     "id": 4,
     "data": "\\\\www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9/Linux","11/Linux"],
         "internet explorer": ["8"],
         "android": ["2.2"]
     },
-    "description": "Again, Chrome treats forward slashes as backslahes, turning the URL into protocol-relative URL. For IE though, this forwards the requests through WINS server.",
+    "description": "Again, Chrome (Linux) treats forward slashes as backslahes, turning the URL into protocol-relative URL. For IE though, this means the \"file:\" protocol and it tries to forward the requests through WINS server.",
     "name": "Protocol relative with forward slashes"
 }, {
     "id": 5,
     "data": "/\\www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "android": ["2.2"]
     },
     "name": "Mixed slashes",
@@ -55,7 +55,7 @@
     "id": 6,
     "data": "\\/www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "android": ["2.2"]
     },
     "name": "Mixed slashes"
@@ -63,7 +63,7 @@
     "id": 7,
     "data": " //www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -75,7 +75,7 @@
     "id": 8,
     "data": "\u0009//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -86,7 +86,7 @@
     "id": 9,
     "data": "\u000a//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -97,7 +97,7 @@
     "id": 10,
     "data": "\u000d//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -108,7 +108,7 @@
     "id": 11,
     "data": "\u000d \u0009//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -119,7 +119,7 @@
     "id": 12,
     "data": "//www.google.com/favicon.ico ",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -130,7 +130,7 @@
     "id": 13,
     "data": " //www.google\u000a.com/favicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -141,7 +141,7 @@
     "id": 14,
     "data": " //www.google.com/\u000afavicon.ico",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -152,7 +152,7 @@
     "id": 15,
     "data": "//www.google.com/favicon.ico\u000a\u000d\u0000",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],
@@ -211,7 +211,7 @@
     "id": 23,
     "data": "//www.google.com/favicon.ico\u0000",
     "browsers": {
-        "chrome": ["11"],
+        "chrome": ["9","11"],
         "firefox": ["3.6", "4"],
         "opera": ["11"],
         "internet explorer": ["8"],

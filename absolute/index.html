@@ -20,7 +20,7 @@ $(function() {
 
   function mark(realurl, url, classname) {
     var hash = hex_md5(url);
-    log(JSON.stringify(url) + ' is ' + classname + ' (' + hash + ')');
+    log(JSON.stringify(url) + ' is ' + classname);
     $(document.getElementById('p-' + hash))
       .addClass(classname)
       .find('.result').text(JSON.stringify(realurl));
@@ -60,7 +60,16 @@ $(function() {
   }
 
   $('#test-manual').click(function() {
-     testPayload($('#url')[0].value);
+     var val = $('#url')[0].value;
+     if (val.indexOf('"') === 0) // JSON literal
+     try {
+       val = JSON.parse(val);
+     } catch(e) {
+       alert('Invalid JSON string, use "http://etc/" JSON format or don\'t start with a quote.');
+       return;
+     }
+     
+     testPayload(val);
   });
 
   $("#clear").click(function() {
@@ -191,7 +200,7 @@ This will show you collected URL formats and test them in you browser as well - 
 <p>
 <button id=load><strong>Start tests</strong></button> <button id=clear>Clear logs</button> <button id=save>Submit test results</button>
 </p>
-<label>Test URL manually: <textarea id=url rows=1 cols=50></textarea>
+<label>Test URL manually (use plain URL or JSON <a href="https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Core_Language_Features#String_Literals">string literal</a> in quotes for special characters): <textarea id=url rows=1 cols=50>"http:\u0001google.com"</textarea>
 <button id=test-manual>Test</button></label>
 <div id=test-data>
 <textarea id=log></textarea>
