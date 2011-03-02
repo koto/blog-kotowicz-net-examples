@@ -43,7 +43,7 @@
         "android": ["2.2"],
         "safari": ["5"]
     },
-    "description": "Chrome (Linux), Safari and Android treat forward slashes as backslashes, turning the URL into protocol-relative URL. Chrome/Windows treats them as file: protocols and disallows them. For IE though, this means the \"file:\" protocol and it tries to forward the requests through WINS resolver (which takes time and can be used as a form of D.O.S. vector).",
+    "description": "Chrome (Linux), Safari and Android treat forward slashes as backslashes, turning the URL into protocol-relative URL. Chrome/Windows treats them as file: protocols and disallows them. IE  treats them as \"file:\" protocol and tries to forward the requests through WINS resolver (which takes time and can be used as a DoS vector).",
     "name": "Protocol relative with forward slashes"
 }, {
     "id": 5,
@@ -174,7 +174,7 @@
         "android": ["2.2"],
         "safari": ["5"]
     },
-    "description": "Chrome, Firefox & Safari browsers will try to correct protocols other than current. This time they will add missing slashes, converting the URL to valid https://. IE & Opera will leave the URL in invalid format. See also #33.",
+    "description": "Chrome, Firefox & Safari browsers will try to correct protocols other than current - they will add missing slashes, converting the URL to valid https://. IE & Opera will leave the URL in invalid format. See also #33.",
     "name": "Missing //, other protocol",
     "reporter": "kkotowicz"
 }, {
@@ -185,8 +185,22 @@
         "android": ["2.2"]
     },
     "description": "Safari will correct the URL even for the curent protocol. Android will leave it in invalid format, all other browsers will convert to internal. See also #33 and #36.",
-    "name": "Missing //, other protocol",
+    "name": "Missing /, same protocol",
     "reporter": "kkotowicz"
+}, {
+    "id": 33,
+    "data": "https:/www.google.com/favicon.ico",
+    "browsers": {
+        "firefox" : ["3.6","4"],
+        "chrome": ["9","11"],
+        "internet explorer": ["6","7","8"],
+        "android": ["2.2"],
+        "safari": ["5"]
+    },
+    "reporter": "sidarkcat",
+    "name": "Missing /, other protocol",
+    "urls" : ["http://code.google.com/p/urlparsing/issues/detail?id=27&colspec=ID%20Summary%20Special"],
+    "description": "Firefox & Chrome will silently correct 'https:/host' to 'https://host' when your document is on http:// protocol BUT will strip 'https:' converting document URL to local when you're currently on https:// i.e. current protocol is stripped, other protocols are converted. This holds true when serving over https. IE will render an invalid 'https:/host' URL. See also #36."
 }, {
     "id": 21,
     "data": "\u0000//www.google.com/favicon.ico",
@@ -254,7 +268,7 @@
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=9&colspec=ID%20Summary%20Special"],
     "reporter": "sidarkcat",
     "name": "4 slashes",
-    "description": "IE will point to http:////google.com/favicon.ico, needs investigation."
+    "description": "IE will point to http:////google.com/favicon.ico, Firefox, Chrome and Safari correct the URL. Needs investigation. "
 }, {
     "id": 27,
     "data": "http:////@google.com/favicon.ico",
@@ -269,7 +283,7 @@
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=10&colspec=ID%20Summary%20Special"],
     "reporter": "sidarkcat",
     "name": "HTTP Auth tricks",
-    "description": "IE points to http:////@google.com/. Needs investigation."
+    "description": "IE points to http:////@google.com/. Firefox & Chrome correct the URL. Needs investigation."
 }, {
     "id": 28,
     "data": "//:@",
@@ -280,7 +294,8 @@
         "safari": ["5"]
     },
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=11&colspec=ID%20Summary%20Special"],
-    "reporter": "sidarkcat"
+    "reporter": "sidarkcat",
+    "description": "Invalid URL for Firefox and Chrome. Needs investigation."
 }, {
     "id": 29,
     "data": "///www.google.com/favicon.ico",
@@ -292,7 +307,8 @@
         "android": ["2.2"],
         "safari": ["5"]
     },
-    "reporter": "sidarkcat"
+    "reporter": "sidarkcat",
+    "description" : "Chrome and Firefox correct the URL."
 }, {
     "id": 30,
     "data": "///asdf@/",
@@ -304,7 +320,8 @@
         "safari": ["5"]
     },
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=16&colspec=ID%20Summary%20Special"],
-    "reporter": "sidarkcat"
+    "reporter": "sidarkcat",
+    "description" : "Pure weirdness. Needs investigation."
 }, {
     "id": 31,
     "data": "://",
@@ -322,21 +339,7 @@
     },
     "reporter": "sidarkcat",
     "name": "dot-colon-dot",
-    "description": "Chrome refuses loading such URL and does nothing"
-}, {
-    "id": 33,
-    "data": "https:/www.google.com/favicon.ico",
-    "browsers": {
-        "firefox" : ["3.6","4"],
-        "chrome": ["9","11"],
-        "internet explorer": ["6","7","8"],
-        "android": ["2.2"],
-        "safari": ["5"]
-    },
-    "reporter": "sidarkcat",
-    "name": "Missing slash, other protocol",
-    "urls" : ["http://code.google.com/p/urlparsing/issues/detail?id=27&colspec=ID%20Summary%20Special"],
-    "description": "Firefox & Chrome will silently correct 'https:/host' to 'https://host' when your document is on http:// protocol BUT will strip 'https:' converting document URL to local when you're currently on https:// i.e. current protocol is stripped, other protocols are converted. This holds true when serving over https. IE will render an invalid 'https:/host' URL. See also #36."
+    "description": "Chrome refuses loading such URL and does nothing. Other browser except mentioned use URL as relative."
 }, {
     "id": 34,
     "data": "h t t p://www.google.com/favicon.ico",
