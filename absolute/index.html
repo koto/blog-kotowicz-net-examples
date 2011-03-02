@@ -18,25 +18,21 @@ $(function() {
     }
   }
 
-  function markExternal(src) {
-    var hash = hex_md5(src);
-    log(src + ' is external (' + hash + ')');
-    $(document.getElementById('p-' + hash)).addClass('external');
+  function mark(realurl, url, classname) {
+    var hash = hex_md5(url);
+    log(JSON.stringify(url) + ' is ' + classname + ' (' + hash + ')');
+    $(document.getElementById('p-' + hash))
+      .addClass(classname)
+      .find('.result').text(JSON.stringify(realurl));
   }
 
-  function markInternal(src) {
-    var hash = hex_md5(src);
-    log(src + ' is internal (' + hash + ')');
-    $(document.getElementById('p-' + hash)).addClass('internal');
-  }
-
-  var internalDomain  = new RegExp(document.location.host);
+  var internalDomain = new RegExp(document.location.host);
 
   function checkUrl(realurl, url) {
     if (realurl.match(internalDomain)) {
-      markInternal(url);
+      mark(realurl, url, 'internal');
     } else {
-      markExternal(url);
+      mark(realurl, url, 'external');
     }
   }
 
@@ -46,16 +42,16 @@ $(function() {
 
   function testPayload(payload, id) {
     id = id ? '#' + id : '';
-    log(id + ':Trying "' + payload + "\"");
+    log(id + ':Trying ' + JSON.stringify(payload));
 
     $('<img>')
       .load(function() {
-        log(id + ':Image source is "' + this.src + '"'); 
+        log(id + ':Image source is ' + JSON.stringify(this.src));
         this.title = this.src;
         checkUrl(this.src, $(this).data('src'));
       })
       .error(function() {
-         log(id + ':Image "' + this.src + "\" failed to load.");
+         log(id + ':Image ' + JSON.stringify(this.src) + " failed to load.");
          checkUrl(this.src, $(this).data('src'));
        })
       .data('src', payload)
@@ -73,7 +69,7 @@ $(function() {
   });
 
   $('code.data').live('click', function() {
-    testPayload($(this).text());
+    testPayload(JSON.parse($(this).text()));
     return false;
   });
 
@@ -145,6 +141,7 @@ $(function() {
         payload = json[i].data;
         li = $('#item-template')
            .tmpl(json[i])
+           .find('code.data').text(JSON.stringify(payload)).end()
            .attr('id', 'p-' + hex_md5(payload))
            .appendTo('#tests');
         testPayload(payload, json[i].id);
@@ -163,8 +160,11 @@ $(function() {
 }
 img {border: 2px solid white;}
 code {white-space: pre; font-family: Courier, monospaced; }
-.internal h4 {background: green;}
-.external h4 {background: red; }
+.internal .result {color: green;}
+.external .result {color: red; }
+.internal h4 {background-color: green;}
+.external h4 {background-color: red; }
+
 #tests { clear: both; margin: 10px 0; padding: 0;}
 </style>
 </head>
@@ -202,7 +202,8 @@ This will show you collected URL formats and test them in you browser as well - 
         <li class="item" data-id="${id}">
                     <a name="${id}"></a>
                     <h4 class="name">${name}<a href="#${id}">#${id}</a></h4><p class="description">${description}</p>
-                    <code class="data">${data}</code>
+                    <code class="data"></code>
+                    <p class="clear">External in:</p>
                     <ul class="browsers">
                     {{if browsers.opera}}
                     <ul class="opera">{{each browsers.opera}}<li>Opera ${$value}</li>{{/each}}</ul>
@@ -223,6 +224,8 @@ This will show you collected URL formats and test them in you browser as well - 
                     <ul class="android">{{each browsers.android}}<li>Android ${$value}</li>{{/each}}</ul>
                     {{/if}}
                     </ul>
+                    <p class="clear">Result in this browser:</p>
+                    <code class="result">image not loaded</code>
                     {{if urls}}
                     <ul class="urls clear">
                     {{each urls}}<li><a href="${$value}">${$value}</a>{{/each}}
