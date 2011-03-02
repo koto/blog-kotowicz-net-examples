@@ -1,23 +1,186 @@
-[
-  {"payload": "http://www.google.com/favicon.ico"},
-  {"payload": "http:\\\\www.google.com\\favicon.ico"},
-  {"payload": "\\\\www.google.com/favicon.ico"},
-  {"payload": "/\\www.google.com/favicon.ico"}, 
-  {"payload": "\\/www.google.com/favicon.ico"},
-  {"payload": "//www.google.com/favicon.ico"},
-  {"payload": " //www.google.com/favicon.ico"},
-  {"payload": "\t//www.google.com/favicon.ico"},
-  {"payload": "\n//www.google.com/favicon.ico"},
-  {"payload": "\r//www.google.com/favicon.ico"},
-  {"payload": "\r \t//www.google.com/favicon.ico"},
-  {"payload": "//www.google.com/favicon.ico "},
-  {"payload": " //www.google\n.com/favicon.ico"},
-  {"payload": " //www.google.com/\nfavicon.ico"},
-  {"payload": "//www.google.com/favicon.ico\n\r\u0000"},
-  {"payload": "%20//www.google.com/favicon.ico%20"},
-  {"payload": "%20//www.google.com/favicon.ico"},
-  {"payload": "\u0000//www.google.com\\favicon.ico"},
-  {"payload": "www.google.com/favicon.ico"},
-  {"payload": "www.google.com\\favicon.ico"},
-  {"payload": "http:www.google.com\\favicon.ico"}
-]
+[{
+    "id": 1,
+    "data": "http://www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "Standard absolute URL"
+}, {
+    "id": 2,
+    "data": "http:\\\\www.google.com\\favicon.ico",
+    "browsers": {
+        "chrome": ["11"]
+    },
+    "description": "Chrome browser treats forward slashes in URL just like backslashes.",
+    "name": "Forward slashes"
+}, {
+    "id": 3,
+    "data": "//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "description": "One of the most common vectors - http: or https: could be missing, the browser fetches the final URI using the protocol of main document.",
+    "name": "Protocol relative"
+}, {
+    "id": 4,
+    "data": "\\\\www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"]
+    },
+    "description": "Again, Chrome treats forward slashes as backslahes, turning the URL into protocol-relative URL.",
+    "name": "Protocol relative with forward slashes"
+}, {
+    "id": 5,
+    "data": "/\\www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"]
+    },
+    "name": "Mixed slashes"
+}, {
+    "id": 6,
+    "data": "\\/www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"]
+    },
+    "name": "Mixed slashes"
+}, {
+    "id": 7,
+    "data": " //www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "description": "Any white space before the URL is ignored",
+    "name": "White space prefix (space)"
+}, {
+    "id": 8,
+    "data": "\u0009//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space prefix (tab)"
+}, {
+    "id": 9,
+    "data": "\u000a//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space prefix (\\n)"
+}, {
+    "id": 10,
+    "data": "\u000d//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space prefix (\\r)"
+}, {
+    "id": 11,
+    "data": "\u000d \u0009//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space prefix (multiple)"
+}, {
+    "id": 12,
+    "data": "//www.google.com/favicon.ico ",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space suffix"
+}, {
+    "id": 13,
+    "data": " //www.google\u000a.com/favicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space in hostname"
+}, {
+    "id": 14,
+    "data": " //www.google.com/\u000afavicon.ico",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space in path"
+}, {
+    "id": 15,
+    "data": "//www.google.com/favicon.ico\u000a\u000d\u0000",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "name": "White space after"
+}, {
+    "id": 16,
+    "data": "%20//www.google.com/favicon.ico%20",
+    "browsers": {},
+    "description": "URL encoding is for not meant to be used for protocol, port or host name.",
+    "name": "%20 encoding"
+}, {
+    "id": 17,
+    "data": "%20//www.google.com/favicon.ico",
+    "browsers": {},
+    "name": "%20 encoding #2"
+}, {
+    "id": 18,
+    "data": "www.google.com/favicon.ico",
+    "browsers": {},
+    "description": "This URL is local (it will fetch 'www.google.com' subdirectory).",
+    "name": "No protocol"
+}, {
+    "id": 19,
+    "data": "www.google.com\\favicon.ico",
+    "browsers": {},
+    "description": "This URL is local (it will fetch 'www.google.com' subdirectory).",
+    "name": "Forward slash"
+}, {
+    "id": 20,
+    "data": "http:www.google.com\\favicon.ico",
+    "browsers": {},
+    "description": "This URL is local (it will fetch 'http:www.google.com' subdirectory).",
+    "name": "Missing //"
+}, {
+    "id": 21,
+    "data": "\u0000//www.google.com/favicon.ico",
+    "browsers": {},
+    "description": "NULL Unicode byte (\\u0000) seems to stop URL processing Further investigation required.",
+    "name": "NUL byte at the beginning"
+}, {
+    "id": 22,
+    "data": "//www.google.com/\u0000favicon.ico",
+    "browsers": {
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "description": "Some browsers allow NULL unicode byte (\\u0000) in the middle of the URL, some (Chrome) don't.",
+    "name": "NUL byte in the middle"
+}, {
+    "id": 23,
+    "data": "//www.google.com/favicon.ico\u0000",
+    "browsers": {
+        "chrome": ["11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["11"]
+    },
+    "description": "NULL unicode byte (\\u0000) can be placed at the end of URL.",
+    "name": "NUL byte at the end"
+}]
