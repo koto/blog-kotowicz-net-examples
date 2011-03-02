@@ -101,6 +101,7 @@ $(function() {
   });
 
   $('code.data').live('click', function() {
+    $('#url').val($(this).text());
     testPayload($.evalJSON($(this).text()));
     return false;
   });
@@ -196,13 +197,13 @@ code {white-space: pre; font-family: Courier, monospaced; }
 <h1>Local or external?
 <small>Weird URL formats on the loose</small></h1>
 <p>This page tries to both test & document differences among browsers as to which incomplete or weird URL formats effectively transform
-to <strong style="background:green;color:white"> local URLs (being in the same domain as the main page) </strong> or <strong style="background:red;color:white"> external URLs (different domain) </strong>. 
+to <strong style="background:green;color:white"> local URLs (being in the same domain as the main page) </strong> or <strong style="background:red;color:white"> external URLs (different domain or protocol) </strong>. 
 This distinction is very important from security point of view when you are accepting URLs in user input and process them, for example by adding CSRF tokens to the URLs or redirecting the browser.
 </p>
 <p>
 Developers incorrectly assume that external URLs have to start with "http" like "http://example.com", and URLs not starting with that string are considered local &amp; safe. Hovewer, that is far from true.
-This page lists all uncommon URL formats that some (or all) browsers recognize as external. To start, press <strong>Start tests</strong>.
-This will show you collected URL formats and test them in you browser as well - items marked red are external for your browser.
+This page lists all uncommon URL formats that some (or all) browsers recognize as external. To start the test in your browser as well, press <strong>Start tests</strong>.
+Items marked red are external for your browser.
 </p>
 <p>You can also test any URL format manually.</p>
 <p><strong>You can help!</strong>
@@ -226,7 +227,7 @@ This will show you collected URL formats and test them in you browser as well - 
         <li class="item" data-id="${id}">
                     <a name="${id}"></a>
                     <h4 class="name">{{if name}}${name}{{else}}${data}{{/if}}<a href="#${id}">#${id}</a></h4><p class="description">${description}</p>
-                    <code class="data"></code>
+                    <code title="Click to test manually" class="data"></code>
                     <p class="clear">External in:</p>
                     <ul class="browsers">
                     {{if browsers.opera}}
