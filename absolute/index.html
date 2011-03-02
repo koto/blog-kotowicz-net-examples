@@ -198,7 +198,7 @@ This will show you collected URL formats and test them in you browser as well - 
 <script type="text/x-jquery-tmpl" id=item-template>
         <li class="item" data-id="${id}">
                     <a name="${id}"></a>
-                    <h4 class="name">${name}</h4><p class="description">${description}</p>
+                    <h4 class="name">${name}<a href="#${id}">#${id}</a></h4><p class="description">${description}</p>
                     <code class="data">${data}</code>
                     <ul class="browsers">
                     {{if browsers.opera}}
@@ -217,6 +217,11 @@ This will show you collected URL formats and test them in you browser as well - 
                     <ul class="internet explorer">{{each browsers['internet explorer']}}<li>Internet Explorer ${$value}</li>{{/each}}</ul>
                     {{/if}}
                     </ul>
+                    {{if urls}}
+                    <ul class="urls clear">
+                    {{each urls}}<li><a href="${$value}">${$value}</a>{{/each}}
+                    </ul>
+                    {{/if}}
                     <dfn class="reporter">${reporter}</dfn>
         </li>
 </script>

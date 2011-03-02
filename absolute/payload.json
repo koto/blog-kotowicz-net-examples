@@ -39,7 +39,9 @@
     "browsers": {
         "chrome": ["11"]
     },
-    "name": "Mixed slashes"
+    "name": "Mixed slashes",
+    "urls" : ["http://heideri.ch/jso/#124"],
+    "reporter": "hasegawayosuke"
 }, {
     "id": 6,
     "data": "\\/www.google.com/favicon.ico",
@@ -162,7 +164,7 @@
     "id": 21,
     "data": "\u0000//www.google.com/favicon.ico",
     "browsers": {},
-    "description": "NULL Unicode byte (\\u0000) seems to stop URL processing Further investigation required.",
+    "description": "NULL Unicode byte (\\u0000) seems to stop URL processing. Further investigation required.",
     "name": "NUL byte at the beginning"
 }, {
     "id": 22,
