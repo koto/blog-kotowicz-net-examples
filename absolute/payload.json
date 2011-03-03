@@ -55,7 +55,7 @@
         "safari": ["5"]
     },
     "name": "Mixed slashes /\\",
-    "description": "Mixed slashes could be used in Chrome, Safari, Android & IE 6, which render this as standard http:// link",
+    "description": "Mixed slashes could be used in Chrome, Safari, Android & IE 6, which render this as standard http:// link.",
     "urls" : ["http://heideri.ch/jso/#124"],
     "reporter": "hasegawayosuke"
 }, {
@@ -181,7 +181,7 @@
         "android": ["2.1","2.2"],
         "safari": ["5"]
     },
-    "description": "Chrome, Firefox & Safari browsers will try to correct protocols other than current - they will add missing slashes, converting the URL to valid https://. IE & Opera will leave the URL in invalid format. See also #33.",
+    "description": "Chrome, Firefox & Safari browsers will try to correct protocols other than current - they will add missing slashes, converting the URL to valid https://. IE & Opera will leave the URL in invalid format and won't fetch. See also #33.",
     "name": "Missing //, other protocol",
     "reporter": "kkotowicz"
 }, {
@@ -207,7 +207,7 @@
     "reporter": "sidarkcat",
     "name": "Missing /, other protocol",
     "urls" : ["http://code.google.com/p/urlparsing/issues/detail?id=27&colspec=ID%20Summary%20Special"],
-    "description": "Firefox & Chrome will silently correct 'https:/host' to 'https://host' when your document is on http:// protocol BUT will strip 'https:' converting document URL to local when you're currently on https:// i.e. current protocol is stripped, other protocols are converted. This holds true when serving over https. IE will render an invalid 'https:/host' URL. See also #36."
+    "description": "Firefox & Chrome will silently correct 'https:/host' to 'https://host' when your document is on http:// protocol BUT will strip 'https:' converting document URL to local when you're currently on https:// i.e. current protocol is stripped, other protocols are converted. This holds true when serving over https. IE will render an invalid 'https:/host' URL and not fetch the resource. See also #36."
 }, {
     "id": 21,
     "data": "\u0000//www.google.com/favicon.ico",
@@ -279,7 +279,7 @@
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=9&colspec=ID%20Summary%20Special"],
     "reporter": "sidarkcat",
     "name": "4 slashes",
-    "description": "IE will point to http:////google.com/favicon.ico, Firefox, Chrome and Safari correct the URL. Needs investigation.",
+    "description": "IE will point to http:////google.com/favicon.ico. When used as iframe src, IE will show an error page. Firefox, Chrome and Safari correct the URL. Needs investigation.",
     "redirect_notes": "Safari won't follow the redirect with more than two slashes."
 }, {
     "id": 27,
@@ -295,7 +295,7 @@
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=10&colspec=ID%20Summary%20Special"],
     "reporter": "sidarkcat",
     "name": "HTTP Auth tricks",
-    "description": "IE points to http:////@google.com/. Firefox & Chrome correct the URL. Needs investigation.",
+    "description": "IE points to http:////@google.com/. When used as iframe src, IE will show an error page. Firefox & Chrome correct the URL. Needs investigation.",
     "redirect_notes": "Safari won't follow the redirect with more than two slashes."
 }, {
     "id": 28,
@@ -308,7 +308,7 @@
     },
     "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=11&colspec=ID%20Summary%20Special"],
     "reporter": "sidarkcat",
-    "description": "Invalid URL for Firefox and Chrome. Needs investigation.",
+    "description": "Invalid URL for Firefox and Chrome. When used as iframe src, IE will show an error page. Needs investigation.",
     "redirect_notes": "Chrome, Firefox and Safari do not follow the redirection."
 }, {
     "id": 29,
@@ -355,7 +355,7 @@
     },
     "reporter": "sidarkcat",
     "name": "dot-colon-dot",
-    "description": "Chrome refuses loading such URL and does nothing. Other browser except mentioned use URL as relative.",
+    "description": "Chrome refuses loading such URL and does nothing, IE loads an empty resource. Other browser except mentioned use URL as relative.",
     "redirect_notes": "Chrome and Safari don't follow the redirection."
 }, {
     "id": 34,
