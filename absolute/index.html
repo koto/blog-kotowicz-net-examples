@@ -7,7 +7,7 @@
 <script src="jquery.json-2.2.min.js"></script>
 <script src="md5.js"></script>
 <script>
-var payloads;
+var payloads, method = 'image'; // there are also 'iframe' and 'redirect' methods available. switch in your JS console.
 
 var load_payloads = function() {
   $('#tests').empty();
@@ -59,6 +59,18 @@ $(function() {
     }
   }
 
+  function checkIframe(realurl, url) {
+    try {
+      if (this.contentWindow.document) { // check for SOP restrictions
+        mark(realurl, url, 'internal');
+      } else {
+        mark(realurl, url, 'external');
+      }
+    } catch (e) {
+      mark(realurl, url, 'external');
+    }
+  }
+
   $(document).ajaxError(function(event, xhr, options, error) {
     log('AJAX error ' + error);
   });
@@ -67,20 +79,58 @@ $(function() {
     id = id ? '#' + id : '';
     log(id + ':Trying ' + $.toJSON(payload));
 
-    $('<img>')
-      .load(function() {
-        log(id + ':Image source is ' + $.toJSON(this.src));
-        this.title = this.src;
-        checkUrl(this.src, $(this).data('src'));
-      })
-      .error(function() {
-         log(id + ':Image ' + $.toJSON(this.src) + " failed to load.");
-         checkUrl(this.src, $(this).data('src'));
-       })
-      .data('src', payload)
-      .attr('src', payload)
-      .appendTo('#images');
+    switch (method) {
+      case 'image':
+        // method 1 - img
+        $('<img>')
+          .load(function() {
+            log(id + ':Image source is ' + $.toJSON(this.src));
+            this.title = this.src;
+            checkUrl(this.src, $(this).data('src'));
+          })
+          .error(function() {
+             log(id + ':Image ' + $.toJSON(this.src) + " failed to load.");
+             checkUrl(this.src, $(this).data('src'));
+           })
+          .data('src', payload)
+          .attr('src', payload)
+          .appendTo('#images');
+      break;
+      case 'iframe':
+        // method 2 - iframe
+        $('<iframe>')
+          .load(function() {
+            log(id + ':Iframe source is ' + $.toJSON(this.src));
+            this.title = this.src;
+            checkIframe.apply(this, [this.src, $(this).data('src')]);
+          })
+          .error(function() {
+             log(id + ':Iframe ' + $.toJSON(this.src) + " failed to load.");
+             checkIframe.apply(this, [this.src, $(this).data('src')]);
+           })
+          .data('src', payload)
+          .attr('src', payload)
+          .appendTo('#images');
+      break;
+      case 'redirect':
+        // method 3 - redirection
+        $('<iframe>')
+          .load(function() {
+            log(id + ':Iframe source is ' + $.toJSON(this.src));
+            this.title = this.src;
+            checkIframe.apply(this, [this.src, $(this).data('src')]);
+          })
+          .error(function() {
+             log(id + ':Iframe ' + $.toJSON(this.src) + " failed to load.");
+             checkIframe.apply(this, [this.src, $(this).data('src')]);
+           })
+          .data('src', payload)
+          .attr('src', 'redirect.php?url=' + encodeURIComponent(payload))
+          .appendTo('#images');
+      break;
+    }
   }
+
 
   $('#test-manual').click(function() {
      var val = $('#url')[0].value;
@@ -114,7 +164,7 @@ $(function() {
     var browser = prompt("Your browser is (firefox,chrome,opera,internet explorer,...): ")
         ,version = prompt("Your browser version is (3.6,4,9,...): ")
         ,changes = 0
-        ,update_json = {add: [], remove: [], 'browser': browser, 'version': version};
+        ,update_json = {add: [], remove: [], 'browser': browser, 'version': version, 'method': method};
 
     if (!browser || !version) {
       alert('You need to give browser and version to submit results');
@@ -167,6 +217,7 @@ $(function() {
   $("#start").click(function() {
     $('.result').empty();
     $('#images').empty();
+    $('*').removeClass('external').removeClass('internal');
 
     for (i = 0; i<payloads.length; i++) {
       testPayload(payloads[i].data, payloads[i].id);
@@ -191,11 +242,14 @@ code {white-space: pre; font-family: Courier, monospaced; }
 .external h4 {background-color: red; }
 
 #tests { clear: both; margin: 10px 0; padding: 0;}
+#images {opacity: 0.7; position: fixed; top: 0px; right: 10px; text-align: right; width: 70%;}
+iframe {width: 24px; height: 24px; padding: 0; border 1px solid #ccc;}
 </style>
 </head>
 <body>
 <h1>Local or external?
 <small>Weird URL formats on the loose</small></h1>
+<p><strong>By <a href="http://blog.kotowicz.net">Krzysztof Kotowicz</a></strong></p>
 <p>This page tries to both test & document differences among browsers as to which incomplete or weird URL formats effectively transform
 to <strong style="background:green;color:white"> local URLs (being in the same domain as the main page) </strong> or <strong style="background:red;color:white"> external URLs (different domain or protocol) </strong>. 
 This distinction is very important from security point of view when you are accepting URLs in user input and process them, for example by adding CSRF tokens to the URLs or redirecting the browser.
@@ -203,7 +257,7 @@ This distinction is very important from security point of view when you are acce
 <p>
 Developers incorrectly assume that external URLs have to start with "http" like "http://example.com", and URLs not starting with that string are considered local &amp; safe. Hovewer, that is far from true.
 This page lists all uncommon URL formats that some (or all) browsers recognize as external. To start the test in your browser as well, press <strong>Start tests</strong>.
-Items marked red are external for your browser.
+Items marked red are external for your browser. You can also click on any payload to test it or test any URL manually.
 </p>
 <p>You can also test any URL format manually.</p>
 <p><strong>You can help!</strong>
@@ -226,7 +280,11 @@ Items marked red are external for your browser.
 <script type="text/x-jquery-tmpl" id=item-template>
         <li class="item" data-id="${id}">
                     <a name="${id}"></a>
-                    <h4 class="name">{{if name}}${name}{{else}}${data}{{/if}}<a href="#${id}">#${id}</a></h4><p class="description">${description}</p>
+                    <h4 class="name">{{if name}}${name}{{else}}${data}{{/if}}<a href="#${id}">#${id}</a></h4>
+                    <p class="description">${description}</p>
+                    {{if redirect_notes}}
+                    <p class="description"><strong>Redirect notes:</strong> ${redirect_notes}</p>
+                    {{/if}}
                     <code title="Click to test manually" class="data"></code>
                     <p class="clear">External in:</p>
                     <ul class="browsers">
