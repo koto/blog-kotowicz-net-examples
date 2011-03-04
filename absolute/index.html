@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="jquery-1.5.1.min.js"></script>
+<script src="jquery.tmpl.min.js"></script>
+<script src="jquery.json-2.2.min.js"></script>
+<script src="md5.js"></script>
+<script>
+var payloads, method = 'image'; // there are also 'iframe' and 'redirect' methods available. switch in your JS console.
+
+var load_payloads = function() {
+  $('#tests').empty();
+  $('#images').empty();
+
+  $.getJSON('payload.json', function(json) {
+    payloads = json; // store in global var
+    var li, payload, i;
+    for (i = 0; i<json.length; i++) {
+      payload = json[i].data;
+      li = $('#item-template')
+         .tmpl(json[i])
+         .find('code.data').text($.toJSON(payload)).end()
+         .attr('id', 'p-' + hex_md5(payload))
+         .appendTo('#tests');
+    }
+    $("#start").removeAttr('disabled');
+  });
+};
+
+window.onload = load_payloads;
+
+$(function() {
+
+  function log(msg) {
+    var cont = $('#log')[0];
+    cont.value += msg + "\n";
+    cont.scrollTop = 100000;
+    if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+      console.log(msg);
+    }
+  }
+
+  function mark(realurl, url, classname) {
+    var hash = hex_md5(url);
+    log($.toJSON(url) + ' is ' + classname);
+    $(document.getElementById('p-' + hash))
+      .addClass(classname)
+      .find('.result').text($.toJSON(realurl));
+  }
+
+  var internalDomain = new RegExp(document.location.host);
+
+  function checkUrl(realurl, url) {
+    if (realurl.match(internalDomain)) {
+      mark(realurl, url, 'internal');
+    } else {
+      mark(realurl, url, 'external');
+    }
+  }
+
+  function checkIframe(realurl, url) {
+    try {
+      if (this.contentWindow.document) { // check for SOP restrictions
+        mark(realurl, url, 'internal');
+      } else {
+        mark(realurl, url, 'external');
+      }
+    } catch (e) {
+      mark(realurl, url, 'external');
+    }
+  }
+
+  $(document).ajaxError(function(event, xhr, options, error) {
+    log('AJAX error ' + error);
+  });
+
+  function testPayload(payload, id) {
+    id = id ? '#' + id : '';
+    log(id + ':Trying ' + $.toJSON(payload));
+
+    switch (method) {
+      case 'image':
+        // method 1 - img
+        $('<img>')
+          .load(function() {
+            log(id + ':Image source is ' + $.toJSON(this.src));
+            this.title = this.src;
+            checkUrl(this.src, $(this).data('src'));
+          })
+          .error(function() {
+             log(id + ':Image ' + $.toJSON(this.src) + " failed to load.");
+             checkUrl(this.src, $(this).data('src'));
+           })
+          .data('src', payload)
+          .attr('src', payload)
+          .appendTo('#images');
+      break;
+      case 'iframe':
+        // method 2 - iframe
+        $('<iframe>')
+          .load(function() {
+            log(id + ':Iframe source is ' + $.toJSON(this.src));
+            this.title = this.src;
+            checkIframe.apply(this, [this.src, $(this).data('src')]);
+          })
+          .error(function() {
+             log(id + ':Iframe ' + $.toJSON(this.src) + " failed to load.");
+             checkIframe.apply(this, [this.src, $(this).data('src')]);
+           })
+          .data('src', payload)
+          .attr('src', payload)
+          .appendTo('#images');
+      break;
+      case 'redirect':
+        // method 3 - redirection
+        $('<iframe>')
+          .load(function() {
+            log(id + ':Iframe source is ' + $.toJSON(this.src));
+            this.title = this.src;
+            checkIframe.apply(this, [this.src, $(this).data('src')]);
+          })
+          .error(function() {
+             log(id + ':Iframe ' + $.toJSON(this.src) + " failed to load.");
+             checkIframe.apply(this, [this.src, $(this).data('src')]);
+           })
+          .data('src', payload)
+          .attr('src', 'redirect.php?url=' + encodeURIComponent(payload))
+          .appendTo('#images');
+      break;
+    }
+  }
+
+
+  $('#test-manual').click(function() {
+     var val = $('#url')[0].value;
+     if (val.indexOf('"') === 0) // JSON literal
+     try {
+       val = $.evalJSON(val);
+     } catch(e) {
+       alert('Invalid JSON string, use "http://etc/" JSON format or don\'t start with a quote.');
+       return;
+     }
+     
+     testPayload(val);
+  });
+
+  $("#clear").click(function() {
+    $('#log').val('');
+    $('#images').empty();
+  });
+
+  $('code.data').live('click', function() {
+    $('#url').val($(this).text());
+    testPayload($.evalJSON($(this).text()));
+    return false;
+  });
+
+  $('#save').click(function() {
+    if (!payloads) {
+      alert("You have to start the tests first.");
+      return;
+    }
+    var browser = prompt("Your browser is (firefox,chrome,opera,internet explorer,...): ")
+        ,version = prompt("Your browser version is (3.6,4,9,...): ")
+        ,changes = 0
+        ,update_json = {add: [], remove: [], 'browser': browser, 'version': version, 'method': method};
+
+    if (!browser || !version) {
+      alert('You need to give browser and version to submit results');
+    }
+
+    $('.item').each(function() {
+      var id
+         ,offset
+         ,$this = $(this)
+         , i;
+
+      if (!(id = $this.data('id'))) {
+        return;
+      }
+
+      for (i in payloads) {
+        if (payloads.hasOwnProperty(i) && payloads[i].id == id) {
+          payloads[i].browsers[browser] = payloads[i].browsers[browser] || [];
+
+          if ($this.hasClass('external')) { // mark as vulnerable
+            if ($.inArray(version, payloads[i].browsers[browser]) === -1) {
+              update_json.add.push(parseInt(id,10));
+              payloads[i].browsers[browser].push(version);
+              changes++;
+            }
+          }
+          if ($this.hasClass('internal')) { // remove marking as vulnerable
+            if ((offset = $.inArray(version, payloads[i].browsers[browser])) !== -1) {
+              update_json.remove.push(parseInt(id,10));
+              payloads[i].browsers[browser].splice(offset, 1);
+              changes++;
+            }
+          }
+
+          if (payloads[i].browsers[browser].length === 0) {
+            delete payloads[i].browsers[browser];
+          }
+        }
+      }
+    });
+
+    alert(changes + ' changes.');
+
+    if (changes > 0) {
+      $("#changes").remove();
+      $("<textarea id=changes style='width:100%; height:50px;'>").val('// send me to kkotowicz at gmail dot com\n\n' + $.toJSON(update_json)).prependTo('body');
+    }
+  });
+
+  $("#start").click(function() {
+    $('.result').empty();
+    $('#images').empty();
+    $('*').removeClass('external').removeClass('internal');
+
+    for (i = 0; i<payloads.length; i++) {
+      testPayload(payloads[i].data, payloads[i].id);
+    }
+
+  });
+
+});
+</script>
+<link rel=stylesheet href=styles/basic.css>
+<style>
+#log {
+  display: block;
+  width: 80%;
+  height: 100px;
+}
+img {border: 2px solid white;}
+code {white-space: pre; font-family: Courier, monospaced; }
+.internal .result {color: green;}
+.external .result {color: red; }
+.internal h4 {background-color: green;}
+.external h4 {background-color: red; }
+
+#tests { clear: both; margin: 10px 0; padding: 0;}
+#images {opacity: 0.7; position: fixed; top: 0px; right: 10px; text-align: right; width: 70%;}
+iframe {width: 24px; height: 24px; padding: 0; border 1px solid #ccc;}
+</style>
+</head>
+<body>
+<h1>Local or external?
+<small>Weird URL formats on the loose</small></h1>
+<p><strong>By <a href="http://blog.kotowicz.net">Krzysztof Kotowicz</a></strong></p>
+<p>This page tries to both test & document differences among browsers as to which incomplete or weird URL formats effectively transform
+to <strong style="background:green;color:white"> local URLs (being in the same domain as the main page) </strong> or <strong style="background:red;color:white"> external URLs (different domain or protocol) </strong>. 
+This distinction is very important from security point of view when you are accepting URLs in user input and process them, for example by adding CSRF tokens to the URLs or redirecting the browser.
+</p>
+<p>
+Developers incorrectly assume that external URLs have to start with "http" like "http://example.com", and URLs not starting with that string are considered local &amp; safe. Hovewer, that is far from true.
+This page lists all uncommon URL formats that some (or all) browsers recognize as external. To start the test in your browser as well, press <strong>Start tests</strong>.
+Items marked red are external for your browser. You can also click on any payload to test it or test any URL manually.
+</p>
+<p>You can also test any URL format manually.</p>
+<p><strong>You can help!</strong>
+<ul>
+<li><strong>Submit your test results</strong> by clicking "Submit test results". This will check your test results with ours and display the differences in a separate textarea. Mail these differences to kkotowicz at gmail dot com</li>
+<li><strong>Found new URL format?</strong> Let me know by email or <a href="http://twitter.com/kkotowicz">@kkotowicz</a>, I'll include it in a test suite!</li>
+</ul>
+<p>Disclaimer: This test page borrows stylesheet, page layout &amp; other ideas from <a href="http://heideri.ch">Mario Heiderich's</a> excellent <a href="http://heideri.ch/jso">HTML5 Security Cheatsheet</a>. The original work is licenced under <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser GPL</a> / <a href="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</a> and I leave it so. The source code is at <a href="https://github.com/koto/blog-kotowicz-net-examples/tree/master/absolute">GitHub</a>.
+</p>
+<p>
+<button id=start disabled><strong>Start tests</strong></button> <button id=clear>Clear logs</button> <button id=save>Submit test results</button>
+</p>
+<label>Test URL manually (use plain URL or JSON <a href="https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Core_Language_Features#String_Literals">string literal</a> in quotes for special characters): <textarea id=url rows=1 cols=50>"http:\u0001google.com"</textarea>
+<button id=test-manual>Test</button></label>
+<div id=test-data>
+<textarea id=log></textarea>
+<div id=images></div>
+</div>
+<ul id=tests></ul>
+<script type="text/x-jquery-tmpl" id=item-template>
+        <li class="item" data-id="${id}">
+                    <a name="${id}"></a>
+                    <h4 class="name">{{if name}}${name}{{else}}${data}{{/if}}<a href="#${id}">#${id}</a></h4>
+                    <p class="description">${description}</p>
+                    {{if redirect_notes}}
+                    <p class="description"><strong>Redirect notes:</strong> ${redirect_notes}</p>
+                    {{/if}}
+                    <code title="Click to test manually" class="data"></code>
+                    <p class="clear">External in:</p>
+                    <ul class="browsers">
+                    {{if browsers.opera}}
+                    <ul class="opera">{{each browsers.opera}}<li>Opera ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    {{if browsers.firefox}}
+                    <ul class="firefox">{{each browsers.firefox}}<li>Firefox ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    {{if browsers.chrome}}
+                    <ul class="chrome">{{each browsers.chrome}}<li>Chrome ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    {{if browsers.safari}}
+                    <ul class="safari">{{each browsers.safari}}<li>Safari ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    {{if browsers["internet explorer"]}}
+                    <ul class="internet explorer">{{each browsers['internet explorer']}}<li>Internet Explorer ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    {{if browsers.android}}
+                    <ul class="android">{{each browsers.android}}<li>Android ${$value}</li>{{/each}}</ul>
+                    {{/if}}
+                    </ul>
+                    <p class="clear">Result in this browser:</p>
+                    <code class="result">image not loaded</code>
+                    {{if urls}}
+                    <ul class="urls clear">
+                    {{each urls}}<li><a href="${$value}">${$value}</a>{{/each}}
+                    </ul>
+                    {{/if}}
+                    <dfn class="reporter">${reporter}</dfn>
+        </li>
+</script>
+</body>
+</html>

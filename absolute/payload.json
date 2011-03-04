@@ -1,0 +1,379 @@
+[{
+    "id": 1,
+    "data": "http://www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "name": "Standard absolute URL"
+}, {
+    "id": 2,
+    "data": "http:\\\\www.google.com\\favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "description": "Chrome, IE, Android & Safari browsers treat forward slashes in URL just like backslashes. See also #19.",
+    "name": "Forward slashes"
+}, {
+    "id": 3,
+    "data": "//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "description": "One of the most common vectors - http: or https: could be missing, the browser fetches the final URL using the protocol of main document. Works everywhere.",
+    "name": "Protocol relative"
+}, {
+    "id": 4,
+    "data": "\\\\www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9/Linux","11/Linux"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "description": "Chrome (Linux), Safari and Android treat forward slashes as backslashes, turning the URL into protocol-relative external URL. Chrome/Windows treats them as file: protocols and disallows them. IE  treats them as \"file:\" protocol and tries to forward the requests through WINS resolver (which takes time and can be used as a DoS vector).",
+    "name": "Protocol relative with forward slashes"
+}, {
+    "id": 5,
+    "data": "/\\www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "android": ["2.1","2.2"],
+        "internet explorer": ["6"],
+        "safari": ["5"]
+    },
+    "name": "Mixed slashes /\\",
+    "description": "Mixed slashes could be used in Chrome, Safari, Android & IE 6, which render this as standard http:// link.",
+    "urls" : ["http://heideri.ch/jso/#124"],
+    "reporter": "hasegawayosuke"
+}, {
+    "id": 6,
+    "data": "\\/www.google.com/favicon.ico",
+    "description": "Mixed slashes could be used in Chrome, Safari, Android & IE 6, which render this as standard http:// link",
+    "browsers": {
+        "chrome": ["9","11"],
+        "android": ["2.1","2.2"],
+        "internet explorer": ["6"],
+        "safari": ["5"]
+    },
+    "name": "Mixed slashes \\/"
+}, {
+    "id": 11,
+    "data": "\u000d \u0009//www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.2"],
+        "safari": ["5"]
+    },
+    "name": "White space prefix",
+    "description": "Any white space (\\r, \\n, \\t and space) before the URL is ignored by all browsers.",
+    "redirect_notes": "PHP rejects headers with \\n, so use other whitespace to test redirections. Firefox converts URL to local when using \\r before URL."
+}, {
+    "id": 12,
+    "data": "//www.google.com/favicon.ico ",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "name": "White space suffix",
+    "description": "All browsers strip white space after the URL.",
+    "redirect_notes": "PHP strips suffixing whitespace from URL for Location: header, investigation needed."
+}, {
+    "id": 13,
+    "data": " //www.g\roo\ngle\u000a.com/fav\r\n\ticon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "name": "White space in hostname / path",
+    "description": "All browsers strip some (\\n, \\r, \\t, not including space) white space characters from inside hostname and path/query, this will reach http://www.google.com/favicon.ico.",
+    "redirect_notes": "Chrome disallows \\r (possibly also \\n) inside Location: headers, but will allow (and strip) \\t. Firefox dissallows \\r and \\t in hostname, but allows (and URL encodes) them in path. Safari will try to resolve the domain with '\\t', and URL encodes '\\t' in path."
+}, {
+    "id": 35,
+    "data": "/\n/www.google.com/favicon.ico",
+    "browsers": {
+        "internet explorer": ["6", "7", "8"],
+        "chrome": ["9", "11"],
+        "opera": ["10.6", "11"],
+        "firefox": ["3.6", "4"],
+        "safari": ["5"],
+        "android": ["2.2"]
+    },
+    "name": "White space between slashes",
+    "description": "All tested browsers strip some white space (\\n, \\r, \\t) even from here - this will reach http://www.google.com/favicon.ico. You could also create 'h\\nt\\rt\\tp:/\\n/' URLs.",
+    "redirect_notes": "Firefox & Safari disallows white space between slashes and in protocol name, converts to absolute local URL: '/%URLENCODED/www.google.com/favicon.ico'",
+    "reporter": "kkotowicz"
+}, {
+    "id": 15,
+    "data": "//www.google.com/favicon.ico\u000a\u000d\u0000",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "name": "White space after",
+    "description": "Trailing whitespace incl. space and a NUL byte (HEX 00,09,0a,0d,20) is stripped completely, the browser will fetch favicon.ico file.",
+    "redirect_notes": "PHP trims Location: header on first NUL byte and disallows \n in header."
+}, {
+    "id": 16,
+    "data": "%20//www.google.com/favicon.ico%20",
+    "browsers": {},
+    "description": "URL encoding is for not meant to be used for protocol, port or host name.",
+    "name": "%20 encoding"
+}, {
+    "id": 17,
+    "data": "%20//www.google.com/favicon.ico",
+    "browsers": {},
+    "name": "%20 encoding #2"
+}, {
+    "id": 18,
+    "data": "www.google.com/favicon.ico",
+    "browsers": {},
+    "description": "This URL is local (it will fetch 'www.google.com' subdirectory).",
+    "name": "No protocol"
+}, {
+    "id": 19,
+    "data": "www.google.com\\favicon.ico",
+    "browsers": {},
+    "description": "This URL is local (it will fetch 'www.google.com' subdirectory).",
+    "redirect_notes": "Firefox will not convert \\ to / during redirection.",
+    "name": "Forward slash"
+}, {
+    "id": 20,
+    "data": "http:www.google.com/favicon.ico",
+    "browsers": {},
+    "description": "This URL is local ('http:' will be discarded and it will fetch 'www.google.com' subdirectory). See also #33 and #36.",
+    "redirect_notes": "This will be automatically corrected to external URL when received in Location header in Safari!.",
+    "name": "Missing //, same protocol"
+}, {
+    "id": 36,
+    "data": "https:www.google.com/favicon.ico",
+    "browsers": {
+        "firefox": ["3.6","4"],
+        "chrome": ["9","11"],
+        "internet explorer": ["6","7","8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "description": "Chrome, Firefox & Safari browsers will try to correct protocols other than current - they will add missing slashes, converting the URL to valid https://. IE & Opera will leave the URL in invalid format and won't fetch. See also #33.",
+    "name": "Missing //, other protocol",
+    "reporter": "kkotowicz"
+}, {
+    "id": 37,
+    "data": "http:/www.google.com/favicon.ico",
+    "browsers": {
+        "safari": ["5"],
+        "android": ["2.1","2.2"]
+    },
+    "description": "Safari will correct the URL even for the curent protocol. Android will leave it in invalid format, all other browsers will convert to local. See also #33 and #36.",
+    "name": "Missing /, same protocol",
+    "reporter": "kkotowicz"
+}, {
+    "id": 33,
+    "data": "https:/www.google.com/favicon.ico",
+    "browsers": {
+        "firefox" : ["3.6","4"],
+        "chrome": ["9","11"],
+        "internet explorer": ["6","7","8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "reporter": "sidarkcat",
+    "name": "Missing /, other protocol",
+    "urls" : ["http://code.google.com/p/urlparsing/issues/detail?id=27&colspec=ID%20Summary%20Special"],
+    "description": "Firefox & Chrome will silently correct 'https:/host' to 'https://host' when your document is on http:// protocol BUT will strip 'https:' converting document URL to local when you're currently on https:// i.e. current protocol is stripped, other protocols are converted. This holds true when serving over https. IE will render an invalid 'https:/host' URL and not fetch the resource. See also #36."
+}, {
+    "id": 21,
+    "data": "\u0000//www.google.com/favicon.ico",
+    "browsers": {
+       "android": ["2.2"],
+        "safari": ["5"]
+    },
+    "description": "NULL Unicode byte (\\u0000) seems to stop URL processing. Further investigation required. Internet Explorer stops parsing URL at first null byte, so this one effectively transforms to '' being local URL. Android strips NUL characters when processing URLs. Chrome & Firefox reject loading URL.",
+    "redirect_notes": "PHP trims Location: header on first NUL byte, so this one converts to local URL.",
+    "name": "NUL byte at the beginning"
+}, {
+    "id": 22,
+    "data": "//www.google.com/\u0000favicon.ico",
+    "browsers": {
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "description": "Some browsers allow NULL unicode byte (\\u0000) in the middle of the URL, some (Chrome) don't and reject loading the URL. IE & Firefox ignore the part after NUL.",
+    "redirect_notes": "PHP trims Location: header on first NUL byte.",
+    "name": "NUL byte in the middle"
+}, {
+    "id": 23,
+    "data": "//www.google.com/favicon.ico\u0000",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6", "4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "description": "NULL unicode byte (\\u0000) can be placed at the end of URL. IE will ignore the NULL byte and everything after it. Chrome strips trailing NULL.",
+    "redirect_notes": "PHP trims Location: header on first NUL byte.",
+    "name": "NUL byte at the end"
+}, {
+    "id": 24,
+    "data": "\\",
+    "browsers": {},
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=7&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat",
+    "name": "Single forward slash \\"
+}, {
+    "id": 25,
+    "data": "\\\\",
+    "browsers": {
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=8&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat",
+    "name": "Two forward slashes",
+    "description": "This is file: protocol for IE.",
+    "redirect_notes": "Chrome does not follow the redirection."
+}, {
+    "id": 26,
+    "data": "http:////google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9", "11"],
+        "firefox" : ["3.6","4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=9&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat",
+    "name": "4 slashes",
+    "description": "IE will point to http:////google.com/favicon.ico. When used as iframe src, IE will show an error page. Firefox, Chrome and Safari correct the URL. Needs investigation.",
+    "redirect_notes": "Safari won't follow the redirect with more than two slashes."
+}, {
+    "id": 27,
+    "data": "http:////@google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9", "11"],
+        "firefox" : ["3.6","4"],
+        "opera": ["10.6", "11"],
+        "internet explorer": ["6", "7", "8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=10&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat",
+    "name": "HTTP Auth tricks",
+    "description": "IE points to http:////@google.com/. When used as iframe src, IE will show an error page. Firefox & Chrome correct the URL. Needs investigation.",
+    "redirect_notes": "Safari won't follow the redirect with more than two slashes."
+}, {
+    "id": 28,
+    "data": "//:@",
+    "browsers": {
+        "internet explorer": ["6", "7", "8"],
+        "opera": ["10.6", "11"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=11&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat",
+    "description": "Invalid URL for Firefox and Chrome. When used as iframe src, IE will show an error page. Needs investigation.",
+    "redirect_notes": "Chrome, Firefox and Safari do not follow the redirection."
+}, {
+    "id": 29,
+    "data": "///www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9", "11"],
+        "firefox" : ["3.6","4"],
+        "internet explorer" : ["6"],
+        "opera": ["10.6", "11"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "reporter": "sidarkcat",
+    "description" : "Chrome and Firefox correct the URL."
+}, {
+    "id": 30,
+    "data": "///asdf@/",
+    "browsers": {
+        "firefox" : ["3.6","4"],
+        "internet explorer": ["6"],
+        "opera": ["10.6", "11"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "urls": ["http://code.google.com/p/urlparsing/issues/detail?id=16&colspec=ID%20Summary%20Special"],
+    "reporter": "sidarkcat",
+    "description" : "Pure weirdness. Firefox complains about the URL. Needs investigation.",
+    "redirect_notes": "Chrome and Firefox do not follow the redirection. Safari corrects it to local '/asdf@/'."
+}, {
+    "id": 31,
+    "data": "://",
+    "browsers": {
+        "internet explorer": ["6"]
+    },
+    "reporter": "sidarkcat",
+    "name": "colon-slash-slash",
+    "redirect_notes": "Safari won't follow the redirection starting with ':'."
+}, {
+    "id": 32,
+    "data": ".:.",
+    "browsers": {
+        "internet explorer": ["6", "7", "8"],
+        "opera": ["10.6", "11"]
+    },
+    "reporter": "sidarkcat",
+    "name": "dot-colon-dot",
+    "description": "Chrome refuses loading such URL and does nothing, IE loads an empty resource. Other browser except mentioned use URL as relative.",
+    "redirect_notes": "Chrome and Safari don't follow the redirection."
+}, {
+    "id": 34,
+    "data": "h t t p://www.google.com/favicon.ico",
+    "browsers": {},
+    "name": "Spaces in protocol",
+    "description": "No-go. Converts to local URL, but see #35."
+}, {
+    "id": 38,
+    "data": "https:anything\n:even spaces@www.google.com/favicon.ico",
+    "browsers": {
+        "chrome": ["9","11"],
+        "firefox": ["3.6","4"],
+        "internet explorer": ["6","7","8"],
+        "android": ["2.1","2.2"],
+        "safari": ["5"]
+    },
+    "name": "HTTP auth + autocorrection from browsers",
+    "description": "Combine #36 and #13 for filter evasion. It will reach https://google.com/favicon.ico on vulnerable browsers, potentially avoiding filters.",
+    "redirect_notes": "PHP rejects Location: headers with \\n, use \\r."
+}]
