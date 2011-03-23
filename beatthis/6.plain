@@ -1,0 +1,7 @@
+Congratulations! You broke the unbreakable, indecipherable cipher, commonly named as Vigenere cipher. Basically, it's XOR but with multibyte key. There are a few ways to break it, but they all come 
+down to frequency analysis. You need to have a model text for assuming the expected letter distribution - like, for example, lengthy fragment of some English text.
+
+First you have to determine the key length by observing the coincidence index (Wikipedia). Once you have the length, 
+you simply brute force each byte of the key in turn, looking for
+a best correlation with model distribution of letters. So it's 
+256*key length loop, not that much. The winning key is: whatdoiwin?

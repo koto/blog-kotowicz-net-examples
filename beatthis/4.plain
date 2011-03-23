@@ -1,0 +1,5 @@
+The XOR operator is extremely common as a component in more complex ciphers. By itself, using a constant repeating key, a simple XOR cipher can trivially be broken using frequency analysis. If the content of any message can be guessed or otherwise known then the key can be revealed. Its primary merit is that it is simple to implement, and that the XOR operation is computationally inexpensive. A simple repeating XOR cipher is therefore sometimes used for hiding information in cases where no particular security is required.
+If the key is random and is as long as the message (so it never repeats), the XOR cipher is more secure. 
+
+So, to make this short - XOR might be bruteforced or is subject to frequency analysis. Bruteforce is so easy when the key has only one 
+byte - and the key for the next level is the second word of plain text repeated 3 times.

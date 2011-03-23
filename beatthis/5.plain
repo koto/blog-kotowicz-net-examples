@@ -1,0 +1,1 @@
+message|I guess I shouldn't append the key to the message - this was multibyte XOR, but the key is given away at the end (a common practice to "solve" key distribution problem). The next level won't be so easy - i'm smarter than that!. LETSTESTTHISFRIEDMANTHINGY is the password, just remove all vowels.|key|xxxx
