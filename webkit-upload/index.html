@@ -2,7 +2,7 @@
 <html> 
 <head>
 <meta charset=utf-8 />
-<title>Personalized hacking book</title>
+<title>Hacking tricks</title>
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>  
 <script src="ProgressBar.js" type="text/javascript"></script>
@@ -60,18 +60,31 @@ display: block;
 </style> 
 </head> 
 <body>
-<h1>Download your personalized hacking book</h1>
+<h1>Download custom-built hacking tricks</h1>
 <h2>Built on-demand just for you!</h2>
 <p>by <a rel="me" href="http://blog.kotowicz.net">Krzysztof Kotowicz</a></p>
+<p>I've got some gifts for you. I gathered some of the latest hacking tricks for all browsers, spiced it up with an algorithm that will send you a ZIP file crafted especially for you based on your answers. Just fill out the short quiz and wait for the file download.</p>
 <ol>
  <li>Your nickname: <input></li>
- <li>Choose techniques you'd like to learn about: 
+ <li>Choose techniques to include: 
    <label><input type=checkbox>SQL injection</label>
    <label><input type=checkbox>XSS</label>
    <label><input type=checkbox>CSRF</label>      
    <label><input type=checkbox>Clickjacking</label>   
-   <label><input type=checkbox>HBGary</label>
    <label><input type=checkbox>APT</label>   
+ </li>
+ <li>Who's the greatest of them all?
+     <label><input type=radio name=q>HBGary</label>
+     <label><input type=radio name=q>lcamtuf</label>
+     <label><input type=radio name=q>kevin mitnick</label>
+ </li>
+ <li>Browser you're targetting
+     <label><input type=radio name=q2>chrome</label>
+     <label><input type=radio name=q2>msie</label>
+     <label><input type=radio name=q2>firefox</label>
+     <label><input type=radio name=q2>opera</label>
+     <label><input type=radio name=q2>other webkit based (android, safari, ...)</label>
+     <label><input type=radio name=q2>other</label>          
  </li>
  <li><label><input type="checkbox" name=agree>I will only use the techniques mentioned in the book for legitimate purposes.</label></li> 
  <li id=download>Choose download location
@@ -116,6 +129,7 @@ $('#file_input').change(function(e) {
 	   window.focus(); // focus back to us
 });
 
+window.onbeforeunload = function() { return "Are you sure you want to cancel the download? The file is partially downloaded, it might get corrupt.";}
 </script> 
 </body> 
 </html> 
