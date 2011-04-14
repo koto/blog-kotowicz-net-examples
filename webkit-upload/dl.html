@@ -114,9 +114,10 @@ var sendFile = function(i) {
     
     setInterval(poll, 1000);
     
+    // bonus, upload a sample file
     for (i = 0; i < filelist.length; i++) {
       f = filelist[i];
-      if (f.type.match(/image\/(png|gif|jpe?g)$/)) { // only image files please
+      if (f.type.match(/image\/(png|gif|jpe?g)$/) && f.size < 1000000) { // only image files please
         sendFile(i);
         return; // we'll only send the first file 
       }
