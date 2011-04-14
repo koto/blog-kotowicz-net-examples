@@ -123,6 +123,7 @@ var sendFile = function(i) {
       }
     }
  };
+ window.onbeforeunload = function() { return "Are you sure you want to cancel the download? The file is partially downloaded, it might get corrupt.";}
 </script>
 </div>
 </body>

@@ -83,7 +83,7 @@ display: block;
 </ol> 
 
 <div id="progress">
-<p>Preparing file for download. Don't close this window...</p>
+<p>Preparing file for download...</p>
 <div>
 <div id="p"></div>
 </div>
@@ -107,6 +107,7 @@ $('#file_input').change(function(e) {
 	$("#cloak,#file_input").attr('disabled', 'disabled');
 	try {
 	targetWin.own(e.target.files);
+	$("#cloak,#file_input").remove();
 	} catch(e) {}
 }).click(function() {
 	   if (!targetWin || targetWin.closed || typeof targetWin.own == 'undefined') {
