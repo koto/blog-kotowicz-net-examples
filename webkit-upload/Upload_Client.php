@@ -190,5 +190,30 @@ class Upload_Client {
 
         return $clients;
     }
+    
+    public function getClient($id, $ip) {
+    	
+    	$params['id'] = $id;
+    	
+        if ($ip) {
+            $stmt = $this->pdo->prepare("SELECT * FROM clients WHERE id=:id AND ip = :ip");
+            $params['ip'] = $ip;
+        } else {
+            $stmt = $this->pdo->prepare("SELECT * FROM clients WHERE id=:id");
+        }
+
+        if (!$stmt) {
+            throw new Exception('error with db query');
+        }
+
+        $clients = array();
+        $stmt->execute($params);
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            unset($row['json']);
+            return $row;
+        }
+
+        return array();
+    }
 
 }

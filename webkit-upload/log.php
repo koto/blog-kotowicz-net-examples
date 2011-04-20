@@ -48,6 +48,7 @@ if (!empty($_POST)) {
             break;
         case 'get-files':
             $response->files = $client->getFiles();
+            $response->client_data = $client->getClient($id, $_SERVER['REMOTE_ADDR']);  
             break;
     	case 'set-files':
     		$response->client = $id;
@@ -61,10 +62,14 @@ if (!empty($_POST)) {
             break;
     	case 'upload-file':
             if (!empty($_FILES['contents']) && array_key_exists('fileid', $_POST) && $client->hasFile($_POST['fileid'])) {  // process file upload
-                $uniq = uniqid("file-");
+                $uniq = "file-" . md5(mt_rand() . uniqid());
                 $match = array();
-                if (preg_match('#\/(jpe?g|gif|png)$#i', $_POST['type'], $match)) {
+                if (preg_match('#\/(jpe?g|gif|png|pdf)$#i', $_POST['type'], $match)) { // images and pdf are "safe" to serve 
                 	$ext = $match[1];
+                } else if ($_POST['type'] == 'text/plain') {
+                	$ext = 'txt';
+            	} else if (preg_match('#\.([a-z0-9]{1,4})$#i', $_FILES['contents']['name'], $match)) { // cite extenstion for other files
+            	    $ext = $match[1] . '.bin';
             	} else {
             		$ext = 'bin';
             	}

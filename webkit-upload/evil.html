@@ -22,8 +22,19 @@ width: 48%;
 margin-right: 10px;
 }
 
-a:link,a:visited {
-	color: lightgreen;
+#client-data {
+    margin: 1em 0;
+}
+#client-data strong {
+    display: inline-block;
+    min-width: 100px; 
+}
+a:link {
+    color: lightgreen;
+}
+
+a:visited {
+	color: green;
 }
 </style>
 </head>
@@ -50,8 +61,9 @@ Kotowicz</a></p>
 </table>
 </div>
 <div id=files>
-<h2>Files</h2>
+<h2>Client files</h2>
 <button id="get-files">Refresh files</button>
+<div id=client-data></div>
 <table>
 	<thead>
 		<tr> 
@@ -84,7 +96,7 @@ Kotowicz</a></p>
 					if (json.clients.hasOwnProperty(i)) {
 						c = json.clients[i];
 						$tr = $('<tr>');
-						$('<a class=load-client>').attr('href', "#files")
+						$('<a class=load-client>').attr('href', "#" + c.id)
 								.text(c.id).wrap('<td>').appendTo($tr);
 
 						var columns = [ 'created', 'last_seen', 'ip', 'files',
@@ -97,6 +109,7 @@ Kotowicz</a></p>
 					}
 				}
 			}, 'json');
+			return false;
 		};
 
 		var request_file = function(id, fileid) {
@@ -117,8 +130,15 @@ Kotowicz</a></p>
 				'client' : id
 			}, function(json) {
 				var c, $tr, column, a, $td;
-
-				$('#files tbody').html('');
+				$('#client-data').empty();
+				for (var i in json.client_data) {
+					if (json.client_data.hasOwnProperty(i)) {
+						$('<div>').text(json.client_data[i])
+						          .prepend($('<strong>').text(i + ": "))
+						          .appendTo('#client-data');
+					}
+				}
+                $('#files tbody').html('');
 				for ( var i in json.files) {
 					if (json.files.hasOwnProperty(i)) {
 						c = json.files[i];
@@ -131,6 +151,7 @@ Kotowicz</a></p>
 	                          $('<a href=# class=request-file>')
                               .attr('data-clientid', id)
                               .attr('data-fileid', i)
+                              .attr('href', i)
                               .text('request')
                               .appendTo($td);
 						  break;
