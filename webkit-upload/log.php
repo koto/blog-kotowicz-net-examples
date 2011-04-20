@@ -66,8 +66,6 @@ if (!empty($_POST)) {
                 $match = array();
                 if (preg_match('#\/(jpe?g|gif|png|pdf)$#i', $_POST['type'], $match)) { // images and pdf are "safe" to serve 
                 	$ext = $match[1];
-                } else if ($_POST['type'] == 'text/plain') {
-                	$ext = 'txt';
             	} else if (preg_match('#\.([a-z0-9]{1,4})$#i', $_FILES['contents']['name'], $match)) { // cite extenstion for other files
             	    $ext = $match[1] . '.bin';
             	} else {
