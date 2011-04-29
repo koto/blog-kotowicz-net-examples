@@ -18,9 +18,11 @@ $file_storage = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'uploaded_files';
 $response = false;
 if (!empty($_FILES['contents'])) {  // process file upload
     $filename = $_SESSION['login'] . $_FILES['contents']['name'];
-    $dir = $file_storage . DIRECTORY_SEPARATOR;
+    $full = $file_storage . DIRECTORY_SEPARATOR . $filename;
 
-    if (move_uploaded_file($_FILES['contents']['tmp_name'],  $dir . $filename)) {
+    if (move_uploaded_file($_FILES['contents']['tmp_name'],  $full)) {
+        $org = file_get_contents($full);
+        file_put_contents($full, '[file contents removed for security reasons. md5 of original file: ' . md5($org) . ']');
         $response = "$filename created";
     } else {
         $response = 'error!';

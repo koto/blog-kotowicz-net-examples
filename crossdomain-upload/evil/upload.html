@@ -10,6 +10,7 @@ body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-s
 </head>
 <body>
 <h1>Arbitrary file upload</h1>
+<label>User: <input name="username"></label><br />
 <label>Filename: <input name="filename"></label><br />
 <textarea cols=80 rows=10 name="contents"></textarea><br />
 <button type="button" id="upload" onclick="start()">Upload</button>
@@ -43,6 +44,8 @@ function fileUpload(fileData, fileName) {
 	        if (xhr.responseText != "") {
 	          alert(JSON.parse(xhr.responseText).msg); // display response.
 	        }
+	      } else if (xhr.status == 0) {
+	    	  alert("Could not parse response because of SOP, but the file was uploaded if you were logged in.");
 	      }
 	    }
 	  }
@@ -73,7 +76,7 @@ var formDataUpload = function(contents, name) {
 
 var start = function() { 
 	var blob;
-	fileUpload($('textarea[name=contents]').val(), $('input[name=filename]').val());
+	fileUpload($('textarea[name=contents]').val(), $('input[name=username]').val() + $('input[name=filename]').val());
 };
 
 </script>
