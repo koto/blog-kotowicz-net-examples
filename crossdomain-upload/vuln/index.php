@@ -26,7 +26,7 @@ if (empty($_SESSION['login'])) {
 } else {
     echo "Hello, " . htmlspecialchars($_SESSION['login']) . "<br>";
     echo "<a href=?logout>logout</a>";
-    $files = glob(__DIR__ . DIRECTORY_SEPARATOR . 'uploaded_files' . DIRECTORY_SEPARATOR . $_SESSION['login'] . '*');
+    $files = glob(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'uploaded_files' . DIRECTORY_SEPARATOR . $_SESSION['login'] . '*');
     if ($files) {
         echo "<h2>Your files</h2><ul>";
         foreach ($files as $file) {
