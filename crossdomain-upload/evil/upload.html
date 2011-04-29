@@ -6,14 +6,17 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
 <style>
 body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-serif;}
+a:link {color: green; }
+a:visited {color: darkgreen;}
 </style>
 </head>
 <body>
 <h1>Arbitrary file upload</h1>
+<p>by <a rel="me" href="http://blog.kotowicz.net">Krzysztof Kotowicz</a> | <a href="http://blog.kotowicz.net/2011/04/how-to-upload-arbitrary-file-contents.html">More info</a></a></p>
 <label>User: <input name="username"></label><br />
 <label>Filename: <input name="filename"></label><br />
-<p>Text file contents. If you want to send binary file, use JSON format enclosed in quotes:
-e.g.
+<p>Enter file contents below. If you want to send binary file, use JSON format enclosed in quotes
+e.g.:
 </p>
 <pre>
 "\u00DE\u00AD\u00BE\u00AF"

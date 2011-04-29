@@ -28,5 +28,5 @@ body {background: #393; color: #eee; font-family: 'Inconsolata', Verdana, sans-s
 </head>
 <body>
 <h1>Private file uploading service</h1>
-<p>by <a rel="me" href="http://blog.kotowicz.net">Krzysztof Kotowicz</a></p>
+<p>by <a rel="me" href="http://blog.kotowicz.net">Krzysztof Kotowicz</a> | <a href="http://blog.kotowicz.net/2011/04/how-to-upload-arbitrary-file-contents.html">More info</a></a></p>
 <p class="warning">This site is just a demonstration of vulnerability class. Be careful when browsing it!</p>
