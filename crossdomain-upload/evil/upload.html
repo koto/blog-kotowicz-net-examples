@@ -12,6 +12,12 @@ body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-s
 <h1>Arbitrary file upload</h1>
 <label>User: <input name="username"></label><br />
 <label>Filename: <input name="filename"></label><br />
+<p>Text file contents. If you want to send binary file, use JSON format enclosed in quotes:
+e.g.
+</p>
+<pre>
+"\u00DE\u00AD\u00BE\u00AF"
+</pre>
 <textarea cols=80 rows=10 name="contents"></textarea><br />
 <button type="button" id="upload" onclick="start()">Upload</button>
 <script>
@@ -23,6 +29,17 @@ function rawUpload(file, fileName) {
     	fileUpload(e.target.result, fileName)
     };
     reader.readAsBinaryString(file);
+}
+
+if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined' && Uint8Array) {
+	XMLHttpRequest.prototype.sendAsBinary = function(datastr) {
+	    function byteValue(x) {
+	        return x.charCodeAt(0) & 0xff;
+	    }
+	    var ords = Array.prototype.map.call(datastr, byteValue);
+	    var ui8a = new Uint8Array(ords);
+	    this.send(ui8a.buffer);
+	}
 }
 
 function fileUpload(fileData, fileName) {
@@ -54,7 +71,7 @@ function fileUpload(fileData, fileName) {
 	  body += fileData + "\r\n";
 	  body += "--" + boundary + "--";
 	  
-	  xhr.send(body);
+	  xhr.sendAsBinary(body);
 	  return true;
 }
 
@@ -73,8 +90,18 @@ var formDataUpload = function(contents, name) {
 };
 
 var start = function() { 
-	var blob;
-	fileUpload($('textarea[name=contents]').val(), $('input[name=username]').val() + $('input[name=filename]').val());
+	var c;
+	c = $('textarea[name=contents]').val();
+
+	if (c.indexOf('"') === 0) {
+		try {
+		c = JSON.parse(c);
+		} catch (e) {
+			alert("Invalid data format. Use JSON format or remove the first quote (\")");
+			return;
+		}
+	}
+	fileUpload(c, $('input[name=username]').val() + $('input[name=filename]').val());
 };
 
 </script>
