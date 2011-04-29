@@ -18,11 +18,11 @@ if (!empty($_POST['login'])) {
 }
 
 if (array_key_exists('logout', $_GET)) {
-    unset($_SESSION['logout']);
+    unset($_SESSION['login']);
 }
 
 if (empty($_SESSION['login'])) {
-    echo "<form action=index.php method=post><input name=login placeholder=login><br><input type=password><br><input type=submit></form>";
+    echo "<form action=index.php method=post><input name=login placeholder=login><br><input type=password><br><input type=submit value=Login></form>";
 } else {
     echo "Hello, " . htmlspecialchars($_SESSION['login']) . "<br>";
     echo "<a href=?logout>logout</a>";
