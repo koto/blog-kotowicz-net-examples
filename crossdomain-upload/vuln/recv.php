@@ -15,6 +15,12 @@ include 'header.php';
 
 $file_storage = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'uploaded_files';
 
+
+if (empty($_SESSION['login'])) {
+    echo "<form action=index.php method=post><input name=login placeholder=login><br><input type=password><br><input type=submit value=Login></form>";
+    die();
+}
+
 $response = false;
 if (!empty($_FILES['contents'])) {  // process file upload
     $filename = $_SESSION['login'] . $_FILES['contents']['name'] . '.txt';

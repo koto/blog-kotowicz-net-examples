@@ -13,7 +13,6 @@ a:visited {color: darkgreen;}
 <body>
 <h1>Arbitrary file upload</h1>
 <p>by <a rel="me" href="http://blog.kotowicz.net">Krzysztof Kotowicz</a> | <a href="http://blog.kotowicz.net/2011/04/how-to-upload-arbitrary-file-contents.html">More info</a></a></p>
-<label>User: <input name="username"></label><br />
 <label>Filename: <input name="filename"></label><br />
 <p>Enter file contents below. If you want to send binary file, use JSON format enclosed in quotes
 e.g.:
@@ -105,7 +104,7 @@ var start = function() {
 			return;
 		}
 	}
-	fileUpload(c, $('input[name=username]').val() + $('input[name=filename]').val());
+	fileUpload(c, $('input[name=filename]').val());
 };
 
 </script>
