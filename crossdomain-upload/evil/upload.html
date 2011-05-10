@@ -54,7 +54,8 @@ function fileUpload(fileData, fileName) {
 	  xhr.open("POST", uri, true);
 	  xhr.setRequestHeader("Content-Type", "multipart/form-data, boundary="+boundary); // simulate a file MIME POST request.
 	  xhr.setRequestHeader("Content-Length", fileSize);
-	  
+	  xhr.withCredentials = "true";
+ 
 	  xhr.onreadystatechange = function() {
 	    if (xhr.readyState == 4) {
 	      if ((xhr.status >= 200 && xhr.status <= 200) || xhr.status == 304) {
