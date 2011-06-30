@@ -69,7 +69,7 @@ function fileUpload(fileData, fileName) {
 	  }
 	  
 	  var body = "--" + boundary + "\r\n";
-	  body += "Content-Disposition: form-data; name='contents'; filename='" + fileName + "'\r\n";
+	  body += "Content-Disposition: form-data; name=\"contents\"; filename=\"" + fileName + "\"\r\n";
 	  body += "Content-Type: application/octet-stream\r\n\r\n";
 	  body += fileData + "\r\n";
 	  body += "--" + boundary + "--";
