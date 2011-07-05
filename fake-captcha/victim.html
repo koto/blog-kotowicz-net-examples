@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>NDCP</title>
+<script type="text/javascript">
+var csrf_token = '35fb6df6-2ab9-408b-abe3-769412a58e15';
+</script>
+<style>
+body {
+    background: url(nuke.jpg) left top repeat;
+    color: white;
+    font-family: Verdana, arial, sans-serif;
+}
+
+h1 {
+border-bottom: 1px solid #ccc;
+font-size: 13px;
+}
+</style>
+</head>
+<body>
+<h1>Totally good guys nuclear device control panel</h1>
+Hello, <strong>admin</strong>
+
+<h2>Nuke'em</h2>
+<p>Are you sure you want to send the nuclear device?</p>
+<div style="background:red; padding: 10px; width: 50%">
+<form method=post>
+<fieldset>
+<legend>Coordinates</legend>
+<label>Lat: <input name=lat value="" ./></label><br>
+<label>Lng: <input name=lng value="" ./></label><br>
+</fieldset>
+<input type="hidden" name=csrf value="35fb6df6-2ab9-408b-abe3-769412a58e15" />
+<p><button type=submit">Off we go!</button></p>
+</form>
+</div>
+</body>
+</html>
