@@ -38,7 +38,8 @@ if (!m) {
 	document.getElementById('frame').style.top = -((line-1) * height + margin_y) + 'px';
 	
 	//load 
-	document.getElementById('frame').src="view-source:" + url;
+	// nested view-source: to clean up view-source: code highlighting! (caused weird pixel offsets in ff/windows )
+	document.getElementById('frame').src="view-source:view-source:" + url;
 }
 </script>
 </body>
