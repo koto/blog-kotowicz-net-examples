@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+/**
+ * This file is part of
+ * "Hacking HTML 5" training materials
+ * @author Krzysztof Kotowicz <kkotowicz at gmail dot com>
+ * @copyright Krzysztof Kotowicz <kkotowicz at gmail dot com>
+ * @see http://blog.kotowicz.net
+ */
+-->
+<html>
+<head>
+<title>Warez forum registration</title>
+</head>
+<body>
+<h1>W@r3zforum.com registration</h1>
+<h2>Limited number of accounts is available</h2>
+<p>Please wait, checking for availability...</p>
+
+<iframe id="outer" src="frameposinner.html" width="100%" height="20" scrolling="no" style="visibility: visible;opacity: 0"></iframe>
+<script type="text/javascript">
+
+window.onload = function() {
+    var x,y;
+    var checked;
+    var outer = document.getElementById('outer');
+    var inner = outer.contentWindow.document.getElementById('inner');
+
+    outer.contentWindow.scrollTo(0,0);
+
+    inner.onload = function() {
+        if (inner.src=='about:blank') return;
+        setTimeout(process, 200);
+    }
+    
+    if (navigator.userAgent.match(/Firefox\/(3\.6|4|5|6|7|8|9)/)) {     	
+	    inner.src = 'about:blank';
+	    inner.src = 'http://imgur.com/signin#username';
+    } else {
+        alert("Use some real browser, we support only Firefox here :P");
+    }
+
+    function process() {
+        if ('scrollX' in outer.contentWindow) {
+            x = outer.contentWindow.scrollX;
+        	y = outer.contentWindow.scrollY;
+        } else {
+        	x = outer.contentWindow.document.documentElement.scrollLeft;
+        	y = outer.contentWindow.document.documentElement.scrollTop;
+        }
+
+        if (y == 0) {
+        	// logged in - no username field present at signin
+            location.replace('step2.html?' + Math.random());
+        } else {
+            alert("We're sorry, no logins available now. Meanwhile, register at imgur.com and have some fun ;)");
+        }
+
+        document.getElementById('form').elements.submit.disabled = false;
+    }
+
+}
+</script>
+</body>
+</html>
