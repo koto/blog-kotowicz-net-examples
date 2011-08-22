@@ -1,0 +1,6 @@
+#dos
+[boot loader]
+timeout=30
+default=C:\lxboot.ini
+[operating systems]
+C:\lxboot.ini="AttackerLinux 1.0"

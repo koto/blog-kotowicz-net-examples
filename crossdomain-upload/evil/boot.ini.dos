@@ -1,0 +1,6 @@
+#denial of service
+[boot loader]
+timeout=30
+default=multi(0)disk(0)rdisk(0)partition(9)\WINDOWS
+[operating systems]
+multi(0)disk(0)rdisk(0)partition(9)\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect
