@@ -48,8 +48,11 @@ var overload = function(f,method,crossdomain) {
 	Object.defineProperty(w, "location",{ writable: false, configurable: false, value: { reload: function () {}, href: "" }}); // works in firefox same-domain, ie9+, cant confirm IE
 
 	// beats top.location=self.location
-        Object.defineProperty(window, "location", {writable: false, configurable: false});  // beats top.location = self.location, ff
+	Object.defineProperty(window, "location", {writable: false, configurable: false});  // beats top.location = self.location, ff
 
+    if (Object.watch) { // beats top.location= too (ff) . thanks, @shafigullin
+       window.watch('location', function(ignore,old,n) { throw 'i watched you!' }); // works in ff
+    }
         // beats whole framebust() function call
 	Object.defineProperty(w, "framebust",{ configurable: false, set: function(v) {}, get: function() { // firefox
 		return function() { console.log('im hijacked') };
