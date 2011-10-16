@@ -1,0 +1,30 @@
+<pre id=log>
+</pre>
+<script>
+function log(msg) {
+    var l = document.getElementById('log');
+    l.innerHTML += msg + "\r\n";
+}
+
+var fake_location = function(nr) {
+    return {
+        href: 'http://victim.com/test_' + nr + '_ok',
+        host: 'victim.com',
+        toString: function() {
+            return this.href;
+        }
+    }
+}
+
+var orig_location = window.location;
+
+log('Starting...');
+log('Location is: ' + window.location);
+if (Object.defineProperty) {
+    log('Test 1  - defineProperty(FF, Safari)');
+    Object.defineProperty(window, 'location', {value: fake_location(1), configurable: true});
+    log('Location is: ' + window.location);
+}
+
+
+</script>
