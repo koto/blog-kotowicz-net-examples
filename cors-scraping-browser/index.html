@@ -115,6 +115,7 @@ html,body {
 					"<head><base href='" + starter.href + "'>");
 			// remove flash 
 			text = text.replace(/\<object.*?\<\/object\>/gi, '[removed Flash]');
+			text = text.replace(/ad\.doubleclick\.net/g, '0.0.0.0');
 
 			return text;
 		}
@@ -126,6 +127,13 @@ html,body {
 		var starter = {
 			href : ''
 		};
+
+		$("#site").keydown(function(event) {
+			if (event.keyCode == '13') {
+				event.preventDefault();
+				$('#start').click();
+			}
+		});
 
 		$("#start").click(function() {
 			starter = {
