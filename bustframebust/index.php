@@ -53,6 +53,16 @@ var overload = function(f,method,crossdomain) {
     if (Object.watch) { // beats top.location= too (ff) . thanks, @shafigullin
        window.watch('location', function(ignore,old,n) { throw 'i watched you!' }); // works in ff
     }
+/*    
+Object.defineProperty(window, 'location', {value:Proxy.create({
+  get: function(proxy, name) {
+    return 'Hello, '+ name;
+  },
+  set: function(proxy, name, val) {
+    alert(name+'='+val);
+  }
+}), configurable:false}); // beats location=url FF
+*/    
         // beats whole framebust() function call
 	Object.defineProperty(w, "framebust",{ configurable: false, set: function(v) {}, get: function() { // firefox
 		return function() { console.log('im hijacked') };
