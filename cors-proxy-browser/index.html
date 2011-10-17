@@ -5,6 +5,7 @@
 @see http://blog.kotowicz.net
  -->
 <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+<script src="crossxhr.js"></script>
 <style type="text/css">
 #hello {
 	width: 100%;
@@ -49,6 +50,7 @@ html,body {
 		<br />
 	</div>
 	<script>
+	    var flash_agree = null;
 		var interval; // page loading time
 
 		var History = (function() {
@@ -65,7 +67,7 @@ html,body {
 					var hist = JSON.parse(localStorage.getItem(name));
 					hist.push({
 						'url' : url,
-						timestamp : new Date()
+						timestamp : (new Date()).toString()
 					});
 					localStorage.setItem(name, JSON.stringify(hist));
 				},
@@ -76,7 +78,6 @@ html,body {
 		})();
 
 		function clicker() {
-			var xhr = new XMLHttpRequest();
 			var url = $(this).attr('href') || $(this).attr('action');
 
 			if (!url.match(/^https?:/)) {
@@ -109,9 +110,16 @@ html,body {
 			History.add(url);
 			$("#site").val(url);
 			write($('#loader-text')[0].innerHTML.replace('$url', url));
-			xhr.open(method, url, true);
-			xhr.onreadystatechange = display;
-			xhr.send(fields);
+            sendRequest(new XMLHttpRequest(), url, method, fields);
+		}
+		
+		function sendRequest(xhr, url, method, fields) {
+            xhr.open(method, url, true);
+            xhr._url = url;
+            xhr._method = method;
+            xhr._fields = fields;
+            xhr.onreadystatechange = display;
+            xhr.send(fields);			
 		}
 
 		function write(text) {
@@ -133,13 +141,18 @@ html,body {
 				interval = null;
 			}
 		}
+		
+		function fallbackToFlash(xhr) {
+            var xhr2 = new CrossXHR();
+            sendRequest(xhr2, xhr._url, xhr._method, xhr._fields);
+		}
 
 		function display(event) {
-			var xhr = event.target;
+			var xhr = this;
 
 			try {
 				if (xhr.readyState === 4) {
-					if (xhr.status === 200) {
+					if (xhr.status == 200) {
 						var text = pre(xhr.responseText);
 						write(text);
 						var f = document.getElementById('hello');
@@ -151,6 +164,15 @@ html,body {
 						alert("Cannot load ("
 								+ xhr.statusText
 								+ ").\nBrowser supports websites that allow CORS requests (Access-Control-Allow-Origin: *)");
+						if (typeof CrossXHR !== "undefined" && !(xhr instanceof CrossXHR)) {
+                            if (flash_agree === null ) { // no user decision made yet
+                                flash_agree = confirm("I can fallback to method using Adobe Flash file (crossxhr.swf).\nDo you want to enable Flash fallback for this and future requests?");
+                            }
+
+							if (flash_agree) { // user is ok with flash fallback
+								fallbackToFlash(xhr);
+							}
+						}
 					}
 				}
 			} catch (e) {
@@ -245,11 +267,6 @@ html,body {
 			<strong>CORS proxy browser</strong> is a proof of concept of how
 			client-side web proxying can be done using <a target="_blank"
 				href="http://www.w3.org/TR/cors/">Cross Origin Resource Sharing</a>.
-
-
-
-
-		
 		<p>
 			It allows you to fetch content of websites using
 			<code>Access-Control-Allow-Origin: *</code>
@@ -258,7 +275,7 @@ html,body {
 			ads) and redisplays the content in your own origin, where you have
 			total control over content, bypassing Same Origin Policy. <strong>All
 				of this is done client-side. In fact, the whole proxy is just a
-				single <code>index.html</code> file</strong>.
+				single <code>index.html</code> file</strong> (apart from Flash fallback).
 		<p>With this proxy browser you can redisplay modified content of
 			other websites that use permissive CORS setup, potentially driving ad
 			traffic from them. However, only public, non-authenticated content is
@@ -289,7 +306,7 @@ html,body {
 				communication originates from victim's browser, his IP address,
 				bandwidth etc. There is no server-side code, just a simple HTML
 				page. <strong>You can even download the file and use it
-					locally from <code>file://</code> protocol.</strong>
+					locally from <code>file://</code> protocol</strong> (Flash fallback won't work from file://).
 			</dd>
 			<dt>
 				What about Flash
@@ -301,7 +318,7 @@ html,body {
 				tiny Flash file for sites using <a target="_blank"
 					href="https://www.owasp.org/index.php/Reviewing_Flash_Applications">permissive</a>
 				<code>crossdomain.xml</code>
-				. But now, with CORS, it's possible without any addons, HTML5-style.
+				. But now, with CORS, it's possible without any addons, HTML5-style. I've added an optional Flash-based fallback though, because more websites now use permissive <code>crossdomain.xml</code> than CORS headers.
 			</dd>
 			<dt>How does it work?</dt>
 			<dd>
@@ -310,7 +327,7 @@ html,body {
 					<li>I ask browser to use <code>XMLHttpRequest</code> to fetch
 						that remote URL
 					<li>If we're lucky and website uses <code>Access-Control-Allow-Origin:
-							*</code>, I get that content
+							*</code>, I get that content. If there's an error and you agree, I try with Flash-based fallback.
 					<li>I modify the content adding marquee, base href and a
 						making an easy attempt to remove ads
 					<li>I create an iframe and display the content
