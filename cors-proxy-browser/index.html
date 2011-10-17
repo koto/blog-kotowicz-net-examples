@@ -169,7 +169,7 @@ display: none;
 <p>By <a rel=me href="http://blog.kotowicz.net" target="_blank">Krzysztof Kotowicz</a>
 <h2>Description</h2>
 <p><strong>CORS proxy browser</strong> is a proof of concept of how client-side web proxying can be done using <a target="_blank" href="http://www.w3.org/TR/cors/">Cross Origin Resource Sharing</a>.
-<p>It allows you to fetch content of websites using <code>Access-Control-Allow-Origin: *</code> HTTP header, modifies it in place (e.g. removes <code>ad.&#8205;doubleclick.net</code> ads) and redisplays the content in your own origin, where you have total control over content, bypassing Same Origin Policy.
+<p>It allows you to fetch content of websites using <code>Access-Control-Allow-Origin: *</code> HTTP header, modifies it in place (e.g. removes <code>ad.&#8205;doubleclick.net</code> ads) and redisplays the content in your own origin, where you have total control over content, bypassing Same Origin Policy. <strong>All of this is done client-side. In fact, the whole proxy is just a single <code>index.html</code> file</strong>.
 <p>With this proxy browser you can redisplay modified content of other websites that use permissive CORS setup, potentially driving ad traffic from them. However, only public, non-authenticated content is displayed, as cookies won't work in this setup.
 <h2>How to use it?</h2>
 <p>Just like any other browser. <strong>Enter URL into the input field (<code>http://sourceforge.net/</code> is a good example) and press ENTER</strong>. If the target website uses <code>Access-Control-Allow-Origin: *</code>, it will load in a moment. The flying marquee at the top is a proof that you're actually modifying content. If not, there will be an alert with error.
@@ -196,7 +196,7 @@ It will only work in <strong>Firefox and Chrome</strong>!
 <dt>Are <code>&lt;form&gt;</code> submissions supported?</dt>
 <dd>Not yet, only same domain <code>&lt;a href&gt;</code> links. It's only a proof of concept. Feel free to add more.
 <dt>Source code?</dt>
-<dd>Well, you have it all in the <code>index.html</code>, but of course, but sure, look at <a href="https://github.com/koto/blog-kotowicz-net-examples/tree/master/cors-scraping-browser" target="_blank">my GitHub repo</a>.</dd>
+<dd>Well, you have it all in the <code>index.html</code>, but of course, but sure, look at <a href="https://github.com/koto/blog-kotowicz-net-examples/tree/master/cors-proxy-browser" target="_blank">my GitHub repo</a>.</dd>
 </dl>    
 </div>
 <div id="loader-text">
