@@ -29,7 +29,7 @@ It will only work in <strong>Firefox and Chrome</strong>!
 <dd>Yes, but a tiny one. Unless the target website serves private or user-specific data without cookie or HTTP or SSL client certificate based authentication, there is no privacy breach. It's only a demonstration that you're allowing attacker to access your content through victim browser.</dd>
 <dt>Has it been possible before?</dt>
 <dd>You could always fetch any content issuing HTTP request to the target webserver. You didn't even have to use the browser for that, it could be a simple script. But with this technique the communication originates from victim's browser, his IP address, bandwidth etc. There is no server-side code, just a simple HTML page.</dd>
-<dt>What about Flash crossdomain.xml?</dt>
+<dt>What about Flash <code>crossdomain.xml</code>?</dt>
 <dd>Yes, it it also totally possible to make a similar browser using tiny Flash file for sites using <a target="_blank" href="https://www.owasp.org/index.php/Reviewing_Flash_Applications">permissive</a> <code>crossdomain.xml</code>. But now, with CORS, it's possible without any addons, HTML5-style.</dd>
 <dt>How does it work?</dt>
 <dd><ol>
@@ -42,6 +42,8 @@ It will only work in <strong>Firefox and Chrome</strong>!
 <li>I periodically bind to all links on the webpage and hijack them (<a target="_blank" href="http://blog.kotowicz.net/2010/11/xss-track-how-to-quietly-track-whole.html">XSS-Track</a> style) to load other URL using the same procedure.
 </ol>
 </dd>
+<dt>Are <code>&lt;form&gt;</code> submissions supported?</dt>
+<dd>Not yet, only same domain <code>&lt;a href&gt;</code> links. It's only a proof of concept. Feel free to add more.
 <dt>Source code?</dt>
 <dd>Well, you have it all in the <code>index.html</code>, but of course, but sure, look at <a href="https://github.com/koto/blog-kotowicz-net-examples/tree/master/cors-scraping-browser" target="_blank">my GitHub repo</a>.</dd>
 </dl>
