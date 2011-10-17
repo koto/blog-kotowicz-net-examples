@@ -18,8 +18,14 @@ html,body {
 	margin: 0;
 }
 
+#nav {
+	background-color: WindowFrame;
+	font: caption;
+}
+
 #site {
 	width: 90%;
+	font: caption;
 }
 
 #nav {
@@ -109,13 +115,13 @@ html,body {
 		function pre(text) {
 			text = text
 					.replace(
-							/\<body.*?\>/,
-							"\0<marquee><center>Content is modified by CORS scraping browser!</center></marquee>");
+							/(\<body.*?\>)/,
+							"$1<marquee><center>Content is modified by CORS scraping browser!</center></marquee>");
 			text = text.replace("<head>",
 					"<head><base href='" + starter.href + "'>");
 			// remove flash 
 			text = text.replace(/\<object.*?\<\/object\>/gi, '[removed Flash]');
-			text = text.replace(/ad\.doubleclick\.net/g, '0.0.0.0');
+			text = text.replace(/ad\.doubleclick\.net/g, '256.256.256.256');
 
 			return text;
 		}
