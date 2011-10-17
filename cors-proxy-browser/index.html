@@ -19,12 +19,12 @@ html,body {
 }
 
 #nav {
-	background-color: WindowFrame;
+	background-color: ThreeDFace;
 	font: caption;
 }
 
 #site {
-	width: 90%;
+	width: 80%;
 	font: caption;
 }
 
@@ -32,7 +32,7 @@ html,body {
 	padding: 0.5em;
 }
 
-#help-text,#loader-text {
+#help-text,#loader-text,#history-text {
 	display: none;
 }
 </style>
@@ -45,15 +45,40 @@ html,body {
 			<strong>Go!</strong>
 		</button>
 		<button id=help>?</button>
+		<button id=history>History</button>
 		<br />
 	</div>
 	<script>
 		var interval; // page loading time
 
+		var History = (function() {
+			var name = 'cors-browser.history';
+
+			if (!localStorage.getItem(name))
+				localStorage.setItem(name, JSON.stringify([]));
+
+			return {
+				clear : function() {
+					localStorage.setItem(name, JSON.stringify([]));
+				},
+				add : function(url) {
+					var hist = JSON.parse(localStorage.getItem(name));
+					hist.push({
+						'url' : url,
+						timestamp : new Date()
+					});
+					localStorage.setItem(name, JSON.stringify(hist));
+				},
+				get : function(url) {
+					return JSON.parse(localStorage.getItem(name)) || [];
+				}
+			}
+		})();
+
 		function clicker() {
 			var xhr = new XMLHttpRequest();
-			var url = $(this).attr('href');
-			console.log(url);
+			var url = $(this).attr('href') || $(this).attr('action');
+
 			if (!url.match(/^https?:/)) {
 				if (url.indexOf('/') === 0) { // domain-absolute url
 					var base_domain = starter.href.match(/(https?:\/\/[^\/]+)/)[1];
@@ -71,17 +96,22 @@ html,body {
 					return false;
 				}
 			}
-			if (interval) {
-				clearInterval(interval);
-				interval = null;
-			}
+			disableTimer();
+			var method = $(this).attr('method') || "GET", fields = null;
 
+			if ('attributes' in this && $(this).is('form')) {
+				fields = $(this).serialize();
+				if (method == "GET" || method == "get") {
+					// append to URL
+					url = url + (url.indexOf('?') === -1 ? '?' : '&') + fields;
+				}
+			}
+			History.add(url);
 			$("#site").val(url);
 			write($('#loader-text')[0].innerHTML.replace('$url', url));
-			xhr.open("GET", url, true);
+			xhr.open(method, url, true);
 			xhr.onreadystatechange = display;
-			xhr.send(null);
-
+			xhr.send(fields);
 		}
 
 		function write(text) {
@@ -94,7 +124,14 @@ html,body {
 						this.contentDocument.write(text);
 
 					}).appendTo('body');
+			disableTimer();
+		}
 
+		function disableTimer() {
+			if (interval) {
+				clearInterval(interval);
+				interval = null;
+			}
 		}
 
 		function display(event) {
@@ -107,11 +144,6 @@ html,body {
 						write(text);
 						var f = document.getElementById('hello');
 						post(f.contentDocument);
-						if (interval) {
-							clearInterval(interval);
-							interval = null;
-						}
-
 						interval = setInterval(function() {
 							post(f.contentDocument)
 						}, 1000);
@@ -143,6 +175,8 @@ html,body {
 		function post(d) {
 			$('a:not([target])', d.body).unbind('click').click(clicker).bind(
 					'click', false);
+			$('form:not([target])', d.body).unbind('submit').submit(clicker)
+					.bind('submit', false);
 		}
 
 		var starter = {
@@ -169,11 +203,34 @@ html,body {
 		});
 
 		$("#help").click(function() {
-			//$('#site').val(location.href.replace(/\/[^\/]*$/, "/about.html"));
-			//$('#start').click();
 			write($("#help-text")[0].innerHTML);
 		});
-		
+
+		$("#history").click(
+				function() {
+					var h = History.get();
+					write($("#history-text")[0].innerHTML);
+
+					setTimeout(function() {
+						var doc = $('#hello')[0].contentDocument;
+						var tr = $('tr:last', doc.body);
+						var tbody = $('tbody', doc.body);
+						for ( var i = h.length - 1; i >= 0; i--) {
+							tr.clone().appendTo(tbody).find('td:eq(0)').text(
+									h[i].timestamp).end().find('td:eq(1)')
+									.append(
+											$('<a>').attr('href', h[i].url)
+													.text(h[i].url)).end()
+									.show();
+						}
+						$("#clear-history", doc.body).click(function() {
+							History.clear();
+							$('#history').click();
+						});
+						post(doc); // to activate links
+					}, 100);
+				});
+
 		if (location.hash && location.hash.slice(1).match(/^http/)) {
 			$('#site').val(location.hash.slice(1));
 		}
@@ -188,6 +245,10 @@ html,body {
 			<strong>CORS proxy browser</strong> is a proof of concept of how
 			client-side web proxying can be done using <a target="_blank"
 				href="http://www.w3.org/TR/cors/">Cross Origin Resource Sharing</a>.
+
+
+
+
 		
 		<p>
 			It allows you to fetch content of websites using
@@ -210,8 +271,8 @@ html,body {
 			<code>Access-Control-Allow-Origin: *</code>
 			, it will load in a moment. The flying marquee at the top is a proof
 			that you're actually modifying content. If not, there will be an
-			alert with error. It will only work in <strong>Firefox and
-				Chrome</strong>!
+			alert with error. It will only work in <strong>Firefox,
+				Chrome and Safari</strong>!
 		<h2>FAQ</h2>
 		<dl>
 			<dt>Is it a demo of vulnerability?</dt>
@@ -221,12 +282,15 @@ html,body {
 				only a demonstration that you're allowing attacker to access your
 				content through victim browser.</dd>
 			<dt>Has it been possible before?</dt>
-			<dd>You could always fetch any content issuing HTTP request to
-				the target webserver. You didn't even have to use the browser for
-				that, it could be a simple script. But with this technique the
+			<dd>
+				You could always fetch any content issuing HTTP request to the
+				target webserver. You didn't even have to use the browser for that,
+				it could be a simple script. But with this technique the
 				communication originates from victim's browser, his IP address,
 				bandwidth etc. There is no server-side code, just a simple HTML
-				page.</dd>
+				page. <strong>You can even download the file and use it
+					locally from <code>file://</code> protocol.</strong>
+			</dd>
 			<dt>
 				What about Flash
 				<code>crossdomain.xml</code>
@@ -252,8 +316,8 @@ html,body {
 					<li>I create an iframe and display the content
 					<li>The websites starts working in my origin, loading scripts,
 						styles, images etc.
-					<li>I periodically bind to all links on the webpage and hijack
-						them (<a target="_blank"
+					<li>I periodically bind to all links and forms on the webpage
+						and hijack them (<a target="_blank"
 						href="http://blog.kotowicz.net/2010/11/xss-track-how-to-quietly-track-whole.html">XSS-Track</a>
 						style) to load other URL using the same procedure.
 				</ol>
@@ -264,14 +328,17 @@ html,body {
 				submissions supported?
 			</dt>
 			<dd>
-				Not yet, only same domain
+				Yes, basic
+				<code>GET / POST &lt;form&gt;</code>
+				submission is supported just like navigating
 				<code>&lt;a href&gt;</code>
-				links. It's only a proof of concept. Feel free to add more.
+				links. However, it's only a proof of concept, so complex AJAX
+				application will not work at all. Feel free to improve.
 			<dt>Source code?</dt>
 			<dd>
 				Well, you have it all in the
 				<code>index.html</code>
-				, but of course, but sure, look at <a
+				, but of course, sure, look at <a
 					href="https://github.com/koto/blog-kotowicz-net-examples/tree/master/cors-proxy-browser"
 					target="_blank">my GitHub repo</a>.
 			</dd>
@@ -284,5 +351,23 @@ html,body {
 			... <img width="16" height="16" title="" alt=""
 				src="data:image/png;base64,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" />
 		</p>
+	</div>
+	<div id="history-text">
+		<h1>History</h1>
+		<table>
+			<thead>
+				<tr>
+					<th>Time</th>
+					<th>URL</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr style="display: none">
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<button id="clear-history">Clear</button>
 	</div>
 </body>
