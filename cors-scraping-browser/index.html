@@ -37,7 +37,8 @@ html,body {
 	<div id=nav>
 		<input title="Enter URL" id=site value="http://sourceforge.net/"
 			size=90>
-		<button id=start>Go!</button>
+		<button id=start><strong>Go!</strong></button>
+		<button id=help>?</button>
 		<br />
 	</div>
 	<script>
@@ -127,7 +128,7 @@ html,body {
 		}
 
 		function post(d) {
-			$('a', d.body).unbind('click').click(clicker).bind('click', false);
+			$('a:not([target])', d.body).unbind('click').click(clicker).bind('click', false);
 		}
 
 		var starter = {
@@ -146,6 +147,11 @@ html,body {
 				'href' : $('#site').val()
 			};
 			clicker.apply(starter);
+		});
+		
+		$("#help").click(function() {
+			$('#site').val(location.href.replace(/\/[^\/]*$/, "/about.html"));
+			$('#start').click();
 		});
 	</script>
 </body>
