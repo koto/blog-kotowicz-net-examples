@@ -140,7 +140,9 @@ html,body {
 				event.preventDefault();
 				$('#start').click();
 			}
-		});
+		}).focus(function() {
+			this.select();
+		}).focus();
 
 		$("#start").click(function() {
 			starter = {
