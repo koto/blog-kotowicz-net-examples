@@ -66,8 +66,9 @@ html,body {
 			;
 
 			function load() {
-				current = $.extend(
-						JSON.parse(localStorage.getItem(name)) || {}, defaults);
+				current = $.extend(defaults, JSON.parse(localStorage
+						.getItem(name))
+						|| {});
 			}
 			;
 
@@ -355,6 +356,8 @@ html,body {
 			<strong>CORS proxy browser</strong> is a proof of concept of how
 			client-side web proxying can be done using <a target="_blank"
 				href="http://www.w3.org/TR/cors/">Cross Origin Resource Sharing</a>.
+
+
 
 
 		
