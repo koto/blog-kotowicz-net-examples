@@ -78,25 +78,26 @@ html,body {
 		})();
 
 		function clicker() {
-			var url = $(this).attr('href') || $(this).attr('action');
-
+			var url = $(this).attr('href') || $(this).attr('action') || starter.href;
+			console.log('url',url, 'base', starter.href);
 			if (!url.match(/^https?:/)) {
 				if (url.indexOf('/') === 0) { // domain-absolute url
 					var base_domain = starter.href.match(/(https?:\/\/[^\/]+)/)[1];
 					url = base_domain + url;
 				} else { // relative url 
-					url = starter.href.replace(/\/$/, '') + '/'
-							+ url.replace(/^\//, '');
+					url = starter.href.replace(/\?.*/,'').replace(/\/[^\/]*$/, '') + '/'
+							+ url;
 				}
 			} else {
 				var domain_re = /:\/\/(.*?)(\/|$)/;
 				var url_domain = url.match(domain_re)[1];
-				if (url_domain !== starter.href.match(domain_re)[1]) {
+				if (starter.href && url_domain !== starter.href.match(domain_re)[1]) {
 					alert('URL is from other domain: ' + url_domain
 							+ ', cannot load.');
 					return false;
 				}
 			}
+			console.log('final',url);
 			disableTimer();
 			var method = $(this).attr('method') || "GET", fields = null;
 
@@ -111,12 +112,16 @@ html,body {
 			$("#site").val(url);
 			write($('#loader-text')[0].innerHTML.replace('$url', url));
             sendRequest(new XMLHttpRequest(), url, method, fields);
+            return false;
 		}
 		
 		function sendRequest(xhr, url, method, fields) {
             xhr.open(method, url, true);
             xhr._url = url;
             xhr._method = method;
+            if (fields) {
+            	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            }
             xhr._fields = fields;
             xhr.onreadystatechange = display;
             xhr.send(fields);			
@@ -195,10 +200,8 @@ html,body {
 		}
 
 		function post(d) {
-			$('a:not([target])', d.body).unbind('click').click(clicker).bind(
-					'click', false);
-			$('form:not([target])', d.body).unbind('submit').submit(clicker)
-					.bind('submit', false);
+			$('a:not([target])', d.body).unbind('click').click(clicker);
+			$('form:not([target])', d.body).unbind('submit').submit(clicker);
 		}
 
 		var starter = {
