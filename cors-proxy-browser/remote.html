@@ -1,0 +1,35 @@
+<html>
+<!-- 
+@author Krzysztof Kotowicz
+@see http://blog.kotowicz.net
+ -->
+<body>
+	<h1>Remote controller for CORS proxy</h1>
+	<p>
+		By <a rel=me href="http://blog.kotowicz.net" target="_blank">Krzysztof
+			Kotowicz</a>
+	</p>
+	<p>This is an example of how you can embed CORS proxy browser in invisible iframe and send remote commands to it via HTML5 <code>postMessage()</code>.
+	You can send commands to fetch cross origin URLs and receive the responses. In fact, even this remote controller page can be cross-origin to index.html</p>
+	<script>
+		window.addEventListener("message", getResponses, false);
+
+		function getResponses(event) {
+			document.getElementById('response').value = event.data;
+		}
+
+		function send() {
+			var f = document.getElementById('fetcher').contentWindow;
+			f.postMessage(JSON.stringify([ [ 'cors', 'flash' ],
+					document.getElementById('url').value, 'get', null ]), '*');
+		}
+	</script>
+	URL:
+	<input autofocus type="text" id="url" size="80" value="http://sourceforge.net/" />
+	<button onclick="send()">Go!</button>
+	<br />
+	<textarea style="width: 95%; height: 50%" id=response></textarea>
+	<iframe style="visibility: hidden" width=1 height=1 id=fetcher
+		src="index.html?silent"></iframe>
+</body>
+</html>
