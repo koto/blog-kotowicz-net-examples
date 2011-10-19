@@ -398,6 +398,7 @@ html,body {
 					if (this.source) {
 						var data = JSON.stringify({
 							result : 'ok',
+							text: text,
 							xhr : xhr
 						});
 						this.source.postMessage(data, '*');
