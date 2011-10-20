@@ -50,439 +50,452 @@ html,body {
 		<br />
 	</div>
 	<script>
-		function bind(scope, fn) {
-			return function() {
-				fn.apply(scope, arguments);
-			};
-		}
+// utility function, used when binding events
+function bind(scope, fn) {
+	return function() {
+		fn.apply(scope, arguments);
+	};
+}
+//  URI parsing: https://gist.github.com/1088850
+function parseURI(url) {
+  var m = String(url).replace(/^\s+|\s+$/g, '').match(/^([^:\/?#]+:)?(\/\/(?:[^:@]*(?::[^:@]*)?@)?(([^:\/?#]*)(?::(\d*))?))?([^?#]*)(\?[^#]*)?(#[\s\S]*)?/);
+  // authority = '//' + user + ':' + pass '@' + hostname + ':' port
+  return (m ? {
+    href     : m[0] || '',
+    protocol : m[1] || '',
+    authority: m[2] || '',
+    host     : m[3] || '',
+    hostname : m[4] || '',
+    port     : m[5] || '',
+    pathname : m[6] || '',
+    search   : m[7] || '',
+    hash     : m[8] || ''
+  } : null);
+}
 
-		var Preferences = (function() {
-			var name = 'cors-browser.pref';
-			var defaults = {
-				'type' : [ 'cors', 'flash' ]
-			}
-			var current = {};
+function absolutizeURI(base, href) {// RFC 3986
 
-			function save(preferences) {
-				localStorage.setItem(name, JSON.stringify(preferences));
-			}
-			;
+  function removeDotSegments(input) {
+    var output = [];
+    input.replace(/^(\.\.?(\/|$))+/, '')
+         .replace(/\/(\.(\/|$))+/g, '/')
+         .replace(/\/\.\.$/, '/../')
+         .replace(/\/?[^\/]*/g, function (p) {
+      if (p === '/..') {
+        output.pop();
+      } else {
+        output.push(p);
+      }
+    });
+    return output.join('').replace(/^\//, input.charAt(0) === '/' ? '/' : '');
+  }
 
-			function load() {
-				current = $.extend(defaults, JSON.parse(localStorage
-						.getItem(name))
-						|| {});
-			}
-			;
+  href = parseURI(href || '');
+  base = parseURI(base || '');
 
-			var inter = {
-				get : function(name) {
-					return current[name];
-				},
-				getAll : function() {
-					return current;
-				},
-				set : function(name, value) {
-					current[name] = value;
-					save(current);
-				}
-			}
+  return !href || !base ? null : (href.protocol || base.protocol) +
+         (href.protocol || href.authority ? href.authority : base.authority) +
+         removeDotSegments(href.protocol || href.authority || href.pathname.charAt(0) === '/' ? href.pathname : (href.pathname ? ((base.authority && !base.pathname ? '/' : '') + base.pathname.slice(0, base.pathname.lastIndexOf('/') + 1) + href.pathname) : base.pathname)) +
+         (href.protocol || href.authority || href.pathname ? href.search : (href.search || base.search)) +
+         href.hash;
+}
 
-			load();
-			return inter;
-		})();
+//object for managing preferences in DOM storage
+var Preferences = (function() {
+    var name = 'cors-browser.pref';
+    var defaults = {
+        'type': ['cors', 'flash']
+        }
+    var current = {};
 
-		var History = (function() {
-			var name = 'cors-browser.history';
+    function save(preferences) {
+        localStorage.setItem(name, JSON.stringify(preferences));
+    };
 
-			if (!localStorage.getItem(name))
-				localStorage.setItem(name, JSON.stringify([]));
+    function load() {
+        current = $.extend(defaults, JSON.parse(localStorage.getItem(name)) || {});
+    };
 
-			return {
-				clear : function() {
-					localStorage.setItem(name, JSON.stringify([]));
-				},
-				add : function(url) {
-					if (url instanceof jQuery.Event) {
-						url = arguments[1];
-					}
-					var hist = JSON.parse(localStorage.getItem(name));
-					hist.push({
-						'url' : url,
-						timestamp : (new Date()).toString()
-					});
-					localStorage.setItem(name, JSON.stringify(hist));
-				},
-				get : function(url) {
-					return JSON.parse(localStorage.getItem(name)) || [];
-				}
-			}
-		})();
+    var inter = {
+        get: function(name) {
+            return current[name];
+        },
+        getAll: function() {
+            return current;
+        },
+        set: function(name, value) {
+            current[name] = value;
+            save(current);
+        }
+    }
 
-		var BrowserUI = {
-			interval : null,
-			baseurl : '',
+    load();
+    return inter;
+})();
 
-			displayPage : function(text) {
+// object for managing history in DOM storage
+var History = (function() {
+    var name = 'cors-browser.history';
 
-				if (text instanceof jQuery.Event) {
-					text = arguments[1];
-				}
+    if (!localStorage.getItem(name))
+        localStorage.setItem(name, JSON.stringify([]));
 
-				text = this.prepareHTML(text);
-				this.writeHTML(text);
-				this.hijackFrame();
-				var self = this;
-				this.interval = setInterval(function() {
-					self.hijackFrame()
-				}, 1000);
-			},
+    return {
+        clear: function() {
+            localStorage.setItem(name, JSON.stringify([]));
+        },
+        add: function(url) {
+            if (url instanceof jQuery.Event) {
+                url = arguments[1];
+            }
+            var hist = JSON.parse(localStorage.getItem(name));
+            hist.push({
+                'url': url,
+                timestamp: (new Date()).toString()
+                });
+            localStorage.setItem(name, JSON.stringify(hist));
+        },
+        get: function(url) {
+            return JSON.parse(localStorage.getItem(name)) || [];
+        }
+    }
+})();
 
-			writeHTML : function(text) {
-				$('#hello').remove();
-				$(
-						'<iframe id=hello sandbox="allow-same-origin allow-forms allow-scripts"/>')
-						.load(function() {
-							this.contentDocument.body.innerHTML = "";
-							this.contentDocument.head.innerHTML = "";
-							this.contentDocument.write(text);
+// browser UI handling
+var BrowserUI = {
+    interval: null,
+    baseurl: '',
 
-						}).appendTo('body');
-				this.disableTimer();
-			},
+    displayPage: function(text) {
 
-			prepareHTML : function(text) {
-				text = text
-						.replace(
-								/(\<body.*?\>)/,
-								"$1<marquee><center>Content is modified by CORS proxy browser!</center></marquee>");
-				text = text.replace("<head>", "<head><base href='"
-						+ $('#site').val() + "'>");
-				// remove flash 
-				text = text.replace(/\<object.*?\<\/object\>/gi,
-						'[removed Flash]');
-				text = text.replace(/ad\.doubleclick\.net/g, '256.256.256.256');
+        if (text instanceof jQuery.Event) {
+            text = arguments[1];
+        }
 
-				return text;
-			},
+        text = this.prepareHTML(text);
+        this.writeHTML(text);
+        this.hijackFrame();
+        var self = this;
+        this.interval = setInterval(function() {
+            self.hijackFrame()
+            }, 1000);
+    },
 
-			hijackFrame : function() {
-				var f = document.getElementById('hello');
-				var self = this;
-				$('a:not([target])', f.contentDocument.body).unbind('click')
-						.click(bind(self, this.handleNavigate));
-				$('form:not([target])', f.contentDocument.body)
-						.unbind('submit').submit(
-								bind(self, this.handleNavigate));
-			},
+    writeHTML: function(text) {
+        $('#hello').remove();
+        $('<iframe id=hello sandbox="allow-same-origin allow-forms allow-scripts"/>').load(function() {
+            this.contentDocument.body.innerHTML = "";
+            this.contentDocument.head.innerHTML = "";
+            this.contentDocument.write(text);
 
-			disableTimer : function() {
-				if (this.interval) {
-					clearInterval(this.interval);
-					this.interval = null;
-				}
-			},
+        }).appendTo('body');
+        this.disableTimer();
+    },
 
-			displayLoading : function(url) {
-				if (url instanceof jQuery.Event) {
-					url = arguments[1];
-				}
-				$("#site").val(url);
-				this.baseurl = url;
-				this.writeHTML($('#loader-text')[0].innerHTML.replace('$url$',
-						url));
-			},
+    prepareHTML: function(text) {
+        text = text.replace(/(\<body.*?\>)/, "$1<marquee><center>Content is modified by CORS proxy browser!</center></marquee>");
+        text = text.replace("<head>", "<head><base href='" + this.baseurl + "'>");
+        // remove flash 
+        text = text.replace(/\<object.*?\<\/object\>/gi, '[removed Flash]');
+        text = text.replace(/ad\.doubleclick\.net/g, '256.256.256.256');
 
-			displayError : function(event, xhr) {
-				this.writeHTML($('#error-text')[0].innerHTML.replace('$url$',
-						xhr._url).replace('$status$', xhr.status || "")
-						.replace('$statusText$', xhr.statusText || ""));
-			},
+        return text;
+    },
 
-			getAbsoluteUrl : function(url) {
-				console.log('url', url, 'base', this.baseurl);
-				if (!url.match(/^https?:/)) {
-					if (url.indexOf('/') === 0) { // domain-absolute url
-						var base_domain = this.baseurl
-								.match(/(https?:\/\/[^\/]+)/)[1];
-						url = base_domain + url;
-					} else { // relative url 
-						url = this.baseurl.replace(/\?.*/, '').replace(
-								/\/[^\/]*$/, '')
-								+ '/' + url;
-					}
-				} else {
-					var domain_re = /:\/\/(.*?)(\/|$)/;
-					var url_domain = url.match(domain_re)[1];
-					if (this.baseurl
-							&& url_domain !== this.baseurl.match(domain_re)[1]) {
-						throw 'URL is from other domain: ' + url_domain
-								+ ', cannot load.';
-					}
-				}
-				console.log('final', url);
-				return url;
-			},
+    hijackFrame: function() {
+        var f = document.getElementById('hello');
+        var self = this;
+        $('a:not([target])', f.contentDocument.body)
+            .unbind('click')
+            .click(false)
+            .click(bind(self, this.handleNavigate));
+        $('form:not([target])', f.contentDocument.body)
+            .unbind('submit')
+            .submit(false)
+            .submit(bind(self, this.handleNavigate));
+    },
 
-			handleNavigate : function(event) {
-				var url = this.baseurl, el = {};
+    disableTimer: function() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+    },
 
-				if (event) {
-					el = event.target;
-					url = $(el).attr('href') || $(el).attr('action')
-							|| this.baseurl;
-				}
+    displayLoading: function(url) {
+        if (url instanceof jQuery.Event) {
+            url = arguments[1];
+        }
+        $("#site").val(url);
+        this.baseurl = url;
+        this.writeHTML($('#loader-text')[0].innerHTML.replace('$url$', url));
+    },
 
-				url = this.getAbsoluteUrl(url); // could delegate
+    displayError: function(event, xhr) {
+    	var text = $('#error-text')[0].innerHTML
+                   .replace('$url$', xhr._url)
+                   .replace('$status$', xhr.status || "")
+                   .replace('$statusText$', xhr.statusText || "")
+                   
+        this.writeHTML(text);
+    },
 
-				var method = $(el).attr('method') || "get", body = null;
+    getAbsoluteUrl: function(url) {
+        console.log('url', url, 'base', this.baseurl);
+        url = absolutizeURI(this.baseurl, url);
+        console.log('final', url);
+        return url;
+    },
 
-				if ('attributes' in el && $(el).is('form')) {
-					body = $(el).serialize();
-					if (method.toLowerCase() == "get") {
-						// append to URL
-						url = url + (url.indexOf('?') === -1 ? '?' : '&')
-								+ body;
-					}
-				}
+    handleNavigate: function(event) {
+        var url = this.baseurl,
+        el = {};
 
-				$('body').trigger('navigate-to', url);
-				var types = Preferences.get('type').slice();
-				console.log("Allowed methods: " + types);
+        if (event) {
+            el = event.target;
+            url = $(el).attr('href') || $(el).attr('action') || this.baseurl;
+        }
 
-				$('body')
-						.trigger('request-start', [ types, url, method, body ]);
-			},
+        url = this.getAbsoluteUrl(url);
+        // could delegate
+        var method = $(el).attr('method') || "get",
+        body = null;
 
-			go : function(url) {
-				if (!$('#site').val().match(/^https?:\/\//)) {
-					$('#site').val('http://' + $('#site').val());
-				}
+        if ('attributes' in el && $(el).is('form')) {
+            body = $(el).serialize();
+            if (method.toLowerCase() == "get") {
+                // append to URL
+                url = url + (url.indexOf('?') === -1 ? '?': '&') + body;
+            }
+        }
 
-				this.baseurl = $("#site").val();
-				this.handleNavigate();
-			}
-		};
+        $('body').trigger('navigate-to', url);
+        var types = Preferences.get('type').slice();
+        console.log("Allowed methods: " + types);
 
-		var Connector = (function() {
-			return {
-				factory : function(type) {
-					console.log('Trying ' + type);
-					switch (type) {
-					case 'cors':
-						return new XMLHttpRequest();
-					case 'flash':
-						if (location.protocol == 'file:')
-							throw "Flash will only load from a http[s], not from file://";
-						if (typeof CrossXHR === 'undefined')
-							throw "Flash is not loaded!";
+        $('body').trigger('request-start', [types, url, method, body]);
+        return false;
+    },
 
-						return new CrossXHR();
-					}
-					throw 'Unsupported request processor type: ' + type;
-				},
+    go: function(url) {
+        if (!$('#site').val().match(/^https?:\/\//)) {
+            $('#site').val('http://' + $('#site').val());
+        }
 
-				sendRequest : function(event, types, url, method, body) {
-					var current_type = types.shift();
-					var xhr = this.factory(current_type); // get first available type
-					xhr.open(method, url, true);
-					xhr._url = url;
-					xhr._method = method;
-					xhr._types_left = types;
-					xhr._type = current_type;
-					if (body) {
-						xhr.setRequestHeader('Content-Type',
-								'application/x-www-form-urlencoded');
-					}
-					xhr._body = body;
-					var self = this;
-					xhr.onreadystatechange = function(e) {
-						self.processResponse(e, this);
-					};
-					xhr.send(body);
-				},
+        this.baseurl = $("#site").val();
+        this.handleNavigate();
+    }
+};
 
-				fallback : function(xhr) {
-					this.sendRequest(null, xhr._types_left, xhr._url,
-							xhr._method, xhr._body);
-				},
+// core stuff - this atually makes the cross origin connections
+var Connector = (function() {
+    return {
+        factory: function(type) {
+            console.log('Trying ' + type);
+            switch (type) {
+            case 'cors':
+            case 'cors-withcredentials':
+                return new XMLHttpRequest();
+            case 'flash':
+                if (location.protocol == 'file:')
+                    throw "Flash will only load from a http[s], not from file://";
+                if (typeof CrossXHR === 'undefined')
+                    throw "Flash is not loaded!";
 
-				processResponse : function(event, xhr) {
-					try {
-						if (xhr.readyState === 4) {
-							if (xhr.status == 200) {
-								$('body').trigger('response-load',
-										[ xhr.responseText, xhr ]);
-							} else {
-								if (xhr._types_left.length == 0) {
-									$('body').trigger('response-error', xhr);
-								} else {
-									return this.fallback(xhr);
-								}
-							}
-						}
-					} catch (e) {
-						console.log(e);
-					}
-				},
+                return new CrossXHR();
+            }
+            throw 'Unsupported request processor type: ' + type;
+        },
 
-				alertError : function(xhr) {
-					if (xhr instanceof jQuery.Event) {
-						xhr = arguments[1];
-					}
-					alert("Could not load "
-							+ xhr._url
-							+ (xhr.statusText ? " (" + xhr.statusText + ")"
-									: "") + "\nUsed methods: "
-							+ JSON.stringify(Preferences.get('type')));
-				}
-			}
-		})();
+        sendRequest: function(event, types, url, method, body) {
+            var current_type = types.shift();
+            var xhr = this.factory(current_type);
+            // get first available type
+            xhr.open(method, url, true);
+            if (current_type === 'cors-withcredentials') {
+                xhr.withCredentials = 'true';
+            }
+            xhr._url = url;
+            xhr._method = method;
+            xhr._types_left = types;
+            xhr._type = current_type;
+            if (body) {
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            }
+            xhr._body = body;
+            var self = this;
+            xhr.onreadystatechange = function(e) {
+                self.processResponse(e, this);
+            };
+            xhr.send(body);
+        },
 
-		/*
-		
-		Events to bind to or trigger:
-			
-			navigate-to: function(ev, url) {} // URL - absolute URL
-		    request-start: function(ev, types, url, method, body) {} // types: array of requestor types (cors,flash) to use
-		    response-load: function(ev, text, xhr) {} // text - response body, xhr - object with _url, _method, _body properties
-		    response-error: function(ev, xhr) {}  
-		
-		Example:
+        fallback: function(xhr) {
+            this.sendRequest(null, xhr._types_left, xhr._url, xhr._method, xhr._body);
+        },
 
-		    $('body').bind('response-load', function(e,t) {console.log(t)});
-		    $('body').trigger('request-start', [ ['cors'], 'http://sourceforge.net/projects/filezilla/', 'get', null]);
-			
-		 */
+        processResponse: function(event, xhr) {
+            try {
+                if (xhr.readyState === 4) {
+                    if (xhr.status == 200) {
+                        $('body').trigger('response-load', [xhr.responseText, xhr]);
+                    } else {
+                        if (xhr._types_left.length == 0) {
+                            $('body').trigger('response-error', xhr);
+                        } else {
+                            return this.fallback(xhr);
+                        }
+                    }
+                }
+            } catch(e) {
+                console.log(e);
+            }
+        },
 
-		$('body').bind('request-start', bind(Connector, Connector.sendRequest));
+        alertError: function(xhr) {
+            if (xhr instanceof jQuery.Event) {
+                xhr = arguments[1];
+            }
+            alert("Could not load " + xhr._url + (xhr.statusText ? " (" + xhr.statusText + ")": "")
+            	  + "\nUsed methods: " + JSON.stringify(Preferences.get('type')));
+        }
+    }
+})();
 
-		if (location.search.indexOf('silent') === -1) {
-			$('body').bind('navigate-to',
-					bind(BrowserUI, BrowserUI.displayLoading));
-			$('body').bind('navigate-to', bind(History, History.add));
-			$('body').bind('response-load',
-					bind(BrowserUI, BrowserUI.displayPage));
-			$('body').bind('response-error',
-					bind(Connector, Connector.alertError));
-			$('body').bind('response-error',
-					bind(BrowserUI, BrowserUI.displayError));
-		} else { // set up remote cross domain comm channel with controller
+/*
 
-			$('#nav').hide();
+Events to bind to or trigger:
+    
+    navigate-to: function(ev, url) {} // URL - absolute URL
+    request-start: function(ev, types, url, method, body) {} // types: array of requestor types (cors,flash) to use
+    response-load: function(ev, text, xhr) {} // text - response body, xhr - object with _url, _method, _body properties
+    response-error: function(ev, xhr) {}  
 
-			var remoteController = {
-				source : null,
-				// remote communication        
-				receive : function(event) {
-					var reqparams;
-					try {
-						reqparams = JSON.parse(event.data);
-						this.source = event.source;
-						if (reqparams.length == 4) { // types, url, method, body
-							$('body').trigger('request-start', reqparams);
-						}
-					} catch (e) {
-					}
-				},
-				sendError : function(event, xhr) {
-					if (this.source) {
-						var data = JSON.stringify({
-							result : 'error',
-							xhr : xhr
-						});
-						this.source.postMessage(data, '*');
-					}
-				},
-				sendResponse : function(event, text, xhr) {
-					if (this.source) {
-						var data = JSON.stringify({
-							result : 'ok',
-							text: text,
-							xhr : xhr
-						});
-						this.source.postMessage(data, '*');
-					}
-				}
-			}
+Example:
 
-			window.addEventListener("message", bind(remoteController,
-					remoteController.receive), false);
-			$('body').bind('response-load',
-					bind(remoteController, remoteController.sendResponse));
-			$('body').bind('response-error',
-					bind(remoteController, remoteController.sendError));
-		}
+    $('body').bind('response-load', function(e,t) {console.log(t)});
+    $('body').trigger('request-start', [ ['cors'], 'http://sourceforge.net/projects/filezilla/', 'get', null]);
+    
+ */
 
-		// UI setup		
-		$("#site").keydown(function(event) {
-			if (event.keyCode == '13') {
-				event.preventDefault();
-				$('#start').click();
-			}
-		}).focus(function() {
-			this.select();
-		}).focus();
+$('body').bind('request-start', bind(Connector, Connector.sendRequest));
 
-		$("#start").click(bind(BrowserUI, BrowserUI.go));
+if (location.search.indexOf('silent') === -1) {
+    // $('body').bind('navigate-to', bind(BrowserUI, BrowserUI.displayLoading));
+    $('body').bind('navigate-to', bind(History, History.add));
+    $('body').bind('response-load', bind(BrowserUI, BrowserUI.displayPage));
+    $('body').bind('response-error', bind(Connector, Connector.alertError));
+    $('body').bind('response-error', bind(BrowserUI, BrowserUI.displayError));
+} else {
+    // set up remote cross domain comm channel with controller
+    $('#nav').hide();
 
-		$("#help").click(function() {
-			BrowserUI.displayPage($("#help-text")[0].innerHTML);
-		});
+    var remoteController = {
+        source: null,
+        // remote communication        
+        receive: function(event) {
+            var reqparams;
+            try {
+                reqparams = JSON.parse(event.data);
+                this.source = event.source;
+                if (reqparams.length == 4) {
+                    // types, url, method, body
+                    $('body').trigger('request-start', reqparams);
+                }
+            } catch(e) {}
+        },
+        sendError: function(event, xhr) {
+            if (this.source) {
+                var data = JSON.stringify({
+                    result: 'error',
+                    xhr: xhr
+                });
+                this.source.postMessage(data, '*');
+            }
+        },
+        sendResponse: function(event, text, xhr) {
+            if (this.source) {
+                var data = JSON.stringify({
+                    result: 'ok',
+                    text: text,
+                    xhr: xhr
+                });
+                this.source.postMessage(data, '*');
+            }
+        }
+    }
 
-		$("#pref").click(
-				function() {
-					var h = History.get();
-					BrowserUI.writeHTML($("#pref-text")[0].innerHTML);
+    window.addEventListener("message", bind(remoteController, remoteController.receive), false);
+    $('body').bind('response-load', bind(remoteController, remoteController.sendResponse));
+    $('body').bind('response-error', bind(remoteController, remoteController.sendError));
+}
 
-					setTimeout(function() {
-						var doc = $('#hello')[0].contentDocument;
-						var tr = $('tr:last', doc.body);
-						var tbody = $('tbody', doc.body);
-						for ( var i = h.length - 1; i >= 0; i--) {
-							tr.clone().appendTo(tbody).find('td:eq(0)').text(
-									h[i].timestamp).end().find('td:eq(1)')
-									.append(
-											$('<a>').attr('href', h[i].url)
-													.text(h[i].url)).end()
-									.show();
-						}
+// UI setup     
+$("#site").keydown(function(event) {
+    if (event.keyCode == '13') {
+        event.preventDefault();
+        $('#start').click();
+    }
+}).focus(function() {
+    this.select();
+}).focus();
 
-						$("#clear-history", doc.body).click(function() {
-							History.clear();
-							$('#pref').click();
-						});
+$("#start").click(bind(BrowserUI, BrowserUI.go));
 
-						$("#pref-form", doc.body).unbind('submit').submit(
-								function() {
-									// update preferences from field values
-									var values = $(this).serializeArray();
-									for ( var i = 0; i < values.length; i++) {
-										Preferences.set(values[i].name, JSON
-												.parse(values[i].value));
-									}
-									;
-									$("#pref").click();
-									return false;
-								});
+$("#help").click(function() {
+    BrowserUI.displayPage($("#help-text")[0].innerHTML);
+});
 
-						// fill form values from preferences
-						var pref = Preferences.getAll();
-						for ( var i in pref) {
-							if (pref.hasOwnProperty(i)) {
-								$("#pref-form", doc.body).find(
-										':input[name="' + i + '"]').val(
-										JSON.stringify(pref[i]));
-							}
-						}
+$("#pref").click(function() {
+    var h = History.get();
+    BrowserUI.writeHTML($("#pref-text")[0].innerHTML);
 
-					}, 100);
-				});
+    setTimeout(function() {
+        var doc = $('#hello')[0].contentDocument;
+        var tr = $('tr:last', doc.body);
+        var tbody = $('tbody', doc.body);
+        // render history HTML
+        for (var i = h.length - 1; i >= 0; i--) {
+            tr.clone()
+              .appendTo(tbody)
+              .find('td:eq(0)')
+                .text(h[i].timestamp)
+              .end()
+              .find('td:eq(1)')
+                .append($('<a>').attr('href', h[i].url).text(h[i].url))
+              .end().show();
+        }
 
-		if (location.hash && location.hash.slice(1).match(/^https?:\/\//)) {
-			$('#site').val(location.hash.slice(1));
-		}
-	</script>
+        $("#clear-history", doc.body).click(function() {
+            History.clear();
+            $('#pref').click();
+        });
+
+        $("#pref-form", doc.body).unbind('submit').submit(function() {
+            // update preferences from field values
+            var values = $(this).serializeArray();
+            for (var i = 0; i < values.length; i++) {
+                Preferences.set(values[i].name, JSON.parse(values[i].value));
+            };
+            $("#pref").click();
+            return false;
+        });
+
+        // fill form values from preferences
+        var pref = Preferences.getAll();
+        for (var i in pref) {
+            if (pref.hasOwnProperty(i)) {
+                $("#pref-form", doc.body).find(':input[name="' + i + '"]').val(JSON.stringify(pref[i]));
+            }
+        }
+
+    }, 100);
+});
+
+if (location.hash && location.hash.slice(1).match(/^https?:\/\//)) {
+    $('#site').val(location.hash.slice(1));
+}
+</script>
 	<div id="texts">
 		<div id="help-text">
 			<h1>CORS proxy browser</h1>
@@ -494,6 +507,7 @@ html,body {
 				<strong>CORS proxy browser</strong> is a proof of concept of how
 				client-side web proxying can be done using <a target="_blank"
 					href="http://www.w3.org/TR/cors/">Cross Origin Resource Sharing</a>.
+
 
 			
 			<p>
@@ -619,9 +633,11 @@ html,body {
 					<li><strong>CORS</strong> requires permissive
 						Access-Control-Allow-Origin headers on target domain, can be used
 						form file:// protocol and will not attach &amp; set cookies.</li>
+					<li><strong>CORS with credentials</strong> requires very
+						permissive setup for the server to get the response, but it will
+						attach cookies. <strong>Best used for blind CSRF</strong>.</li>
 					<li><strong>Flash</strong> requires permissive crossdomain.xml
 						file, requires a server but will attach &amp; set cookies.</li>
-
 				</ul>
 				<select name="type">
 					<option value='["cors","flash"]'>Cross Origin Resource
@@ -631,6 +647,10 @@ html,body {
 					<option value='["cors"]'>only Cross Origin Resource
 						Sharing</option>
 					<option value='["flash"]'>only Flash</option>
+					<option value='["cors-withcredentials"]'>Cross Origin
+						Resource Sharing with credentials (blind CSRF)</option>
+					<option value='["flash","cors-withcredentials"]'>Flash,
+						then Cross Origin Resource Sharing with credentials</option>
 				</select>
 				<button type="submit">Save</button>
 			</form>
