@@ -241,9 +241,9 @@ var BrowserUI = {
     },
 
     getAbsoluteUrl: function(url) {
-        console.log('url', url, 'base', this.baseurl);
+        //console.log('url', url, 'base', this.baseurl);
         url = absolutizeURI(this.baseurl, url);
-        console.log('final', url);
+        //console.log('final', url);
         return url;
     },
 
@@ -271,7 +271,7 @@ var BrowserUI = {
 
         $('body').trigger('navigate-to', url);
         var types = Preferences.get('type').slice();
-        console.log("Allowed methods: " + types);
+        //console.log("Allowed methods: " + types);
 
         $('body').trigger('request-start', [types, url, method, body]);
         return false;
@@ -291,7 +291,7 @@ var BrowserUI = {
 var Connector = (function() {
     return {
         factory: function(type) {
-            console.log('Trying ' + type);
+            //console.log('Trying ' + type);
             switch (type) {
             case 'cors':
             case 'cors-withcredentials':
@@ -335,20 +335,16 @@ var Connector = (function() {
         },
 
         processResponse: function(event, xhr) {
-            try {
-                if (xhr.readyState === 4) {
-                    if (xhr.status == 200) {
-                        $('body').trigger('response-load', [xhr.responseText, xhr]);
+            if (xhr.readyState === 4) {
+                if (xhr.status == 200) {
+                    $('body').trigger('response-load', [xhr.responseText, xhr]);
+                } else {
+                    if (xhr._types_left.length == 0) {
+                        $('body').trigger('response-error', xhr);
                     } else {
-                        if (xhr._types_left.length == 0) {
-                            $('body').trigger('response-error', xhr);
-                        } else {
-                            return this.fallback(xhr);
-                        }
+                        return this.fallback(xhr);
                     }
                 }
-            } catch(e) {
-                console.log(e);
             }
         },
 
@@ -408,7 +404,15 @@ if (location.search.indexOf('silent') === -1) {
             if (this.source) {
                 var data = JSON.stringify({
                     result: 'error',
-                    xhr: xhr
+                    xhr: {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                    	_url: xhr._url,
+                    	_method: xhr._method,
+                    	_body: xhr._body,
+                        _type: xhr._type,
+                    	_types_left: xhr._types_left
+                    }
                 });
                 this.source.postMessage(data, '*');
             }
@@ -418,7 +422,15 @@ if (location.search.indexOf('silent') === -1) {
                 var data = JSON.stringify({
                     result: 'ok',
                     text: text,
-                    xhr: xhr
+                    xhr: {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        _url: xhr._url,
+                        _method: xhr._method,
+                        _body: xhr._body,
+                        _type: xhr._type,
+                        _types_left: xhr._types_left
+                    }
                 });
                 this.source.postMessage(data, '*');
             }
