@@ -327,6 +327,7 @@ var Connector = (function() {
             xhr.onreadystatechange = function(e) {
                 self.processResponse(e, this);
             };
+            xhr._start_time = new Date().getTime();
             xhr.send(body);
         },
 
@@ -337,6 +338,7 @@ var Connector = (function() {
         processResponse: function(event, xhr) {
             if (xhr.readyState === 4) {
                 if (xhr.status == 200) {
+                    xhr._end_time = new Date().getTime();                	
                     $('body').trigger('response-load', [xhr.responseText, xhr]);
                 } else {
                     if (xhr._types_left.length == 0) {
@@ -400,39 +402,42 @@ if (location.search.indexOf('silent') === -1) {
                 }
             } catch(e) {}
         },
+        prepareResult: function(xhr) {
+        	return {
+                result: undefined,
+                duration: xhr._end_time - xhr._start_time,
+                response: {
+                    body: undefined,
+                    headers: undefined,
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    time: xhr._end_time
+                },
+                request: {
+                    url: xhr._url,
+                    method: xhr._method,
+                    body: xhr._body,
+                    type: xhr._type,
+                    types_left: xhr._types_left,
+                    time: xhr._start_time
+                }
+            }        	
+        },
         sendError: function(event, xhr) {
             if (this.source) {
-                var data = JSON.stringify({
-                    result: 'error',
-                    xhr: {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                    	_url: xhr._url,
-                    	_method: xhr._method,
-                    	_body: xhr._body,
-                        _type: xhr._type,
-                    	_types_left: xhr._types_left
-                    }
-                });
-                this.source.postMessage(data, '*');
+            	var obj = this.prepareResult(xhr);
+            	obj.result = 'error';
+                var data = JSON.stringify(obj);
+                this.source.postMessage(JSON.stringify(obj), '*');
             }
         },
         sendResponse: function(event, text, xhr) {
             if (this.source) {
-                var data = JSON.stringify({
-                    result: 'ok',
-                    text: text,
-                    xhr: {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        _url: xhr._url,
-                        _method: xhr._method,
-                        _body: xhr._body,
-                        _type: xhr._type,
-                        _types_left: xhr._types_left
-                    }
-                });
-                this.source.postMessage(data, '*');
+            	var obj = this.prepareResult(xhr);
+            	obj.result = 'ok';
+            	obj.response.body = text;
+            	obj.response.headers = (xhr.getAllResponseHeaders ? xhr.getAllResponseHeaders() : null); 
+                this.source.postMessage(JSON.stringify(obj), '*');
             }
         }
     }

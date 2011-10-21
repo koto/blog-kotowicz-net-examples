@@ -22,7 +22,17 @@
         }
         
 		function showResponse(event) {
-			document.getElementById('response').value = event.data;
+			var d = JSON.parse(event.data);
+			if (d.result === 'ok') {
+				document.getElementById('response').value = 
+					"HTTP/1.1 " + d.response.status + " " + (d.response.statusText || "") + "\r\n" +
+					(d.response.headers || "") + 
+					"Content-Length: " + d.response.body.length + "\r\n\r\n" +
+				    d.response.body;
+				
+			} else {
+	            document.getElementById('response').value = event.data;
+			}
 			window.removeEventListener('message', arguments.callee);
 		}
 		
@@ -47,7 +57,7 @@ var CorsCrawler = {
 		   
 	processResponse: function(event) {
         var received = JSON.parse(event.data);
-        var url = received.xhr._url;
+        var url = received.request.url;
 
         this.queued--;
         
@@ -66,14 +76,14 @@ var CorsCrawler = {
         // check if we reached level
         var currentDepth = this.results[url];
         
-        this.results[url] = received.text; // assign text
+        this.results[url] = received; // assign text
         var base_authority = parseURI(url).authority;
         var i = 0;
         if (currentDepth < this.depthLimit) {
             // look for links
             var new_url, match, re = /href\="([^"]+)"/g;
-            while (match = re.exec(received.text)) {
-                new_url = absolutizeURI(received.xhr._url, match[1]);
+            while (match = re.exec(received.response.body)) {
+                new_url = absolutizeURI(received.request.url, match[1]);
                 
                 if (this.stayInOrigin && base_authority != parseURI(new_url).authority) {
                 	console.log('skipping ' + new_url + ' - another origin');
@@ -90,7 +100,7 @@ var CorsCrawler = {
             }
         }
 
-        if (this.queued == 0) {
+        if (this.queued <= 0) {
             window.removeEventListener('message', arguments.callee.caller, false);
             this.stop();
         }
@@ -108,11 +118,18 @@ function startCrawling() {
 	document.getElementById('response').value = '';
 	// CorsCrawler.depthLimit = 2;
 	CorsCrawler.crawl(document.getElementById('url').value, function(results) {
-
-		document.getElementById('response').value = Object.keys(results).length + " results for depth " + this.depthLimit + ":\n";
+	    var r = document.getElementById('response'); 
+		r.value = Object.keys(results).length + " results for depth " + this.depthLimit + ":\n";
 		for (var i in results) {
 			if (results.hasOwnProperty(i)) {
-				document.getElementById('response').value += " " + i + " " + (results[i] === undefined ? "(error)" : results[i].length + " bytes") +"\n";  
+				r.value += " " + i + " ";
+				if (!results[i]) {
+				    r.value += "(none, skipped?)\n";
+				} else if (results[i].result == 'error') {
+					r.value += '(error)\n';
+				} else {
+					r.value += results[i].response.body.length + " bytes, " + results[i].duration + " ms\n"; 
+				}
 			}
 		}
 	}, function(resultCount, queueSize, currentUrl) {
@@ -171,7 +188,7 @@ function absolutizeURI(base, href) {// RFC 3986
 	URL:
 	<input autofocus type="text" id="url" size="80" value="http://sourceforge.net/" />
 	<button onclick="send()">Go!</button>
-    <button onclick="startCrawling()">Crawl!</button>
+    <button onclick="startCrawling()">Crawl !</button>
 
 	<br />
 	<textarea style="width: 95%; height: 50%" id=response></textarea>
