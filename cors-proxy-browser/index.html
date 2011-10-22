@@ -5,6 +5,9 @@
 @see http://blog.kotowicz.net
  -->
 <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+<!--[if lte IE 8]>
+    <script type="text/javascript" src="json2.min.js"></script>
+<![endif]-->
 <script src="crossxhr.js"></script>
 <style type="text/css">
 #hello {
@@ -184,9 +187,11 @@ var BrowserUI = {
     writeHTML: function(text) {
         $('#hello').remove();
         $('<iframe id=hello sandbox="allow-same-origin allow-forms allow-scripts"/>').load(function() {
-            this.contentDocument.body.innerHTML = "";
-            this.contentDocument.head.innerHTML = "";
-            this.contentDocument.write(text);
+            this.contentWindow.document.body.innerHTML = "";
+            if (this.contentWindow.document.head) { // IE quirk
+            	this.contentWindow.document.head.innerHTML = "";
+            }
+            this.contentWindow.document.write(text);
 
         }).appendTo('body');
         this.disableTimer();
@@ -205,11 +210,11 @@ var BrowserUI = {
     hijackFrame: function() {
         var f = document.getElementById('hello');
         var self = this;
-        $('a:not([target])', f.contentDocument.body)
+        $('a:not([target])', f.contentWindow.document.body)
             .unbind('click')
             .click(false)
             .click(bind(self, this.handleNavigate));
-        $('form:not([target])', f.contentDocument.body)
+        $('form:not([target])', f.contentWindow.document.body)
             .unbind('submit')
             .submit(false)
             .submit(bind(self, this.handleNavigate));
@@ -295,7 +300,7 @@ var Connector = (function() {
             switch (type) {
             case 'cors':
             case 'cors-withcredentials':
-                return new XMLHttpRequest();
+                return (typeof XDomainRequest !== 'undefined' ? new XDomainRequest() : new XMLHttpRequest());
             case 'flash':
                 if (location.protocol == 'file:')
                     throw "Flash will only load from a http[s], not from file://";
@@ -324,9 +329,15 @@ var Connector = (function() {
             }
             xhr._body = body;
             var self = this;
-            xhr.onreadystatechange = function(e) {
-                self.processResponse(e, this);
-            };
+            if (typeof XDomainRequest !== 'undefined' && xhr instanceof XDomainRequest) {  // of course, IE
+                xhr.onerror = function(e) { self.handleError(e,this); }
+                xhr.onload = function(e) { self.handleSuccess(e,this); }
+            } else {
+                xhr.onreadystatechange = function(e) {
+                    self.handleResponse(e, this);
+                };
+            }
+            
             xhr._start_time = new Date().getTime();
             xhr.send(body);
         },
@@ -334,18 +345,26 @@ var Connector = (function() {
         fallback: function(xhr) {
             this.sendRequest(null, xhr._types_left, xhr._url, xhr._method, xhr._body);
         },
+        
+        handleSuccess: function(event, xhr) {
+            xhr._end_time = new Date().getTime();                   
+            $('body').trigger('response-load', [xhr.responseText, xhr]);        	
+        },
+        
+        handleError: function(event, xhr) {
+            if (xhr._types_left.length == 0) {
+                $('body').trigger('response-error', xhr);
+            } else {
+                this.fallback(xhr);
+            }
+        },
 
-        processResponse: function(event, xhr) {
+        handleResponse: function(event, xhr) {
             if (xhr.readyState === 4) {
                 if (xhr.status == 200) {
-                    xhr._end_time = new Date().getTime();                	
-                    $('body').trigger('response-load', [xhr.responseText, xhr]);
+                	this.handleSuccess(event, xhr);
                 } else {
-                    if (xhr._types_left.length == 0) {
-                        $('body').trigger('response-error', xhr);
-                    } else {
-                        return this.fallback(xhr);
-                    }
+                    this.handleError(event, xhr);
                 }
             }
         },
@@ -379,7 +398,7 @@ Example:
 $('body').bind('request-start', bind(Connector, Connector.sendRequest));
 
 if (location.search.indexOf('silent') === -1) {
-    // $('body').bind('navigate-to', bind(BrowserUI, BrowserUI.displayLoading));
+    $('body').bind('navigate-to', bind(BrowserUI, BrowserUI.displayLoading));
     $('body').bind('navigate-to', bind(History, History.add));
     $('body').bind('response-load', bind(BrowserUI, BrowserUI.displayPage));
     $('body').bind('response-error', bind(Connector, Connector.alertError));
@@ -468,7 +487,7 @@ $("#pref").click(function() {
     BrowserUI.writeHTML($("#pref-text")[0].innerHTML);
 
     setTimeout(function() {
-        var doc = $('#hello')[0].contentDocument;
+        var doc = $('#hello')[0].contentWindow.document;
         var tr = $('tr:last', doc.body);
         var tbody = $('tbody', doc.body);
         // render history HTML
@@ -549,7 +568,7 @@ if (location.hash && location.hash.slice(1).match(/^https?:\/\//)) {
 				, it will load in a moment. The flying marquee at the top is a proof
 				that you're actually modifying content. If not, there will be an
 				alert with error. It will only work in <strong>Firefox,
-					Chrome and Safari</strong>!
+					Chrome, Safari and IE8+</strong>!
 			<h2>FAQ</h2>
 			<dl>
 				<dt>Is it a demo of vulnerability?</dt>

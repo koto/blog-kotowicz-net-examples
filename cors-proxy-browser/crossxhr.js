@@ -35,7 +35,7 @@ var swfobject=function(){var Z="undefined",P="object",B="Shockwave Flash",h="Sho
       var id = this.id;
       setTimeout(function(){  // must release flash
         gateway.finished(id); 
-        obj.onreadystatechange.apply(obj); 
+        if (typeof obj.onreadystatechange !== 'undefined') obj.onreadystatechange.apply(obj); 
       }, 10);
     }
   }
