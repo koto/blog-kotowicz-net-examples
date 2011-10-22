@@ -3,6 +3,11 @@
 @author Krzysztof Kotowicz
 @see http://blog.kotowicz.net
  -->
+<head>
+<!--[if lte IE 8]>
+    <script type="text/javascript" src="json2.min.js"></script>
+<![endif]-->
+</head>
 <body>
 	<h1>Remote controller for CORS proxy</h1>
 	<p>
@@ -14,6 +19,19 @@
 	<p>This is an example of how you can embed CORS proxy browser in invisible iframe and send remote commands to it via HTML5 <code>postMessage()</code>.
 	You can send commands to fetch cross origin URLs and receive the responses. In fact, even this remote controller page can be cross-origin to index.html</p>
 	<script>
+	
+	    if (!Object.keys) {
+	    	Object.keys = function(o) { // IE
+	    		var keys = [];
+	    		for (var i in o) {
+	    			if (o.hasOwnProperty(i)) {
+	    				keys.push(i);
+	    			}
+	    		}
+	    		return keys;
+	    	}
+	    }
+	    
         var f = document.getElementById('fetcher').contentWindow;
 	
         function requestUrl(url) {
@@ -25,7 +43,7 @@
 			var d = JSON.parse(event.data);
 			if (d.result === 'ok') {
 				document.getElementById('response').value = 
-					"HTTP/1.1 " + d.response.status + " " + (d.response.statusText || "") + "\r\n" +
+					"HTTP/1.1 " + (d.response.status || "200") + " " + (d.response.statusText || "") + "\r\n" +
 					(d.response.headers || "") + 
 					"Content-Length: " + d.response.body.length + "\r\n\r\n" +
 				    d.response.body;
@@ -33,7 +51,11 @@
 			} else {
 	            document.getElementById('response').value = event.data;
 			}
-			window.removeEventListener('message', arguments.callee);
+            if (window.removeEventListener) {
+                window.removeEventListener('message', arguments.callee, false);
+            } else if (window.detachEvent) {
+                window.detachEvent("onmessage", arguments.callee);
+            }			
 		}
 		
 var CorsCrawler = {
@@ -42,10 +64,18 @@ var CorsCrawler = {
     stayInOrigin: true,
     onstop: null,
     onprogress: null,
+    _wrapper_fun: null,
 	
     crawl: function(url, onstop, onprogress) {
+    	
     	var self = this;
-        window.addEventListener("message", function(e) {self.processResponse(e)}, false);
+    	this._wrapper_fun = function(e) {self.processResponse(e)};
+    	if (window.addEventListener) {
+    	    window.addEventListener("message", this._wrapper_fun, false);
+    	} else if (window.attachEvent) {
+    		window.attachEvent("onmessage", this._wrapper_fun);
+    	}
+    	
         this.results = {};
         this.results[url] = 0; // start
         this.queued = 0;
@@ -54,6 +84,7 @@ var CorsCrawler = {
         this.onstop = onstop;
         this.onprogress = onprogress;
     },
+
 		   
 	processResponse: function(event) {
         var received = JSON.parse(event.data);
@@ -99,14 +130,21 @@ var CorsCrawler = {
                 }
             }
         }
-
         if (this.queued <= 0) {
-            window.removeEventListener('message', arguments.callee.caller, false);
             this.stop();
         }
 	},
 	
 	stop: function() {
+		if (this._wrapper_fun) {
+	        if (window.removeEventListener) {
+	            window.removeEventListener('message', this._wrapper_fun, false);
+	        } else if (window.detachEvent) {
+	            window.detachEvent("onmessage", this._wrapper_fun);
+	        }
+		}
+		this._wrapper_fun = null;
+		
 		if (typeof this.onstop == 'function') {
 		 this.onstop(this.results);
 		}	
@@ -125,6 +163,8 @@ function startCrawling() {
 				r.value += " " + i + " ";
 				if (!results[i]) {
 				    r.value += "(none, skipped?)\n";
+                } else if (typeof results[i] == 'number') {
+                	r.value += "(queued)\n";
 				} else if (results[i].result == 'error') {
 					r.value += '(error)\n';
 				} else {
@@ -136,10 +176,19 @@ function startCrawling() {
 		document.getElementById('response').value = resultCount + " all, queued: " + queueSize; 
 	});
 }
-		function send() {
-	        window.addEventListener("message", showResponse, false);
-	        requestUrl(document.getElementById('url').value);
-		}
+
+function stopCrawling() {
+	CorsCrawler.stop();
+}
+
+function send() {
+	if (window.addEventListener) {
+	    window.addEventListener("message", showResponse, false);
+	} else if (window.attachEvent) {
+	    window.attachEvent("onmessage", showResponse);
+	}
+    requestUrl(document.getElementById('url').value);
+}
 
 	//  URI parsing: https://gist.github.com/1088850
 function parseURI(url) {
@@ -189,7 +238,7 @@ function absolutizeURI(base, href) {// RFC 3986
 	<input autofocus type="text" id="url" size="80" value="http://sourceforge.net/" />
 	<button onclick="send()">Go!</button>
     <button onclick="startCrawling()">Crawl !</button>
-
+    <button onclick="stopCrawling()">Stop crawl</button>
 	<br />
 	<textarea style="width: 95%; height: 50%" id=response></textarea>
 </body>

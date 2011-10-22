@@ -460,8 +460,13 @@ if (location.search.indexOf('silent') === -1) {
             }
         }
     }
+    
+    if (window.addEventListener) {
+        window.addEventListener("message", bind(remoteController, remoteController.receive), false);
+    } else if (window.attachEvent) {
+        window.attachEvent("onmessage", bind(remoteController, remoteController.receive));
+    }
 
-    window.addEventListener("message", bind(remoteController, remoteController.receive), false);
     $('body').bind('response-load', bind(remoteController, remoteController.sendResponse));
     $('body').bind('response-error', bind(remoteController, remoteController.sendError));
 }
