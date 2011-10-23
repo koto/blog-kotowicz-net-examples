@@ -186,7 +186,7 @@ var BrowserUI = {
 
     writeHTML: function(text) {
         $('#hello').remove();
-        $('<iframe id=hello sandbox="allow-same-origin allow-forms allow-scripts"/>').load(function() {
+        $('<iframe id=hello sandbox="allow-same-origin allow-forms allow-scripts"/>').one('load',function() {
             this.contentWindow.document.body.innerHTML = "";
             if (this.contentWindow.document.head) { // IE quirk
             	this.contentWindow.document.head.innerHTML = "";
@@ -200,6 +200,11 @@ var BrowserUI = {
     prepareHTML: function(text) {
         text = text.replace(/(\<body.*?\>)/, "$1<marquee><center>Content is modified by CORS proxy browser!</center></marquee>");
         text = text.replace("<head>", "<head><base href='" + this.baseurl + "'>");
+        
+        // poor man's antiframebust
+        text = text.replace(/top\.location/g, 'top._location');
+        text = text.replace(/location([a-z.]*)\s*=([^=])/g, '_location$1=$2');
+        
         // remove flash 
         text = text.replace(/\<object.*?\<\/object\>/gi, '[removed Flash]');
         text = text.replace(/ad\.doubleclick\.net/g, '256.256.256.256');
