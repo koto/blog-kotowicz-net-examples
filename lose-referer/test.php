@@ -8,7 +8,7 @@ header('Content-Type: text/html;charset=utf-8');
 if <code>Referer</code> is from a third-party site, the request processing is blocked. However, loose referer checking allows requests with no referrer header at all.
 <p>There are various ways to make a request losing the <code>Referer</code> header - most common is just doing a 30x redirect either through attacker's site or a third party
 URL shortening service like <a href="//goo.gl">goo.gl</a>. I've tried to find ways how to do it <strong>client-side only</strong>, in Javascript. Here are the results.
-
+<p>More info: <a href="http://blog.kotowicz.net/2011/10/stripping-referrer-for-fun-and-profit.html" rel="me">Stripping Referrer for fun and profit</a></p>
 <script>
 var url = 'http://victim.kotowicz.net/lose-referer/test.php?text=hello';
 function lose_referer() {
