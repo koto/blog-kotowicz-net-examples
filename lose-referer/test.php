@@ -55,7 +55,7 @@ echo "<p>Method: <strong>" . htmlspecialchars($_SERVER['REQUEST_METHOD']) . '</s
 </ul>
 <h4>POST requests</h4>
 <ul>
-<li><a href="#" onclick="post_and_lose()">data: with meta refresh &amp; form submit</a>Firefox / Chrome
+<li><a href="#" onclick="post_and_lose()">data: with meta refresh &amp; form submit</a> - Firefox / Chrome
 </ul>
 
 <p>Ideas welcome! Mail me at kkotowicz (it's a gmail account)
