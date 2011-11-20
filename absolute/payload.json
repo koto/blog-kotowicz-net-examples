@@ -2,7 +2,7 @@
     "id": 1,
     "data": "http://www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -14,7 +14,7 @@
     "id": 2,
     "data": "http:\\\\www.google.com\\favicon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "internet explorer": ["6", "7", "8"],
         "android": ["2.1","2.2"],
         "safari": ["5"]
@@ -25,7 +25,7 @@
     "id": 3,
     "data": "//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -49,7 +49,7 @@
     "id": 5,
     "data": "/\\www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "android": ["2.1","2.2"],
         "internet explorer": ["6"],
         "safari": ["5"]
@@ -63,7 +63,7 @@
     "data": "\\/www.google.com/favicon.ico",
     "description": "Mixed slashes could be used in Chrome, Safari, Android & IE 6, which render this as standard http:// link",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "android": ["2.1","2.2"],
         "internet explorer": ["6"],
         "safari": ["5"]
@@ -73,7 +73,7 @@
     "id": 11,
     "data": "\u000d \u0009//www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -87,7 +87,7 @@
     "id": 12,
     "data": "//www.google.com/favicon.ico ",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -101,7 +101,7 @@
     "id": 13,
     "data": " //www.g\roo\ngle\u000a.com/fav\r\n\ticon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -116,7 +116,7 @@
     "data": "/\n/www.google.com/favicon.ico",
     "browsers": {
         "internet explorer": ["6", "7", "8"],
-        "chrome": ["9", "11"],
+        "chrome": ["9", "11", "15"],
         "opera": ["10.6", "11"],
         "firefox": ["3.6", "4"],
         "safari": ["5"],
@@ -130,7 +130,7 @@
     "id": 15,
     "data": "//www.google.com/favicon.ico\u000a\u000d\u0000",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -176,7 +176,7 @@
     "data": "https:www.google.com/favicon.ico",
     "browsers": {
         "firefox": ["3.6","4"],
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "internet explorer": ["6","7","8"],
         "android": ["2.1","2.2"],
         "safari": ["5"]
@@ -199,7 +199,7 @@
     "data": "https:/www.google.com/favicon.ico",
     "browsers": {
         "firefox" : ["3.6","4"],
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "internet explorer": ["6","7","8"],
         "android": ["2.1","2.2"],
         "safari": ["5"]
@@ -235,7 +235,7 @@
     "id": 23,
     "data": "//www.google.com/favicon.ico\u0000",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6", "4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -269,7 +269,7 @@
     "id": 26,
     "data": "http:////google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9", "11"],
+        "chrome": ["9", "11", "15"],
         "firefox" : ["3.6","4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -285,7 +285,7 @@
     "id": 27,
     "data": "http:////@google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9", "11"],
+        "chrome": ["9", "11", "15"],
         "firefox" : ["3.6","4"],
         "opera": ["10.6", "11"],
         "internet explorer": ["6", "7", "8"],
@@ -314,7 +314,7 @@
     "id": 29,
     "data": "///www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9", "11"],
+        "chrome": ["9", "11", "15"],
         "firefox" : ["3.6","4"],
         "internet explorer" : ["6"],
         "opera": ["10.6", "11"],
@@ -367,7 +367,7 @@
     "id": 38,
     "data": "https:anything\n:even spaces@www.google.com/favicon.ico",
     "browsers": {
-        "chrome": ["9","11"],
+        "chrome": ["9","11", "15"],
         "firefox": ["3.6","4"],
         "internet explorer": ["6","7","8"],
         "android": ["2.1","2.2"],
