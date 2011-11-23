@@ -11,6 +11,15 @@
     },
     "name": "Standard absolute URL"
 }, {
+    "id": 39,
+    "data": "http:/www.google.com/favicon.ico",
+    "browsers": {
+        "safari": ["5"]
+    },
+    "description": "Safari allows a single slash after http:",
+    "name": "Single slash",
+    "reporter": "Gareth Heyes"
+}, {
     "id": 2,
     "data": "http:\\\\www.google.com\\favicon.ico",
     "browsers": {
@@ -21,6 +30,7 @@
     },
     "description": "Chrome, IE, Android & Safari browsers treat forward slashes in URL just like backslashes. See also #19.",
     "name": "Forward slashes"
+
 }, {
     "id": 3,
     "data": "//www.google.com/favicon.ico",
