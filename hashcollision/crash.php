@@ -8,7 +8,8 @@ function doom() {
         '1' => 'FY',
         '2' => 'G8',
         '3' => 'H' . chr(23),
-        '4' => 'D'.chr(122+33), 
+        '4' => 'D' . chr(122+33),
+//        '5' => 'C' . chr(122+33+33),
     );
     // how long should the payload be
     $length = 7;
