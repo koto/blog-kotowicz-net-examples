@@ -325,6 +325,10 @@ var Connector = (function() {
             if (current_type === 'cors-withcredentials') {
                 xhr.withCredentials = 'true';
             }
+            if (typeof xhr.overrideMimeType !== "undefined") {
+                xhr.overrideMimeType('text/plain; charset=x-user-defined');
+            }
+            
             xhr._url = url;
             xhr._method = method;
             xhr._types_left = types;
@@ -460,9 +464,13 @@ if (location.search.indexOf('silent') === -1) {
             	var obj = this.prepareResult(xhr);
             	obj.result = 'ok';
             	obj.response.body = text;
+            	obj.response.bytes = Array.prototype.map.call(text, this.byteValue);
             	obj.response.headers = (xhr.getAllResponseHeaders ? xhr.getAllResponseHeaders() : null); 
                 this.source.postMessage(JSON.stringify(obj), '*');
             }
+        },
+        byteValue: function(x) {
+            return x.charCodeAt(0) & 0xff;
         }
     }
     
