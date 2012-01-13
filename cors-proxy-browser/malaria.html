@@ -9,7 +9,7 @@
 <![endif]-->
 </head>
 <body>
-	<h1>MalaRIA connector</h1>
+	<h1>MalaRIA CORS connector</h1>
 	<p>
 		By <a rel=me href="http://blog.kotowicz.net" target="_blank">Krzysztof
 			Kotowicz</a>
@@ -75,7 +75,24 @@ function log(s) {
     o.scrollTop = Math.max(100000, o.scrollHeight);
 }
 
+if (typeof FileReader == 'undefined') { // emulation not tested
+    FileReader = function() {
+        this.readAsBinaryString = function(s) {
+            var eventEmulator = {};
+            eventEmulator.target = this;
+            this.result = s;
+            this.onload(eventEmulator);
+        };
+        
+        this.onload = function() {};
+    }
+}
+
 var fr = new FileReader;
+
+fr.onload = function(e) {
+    parseRequest(e.target.result);
+};
 
 function parseRequest(req) {
 	if (window.addEventListener) {
@@ -133,12 +150,13 @@ function returnResponseToProxy(event) {
     }
 }
 
-fr.onload = function(e) {
-    parseRequest(e.target.result);
-};
-
 function launchMalariaConnector() {
-    p = new WebSocket(document.getElementById('ws-url').value, 'binary');
+    try {
+        p = new WebSocket(document.getElementById('ws-url').value, 'binary');
+    } catch (e) {
+        log("Cannot connect to WebSocket server:" + e.message);
+    }
+    
     p.onopen = function() {
         log("Connected to MalaRIA at " + p.URL);
         p.send('Hello');
@@ -162,4 +180,8 @@ function start() {
 document.getElementById('fetcher').onload = start;
 
 document.getElementById('fetcher').src = "index.html?silent&_=" + Math.random();
+
+if (!navigator.userAgent.match(/hrome/)) {
+    log('Sorry, this page works in Chrome only for now.');
+}
 </script>
