@@ -1,0 +1,126 @@
+<html>
+<!-- 
+@author Krzysztof Kotowicz
+@see http://blog.kotowicz.net
+ -->
+<head>
+<!--[if lte IE 8]>
+    <script type="text/javascript" src="json2.min.js"></script>
+<![endif]-->
+</head>
+<body>
+	<h1>MalaRIA connector</h1>
+	<p>
+		By <a rel=me href="http://blog.kotowicz.net" target="_blank">Krzysztof
+			Kotowicz</a>
+	</p>
+	<iframe style="visibility: hidden" width=1 height=1 id=fetcher
+        src=""></iframe>
+    WebSocket malaRIA server URL: <input size=80 id="ws-url" value="ws://localhost:8082">
+    <button id=start disabled=disabled>start</button>
+    <br />
+    <textarea id=log cols=90 rows=10"></textarea>
+<script>
+var f = document.getElementById('fetcher').contentWindow;
+var p;
+
+function requestUrl(url, method) {
+    log("Requesting " + url);
+    f.postMessage(JSON.stringify([ [ 'cors' ],
+                                   url, method, null ]), '*');
+}
+
+function log(s) {
+    var o = document.getElementById('log');
+    o.value += s + "\n";
+    o.scrollTop = Math.max(100000, o.scrollHeight);
+}
+
+var fr = new FileReader;
+
+function parseRequest(req) {
+	if (window.addEventListener) {
+	    window.addEventListener("message", returnResponseToProxy, false);
+	} else if (window.attachEvent) {
+	    window.attachEvent("onmessage", returnResponseToProxy);
+	}
+	
+	// req = "METHOD URL ACCEPT-HEADER-VALUE"
+	var parts = req.split(' ');
+	
+	log("Received: " + req);
+	if (parts.length >= 2)
+    requestUrl(parts[1], parts[0]); // we ignore the accept type for now
+	
+}
+
+var readByteAt = function(i, fileContents){
+    return fileContents.charCodeAt(i) & 0xff;
+};
+
+function returnResponseToProxy(event) {
+    var d = JSON.parse(event.data);
+    var response = '';
+    var binaryBody = null;
+    if (d.result === 'ok') {
+        log("Received success response");
+        if (d.response.bytes) {
+          binaryBody = new Uint8Array(d.response.bytes.length); // Note:not xhr.responseText
+          for (var i  = 0 ; i < d.response.bytes.length; i++) {
+            binaryBody[i] = d.response.bytes[i];
+          }
+        }
+        response = d.response.body; // MalaRIA does not report headers back to proxy clients
+    } else {
+        log("Received error response");
+        // todo 502
+        //document.getElementById('response').value = event.data;
+        response = 'HTTP/1.1 502 Not accessible - ' + event.data;
+    }
+    if (window.removeEventListener) {
+        window.removeEventListener('message', arguments.callee, false);
+    } else if (window.detachEvent) {
+        window.detachEvent("onmessage", arguments.callee);
+    }
+    
+    if (binaryBody) {
+        log("Sending " + binaryBody.length + " bytes to MalaRIA");
+        p.send(binaryBody.length + ":");
+        p.send(binaryBody.buffer);
+    } else {
+        log("Sending " + response.length + " characters to MalaRIA");
+        response = response.length + ":" + response;
+        p.send(response);
+    }
+}
+
+fr.onload = function(e) {
+    parseRequest(e.target.result);
+};
+
+function launchMalariaConnector() {
+    p = new WebSocket(document.getElementById('ws-url').value, 'binary');
+    p.onopen = function() {
+        log("Connected to MalaRIA at " + p.URL);
+        p.send('Hello');
+        p.onmessage = function(e) {
+            fr.readAsBinaryString(e.data);
+        };
+    };
+    p.onerror = function() {
+        log("Cannot connect to WebSocket server at " + p.URL);
+    };
+    document.getElementById('start').disabled = '';
+    document.getElementById('start').onclick = null;
+}
+
+function start() {
+    document.getElementById('start').disabled = '';
+    document.getElementById('start').onclick = launchMalariaConnector;
+}
+
+
+document.getElementById('fetcher').onload = start;
+
+document.getElementById('fetcher').src = "index.html?silent&_=" + Math.random();
+</script>
