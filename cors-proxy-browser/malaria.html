@@ -54,7 +54,7 @@
     <li>Point your victim browser to this page
     <li>Press 'start' to open WebSocket connection (use websockify port 8082)
     <li>Set HTTP proxy on attacker's browser to localhost:8080
-    <li>Use attacker browser to navigate through victim browser (usual MalaRIA stuff). URLs have to be same domain as connector or have CORS headers.
+    <li>Use attacker browser to navigate through victim browser (usual MalaRIA stuff). URLs have to be same domain as connector (<code><script>document.write(location.host)</script></code>) or have CORS headers.
     </ol>
     <h2>Issues</h2>
     <p>Alpha quality. Use with caution. Fetching binary files works most likely with Chrome only.</p>
