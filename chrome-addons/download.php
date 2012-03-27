@@ -1,7 +1,11 @@
 <?php
 /*
 downloads & unpacks addons listed in standard input JSON feed
-Usage: php download.php < addons.json
+Usage: 
+
+ php download.php < addons.json
+ php download.php <addon-guid> <addon-name>
+
 Req: openssl extension, unzip command line
 
 @author Krzysztof Kotowicz kkotowicz<at>gmail<dot>com
@@ -9,10 +13,19 @@ Req: openssl extension, unzip command line
 
  */
 
-$f = file_get_contents('php://stdin');
-$addons = json_decode($f);
 $output_dir = 'addons';
 $skip_existing = true;
+
+// command line support
+if (count($argv) == 3) {
+    $addons = array($argv[1] => $argv[2]);
+    $skip_existing = false;
+} else {
+    $f = file_get_contents('php://stdin');
+    $addons = json_decode($f);
+}
+
+
 
 while (list($k, $v) = each($addons)) {
     download($k, $v);
@@ -39,6 +52,6 @@ function download($id, $name) {
 	file_put_contents($dir . DIRECTORY_SEPARATOR . $id. '.crx', $crx);
 	echo "Saving " . strlen($crx) . " bytes to $dir\n";
 	echo "Unpacking...";
-	shell_exec("unzip $dir/$id.crx -d $dir");
+	shell_exec("unzip -o $dir/$id.crx -d $dir");
     }
 }
