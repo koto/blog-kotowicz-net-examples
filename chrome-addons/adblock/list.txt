@@ -1,0 +1,6 @@
+[Adblock Plus 0.7.5]
+! Now this is some fine AdBlock list 
+! http://anything.here
+! 26/11/2012 15:35 (DD/MM/YYYY)
+!Whitelist all domains & stop blocking ads, cool, ah?
+@@*$document,domain=~whitelist.all

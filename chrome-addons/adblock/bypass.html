@@ -1,0 +1,31 @@
+<html>
+<head>
+<script>
+
+function block(node) {
+    if (   (node.nodeName == 'LINK' && node.href == 'data:text/css,') // new style
+        || (node.nodeName == 'STYLE' && node.innerText.match(/^\/\*This block of style rules is inserted by AdBlock/)) // old style
+        ) {
+        node.parentElement.removeChild(node);
+    }
+
+}
+document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('DOMNodeInserted', function(e) {
+    // disable blocking styles inserted by AdBlock
+    block(e.target);
+    }, false);
+    
+}, false);
+
+</script>
+</head>
+<body>
+<h1>Chrome AdBlock bypass</h1>
+<p>By <a rel=me href="http://blog.kotowicz.net">Krzysztof Kotowicz</a>
+<p>This page will block adBlock style insertion, therefore bypassing all adBlock filters
+<p>See also: <a href="disable.html">Chrome (AdBlock)^2</a>
+<br />
+<iframe style="border: 1px solid black" name="google_ads_try" src="blockme.html"></iframe>
+</body>
+</html>
