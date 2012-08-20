@@ -1,0 +1,7 @@
+<iframe id=f sandbox src=framed.html>
+</iframe>
+<script>
+setTimeout(function() {
+alert(document.getElementById('f').contentWindow.document.title);
+}, 1000) 
+</script>
