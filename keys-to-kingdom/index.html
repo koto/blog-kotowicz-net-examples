@@ -1,0 +1,64 @@
+<head>
+<link rel=stylesheet type=text/css href=http://nicolasgallagher.com/pure-css-speech-bubbles/demo/default.css >
+<style>
+p {text-align: center}
+</style>
+<script>
+window.onmessage = function(e) {
+  if (!e) e = this.event;
+  var k = e.data;
+  document.getElementById('key').innerHTML = k;
+}
+
+function crack(f) {
+  document.getElementById('f').contentWindow.postMessage(f.elements['tryme'].value, '*');
+  f.elements['tryme'].value = '';
+  return false;
+}
+
+</script>
+</head>
+<body>
+<div style="width: 700px; margin: 0 auto">
+<h1>Keys to a kingdom!</h1>
+<p>A quick fun sidechannel, posssibly crypto challenge by <a href="http://blog.kotowicz.net">Krzysztof Kotowicz</a></p>
+<h2>Rules</h2>
+<ol>
+<li>Remote kingdom posesses a secret. Every 2 seconds its king gives you a new key to crack 
+<li>If you can crack the key, enter the solution in the input field below and press the magical ENTER key
+<li>Beware! Solutions expire, so you have only about 100 seconds to crack any key on average!
+<li>Once in a while, you'll be getting expired solutions as a hint.
+<li><strong>Make the kingdom display you the generated secret</strong>
+<li>Modern browsers only or respect the iframe sandbox rules (i.e. no direct access to remote.html DOM)
+<li>You can copy the challenge to automate tasks, but no tampering with kingdom.html
+<li>There's more than one way to skin a cat, so Think OUTB.
+</ol>
+<div style="text-align: center">  
+<h1>Newest key to crack:</h1>
+<p id=key>&nbsp;</p>
+</div>
+<img src="knight.png" style="float: right;">
+
+<form style="margin: 0 200px; text-align: right" class="triangle-border right" onsubmit="return crack(this)" action=#>
+
+<input id=tryme placeholder="Your solution is..." size=32 maxlength=32>
+</form>
+<iframe id=f sandbox=allow-scripts seamless style="width:700px; border: none; height: 400px;"></iframe>
+<script>
+  var f = document.getElementById('f'); 
+  f.onload = function() {
+    window.frames[0].postMessage(null, '*');
+  }
+  f.src = 'kingdom.html';
+
+</script>
+<p>
+<small>
+Used <a href="http://www.iconspedia.com/pack/desktop-boss-2-icons-3659/">http://www.iconspedia.com/pack/desktop-boss-2-icons-3659/</a>, 
+  <a href=http://icones.pro/en/knight-png-image.html>http://icones.pro/en/knight-png-image.html</a>, 
+  <a href="http://nicolasgallagher.com/pure-css-speech-bubbles/demo/">http://nicolasgallagher.com/pure-css-speech-bubbles/demo/</a> and <a href="http://pajhome.org.uk/crypt/md5">http://pajhome.org.uk/crypt/md5</a>.
+
+<h1>Hall of fame</h1>
+<p>awaits you!
+</div>
+</body>

@@ -1,0 +1,71 @@
+<head>
+<title>Remote kingdom says...</title>
+<link rel=stylesheet type=text/css href=http://nicolasgallagher.com/pure-css-speech-bubbles/demo/default.css >
+<style>
+#container {width: 670px;}
+</style>
+<script src=md5.js></script>
+<script>
+var secret;
+(function() {
+  var kingdom = {};
+  var knight;
+  var age = 40 + (Math.random() * 60);
+  // a secret is A SECRET - no peeking here!    
+  secret = "age(princess) > " + Math.ceil(Math.ceil(365*age) * 24 * 60) + " min";
+  
+  window.onmessage = function(e) {
+    if (!e) e = this.event;
+    var k = e.data;
+    
+    if (!knight) {
+      knight = e.source;
+      return;    
+    }
+    
+    if (kingdom[k]) {
+      document.getElementById('msg').innerHTML = 
+        "Congratulations! You cracked <strong>" + kingdom[k]
+         + "</strong> with <strong>" + encodeURIComponent(k) + "</strong><br>Secret:<br>\n" + secret + '\"<br>'
+         + "Submit the solution to kkotowicz (on gmail) AND SPECIFY HOW YOU FOUND IT." ;
+    } else {
+      document.getElementById('msg').innerHTML = "\"" + encodeURIComponent(k) + "\" is not right :/"; 
+    }
+  }
+  
+  var keyNo = 0;
+  
+  setInterval(function() {
+    var msg = "THIS_IS_KEY_NUMBER_" + (++keyNo);
+    //var hash = (new jsSHA(secret + msg , 'TEXT')).getHash("SHA-512", "HEX").substring(0,32);
+    var hash = hex_md5(secret + msg);
+    kingdom[hash] = msg;
+    // keep number of keys low
+    if ((keyNo % 2 == 0) || keyNo > 50) {
+      // expire keys
+      for(var i in kingdom) {
+        if ((Math.random() * 2) > 1) { // display hint
+          var old = document.getElementById('old');  
+          old.style.opacity = 1;
+          old.innerHTML = ('"' +i + "\" used to work...");
+        }
+          delete kingdom[i];
+        break;
+      }
+    }
+    knight.postMessage(msg, '*');
+  }, 2000);
+})();
+</script>
+</head>
+<body>
+<div id=container>
+<img src="king.png" style="float: left; width: 256px;">
+<div class="triangle-border left" style="margin-left: 200px">
+<p id=msg ><strong>Greetings! Please type you solution to one of given keys above. Half of the kingdom and the princess awaits 
+you!</strong></p>
+</div>
+<div class="triangle-isosceles left" style="margin-left: 250px; opacity: 0" id=old></div>
+</div>
+
+</body>
