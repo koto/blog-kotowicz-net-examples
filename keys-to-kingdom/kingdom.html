@@ -26,7 +26,7 @@ var secret;
     if (kingdom[k]) {
       document.getElementById('msg').innerHTML = 
         "Congratulations! You cracked <strong>" + kingdom[k]
-         + "</strong> with <strong>" + encodeURIComponent(k) + "</strong><br>Secret:<br>\n" + secret + '\"<br>'
+         + "</strong> with <strong>" + encodeURIComponent(k) + "</strong><br>Secret:<br>\"<strong>" + secret + '</strong>\"<br>'
          + "Submit the solution to kkotowicz (on gmail) AND SPECIFY HOW YOU FOUND IT." ;
     } else {
       document.getElementById('msg').innerHTML = "\"" + encodeURIComponent(k) + "\" is not right :/"; 
