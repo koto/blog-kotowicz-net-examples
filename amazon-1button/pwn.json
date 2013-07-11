@@ -1,0 +1,24 @@
+{
+  "pwn" : {
+    "urlexp" : "http(s)?:\\/\\/",
+    "rankometer" :  {
+      "url"   :"http(s)?:\\/\\/",
+      "reload": true,
+      "xpath" : {
+        "block": [
+          "//body"
+        ],
+        "insert" : [
+          "//body"
+        ],
+        "target" : [
+          "//body"
+         ]
+      }
+    },
+    "cba" : {
+        "url"   :"http(s)?:\\/\\/",
+        "reload": true
+    }
+  }
+}
