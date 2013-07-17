@@ -6,13 +6,13 @@
       "reload": true,
       "xpath" : {
         "block": [
-          "//body"
+          "//html"
         ],
         "insert" : [
-          "//body"
+          "//html"
         ],
         "target" : [
-          "//body"
+          "//html"
          ]
       }
     },
