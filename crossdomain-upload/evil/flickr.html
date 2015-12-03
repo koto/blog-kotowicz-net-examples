@@ -57,7 +57,7 @@ function fileUpload(fileData, fileName) {
 	  var fileFieldName = "file1";
 	  
 	  xhr.open("POST", uri, true);
-	  xhr.setRequestHeader("Content-Type", "multipart/form-data, boundary="+boundary); // simulate a file MIME POST request.
+	  xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary="+boundary); // simulate a file MIME POST request.
 	  xhr.setRequestHeader("Content-Length", fileSize);
 	  xhr.withCredentials = "true";
  
