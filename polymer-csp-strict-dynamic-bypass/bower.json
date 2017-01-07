@@ -6,7 +6,8 @@
   "license": "https://polymer.github.io/LICENSE.txt",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.6.0",
-    "iron-jsonp-library": "PolymerElements/iron-jsonp-library#^1.0.4"
+    "iron-jsonp-library": "PolymerElements/iron-jsonp-library#^1.0.4",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.4.3"
   },
   "devDependencies": {
   },
